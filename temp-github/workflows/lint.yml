@@ -1,0 +1,26 @@
+name: Lint
+on: [push]
+
+jobs:
+  lint:
+    name: Lint the codebase
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Setup Node 17.x and write .npmrc
+        uses: actions/setup-node@v2
+        with:
+          version: 17.x
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@beefchimi'
+
+      - name: Install Dependencies and build (with cache)
+        uses: bahmutov/npm-install@v1
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Lint
+        run: npm run lint

@@ -1,0 +1,70 @@
+{
+  "name": "earwurm",
+  "version": "0.0.0",
+  "description": "Browser audio for the modern age",
+  "author": "Curtis Dulmage",
+  "license": "ISC",
+  "keywords": [
+    "browser",
+    "web",
+    "audio",
+    "sound",
+    "webm"
+  ],
+  "homepage": "https://github.com/beefchimi/earwurm#readme",
+  "bugs": {
+    "url": "https://github.com/beefchimi/earwurm/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beefchimi/earwurm.git"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "type": "module",
+  "main": "./dist/earwurm.umd.js",
+  "module": "./dist/earwurm.es.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/earwurm.es.js",
+      "require": "./dist/earwurm.umd.js"
+    }
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "nuke": "npm run clean && rm -rf node_modules && rm -rf package-lock.json && npm cache clean --force",
+    "build": "npm run clean && tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .ts,.tsx",
+    "report": "changeset",
+    "release": "npm run build && changeset publish"
+  },
+  "dependencies": {
+    "@changesets/changelog-github": "^0.4.8",
+    "@changesets/cli": "^2.26.0",
+    "emitten": "^0.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.18",
+    "@typescript-eslint/eslint-plugin": "^5.49.0",
+    "eslint": "^8.32.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-config-standard-with-typescript": "^32.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.6.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "typescript": "^4.9.4",
+    "vite": "^4.0.4",
+    "vite-plugin-dts": "^1.7.1"
+  }
+}

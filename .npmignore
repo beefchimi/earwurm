@@ -1,0 +1,64 @@
+scrap
+
+# Root dotfiles
+.DS_Store
+.git
+.babelrc
+.editorconfig
+.eslintignore
+
+# Caches
+.cache
+.eslintcache
+.sass-cache
+*.tsbuildinfo
+
+# Dependencies
+.lock-wscript
+.node_repl_history
+.npm
+.npmignore
+.pnp.*
+.yarn
+.yarn-integrity
+package-lock.json
+yarn.lock
+node_modules
+web_modules/
+
+# Build
+build
+# dist
+dist-ssr
+storybook-static
+
+# Environment
+.env
+.env.test
+.env.production
+
+# Coverage
+coverage
+lib-cov
+*.lcov
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Reports
+assets-manifest.json
+bundle-report.html
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Other
+*.local
+# *.*.map
+# config
+secrets.json
+tests
