@@ -54,8 +54,8 @@ import type {ManagerConfig} from '@beefchimi/earwurm';
 
 // Optionally configure some global settings.
 const customConfig: ManagerConfig = {
-  volume: 0.5,
-  requestOptions: {},
+  fadeMs: 200,
+  request: {},
 };
 
 // Initialize the global audio controller.

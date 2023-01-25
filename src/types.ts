@@ -15,6 +15,7 @@ export interface ManagerEventMap {
 export interface ManagerConfig {
   volume?: number;
   fadeMs?: number;
+  request?: RequestInit;
 }
 
 export interface LibraryEntry {
@@ -43,6 +44,7 @@ export interface StackEventMap {
 export interface StackConfig {
   volume?: number;
   fadeMs?: number;
+  request?: RequestInit;
 }
 
 ///

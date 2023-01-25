@@ -36,6 +36,7 @@ export class Stack extends EmittenProtected<StackEventMap> {
   #outputNode: AudioNode;
   #fadeSec = 0;
   #totalSoundsCreated = 0;
+  #request: StackConfig['request'];
   #queue: Sound[] = [];
 
   constructor(
@@ -49,6 +50,7 @@ export class Stack extends EmittenProtected<StackEventMap> {
 
     this._volume = config?.volume ?? this._volume;
     this.#fadeSec = config?.fadeMs ? msToSec(config.fadeMs) : this.#fadeSec;
+    this.#request = config?.request ?? undefined;
 
     this.#gainNode = this.context.createGain();
     this.#outputNode = this.#gainNode.connect(this.destination);
@@ -151,16 +153,18 @@ export class Stack extends EmittenProtected<StackEventMap> {
   async #load() {
     this.#setState('loading');
 
-    const result = await fetchAudioBuffer(this.path, this.context).catch(
-      (error) => {
-        this.emit(
-          'error',
-          Stack.#loadError(this.id, this.path, getErrorMessage(error)),
-        );
+    const result = await fetchAudioBuffer(
+      this.path,
+      this.context,
+      this.#request,
+    ).catch((error) => {
+      this.emit(
+        'error',
+        Stack.#loadError(this.id, this.path, getErrorMessage(error)),
+      );
 
-        return scratchBuffer(this.context);
-      },
-    );
+      return scratchBuffer(this.context);
+    });
 
     this.#setStateFromQueue();
 

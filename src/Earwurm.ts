@@ -29,6 +29,7 @@ export class Earwurm extends EmittenProtected<ManagerEventMap> {
   #outputNode: AudioNode;
 
   #fadeSec = 0;
+  #request: ManagerConfig['request'];
   #library: Stack[] = [];
   #suspendId: TimeoutId = 0;
   #queuedResume = false;
@@ -42,6 +43,7 @@ export class Earwurm extends EmittenProtected<ManagerEventMap> {
 
     this._volume = config?.volume ?? this._volume;
     this.#fadeSec = config?.fadeMs ? msToSec(config.fadeMs) : this.#fadeSec;
+    this.#request = config?.request ?? undefined;
     this.#outputNode = this.#gainNode.connect(this.#context.destination);
 
     this.#gainNode.gain.setValueAtTime(this._volume, this.#context.currentTime);
@@ -127,6 +129,7 @@ export class Earwurm extends EmittenProtected<ManagerEventMap> {
 
       const newStack = new Stack(id, path, this.#context, this.#outputNode, {
         fadeMs: secToMs(this.#fadeSec),
+        request: this.#request,
       });
 
       newStack.on('statechange', this.#handleStackStateChange);
