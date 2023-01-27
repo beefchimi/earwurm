@@ -1,4 +1,5 @@
 import {EmittenProtected} from 'emitten';
+import type {EmittenListener} from 'emitten';
 
 import {clamp, msToSec} from './utilities';
 import type {SoundId, SoundState, SoundEventMap, SoundConfig} from './types';
@@ -133,4 +134,36 @@ export class Sound extends EmittenProtected<SoundEventMap> {
   #handleEnded = () => {
     this.emit('ended', {id: this.id, source: this.#source});
   };
+
+  ///
+  /// Emitten method exposure
+
+  public off<TKey extends keyof SoundEventMap>(
+    eventName: TKey,
+    listener: EmittenListener<SoundEventMap[TKey]>,
+  ) {
+    super.off(eventName, listener);
+  }
+
+  public on<TKey extends keyof SoundEventMap>(
+    eventName: TKey,
+    listener: EmittenListener<SoundEventMap[TKey]>,
+  ) {
+    super.on(eventName, listener);
+  }
+
+  public once<TKey extends keyof SoundEventMap>(
+    eventName: TKey,
+    listener: EmittenListener<SoundEventMap[TKey]>,
+  ) {
+    super.once(eventName, listener);
+  }
+
+  public disposable<TKey extends keyof SoundEventMap>(
+    eventName: TKey,
+    listener: EmittenListener<SoundEventMap[TKey]>,
+  ) {
+    const result = super.disposable(eventName, listener);
+    return result;
+  }
 }
