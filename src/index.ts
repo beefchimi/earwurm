@@ -6,6 +6,8 @@ export type {
   ManagerState,
   ManagerEventMap,
   ManagerConfig,
+  LibraryEntry,
+  LibraryKeys,
   StackState,
   StackEventMap,
   StackConfig,
