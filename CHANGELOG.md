@@ -1,5 +1,15 @@
 # earwurm
 
+## 0.0.3
+
+### Patch Changes
+
+- 87beb80: Export types for LibraryEntry and LibraryKeys.
+- dc9bc89: Improve README with some guidance on converting audio files.
+- dffe648: Solves a `this` binding issue by converting a `Stack` method to an arrow function.
+- dffe648: Removed some `console.log` calls.
+- dffe648: Bumps `emitten` to `0.2.0` to solve a `super > accessor` bug.
+
 ## 0.0.2
 
 ### Patch Changes
