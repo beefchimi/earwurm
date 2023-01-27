@@ -1,5 +1,11 @@
 # earwurm
 
+## 0.0.2
+
+### Patch Changes
+
+- 877e95b: Update Emitten and revise public exposure of protected methods.
+
 ## 0.0.1
 
 ### Patch Changes
