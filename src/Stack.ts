@@ -167,7 +167,7 @@ export class Stack extends EmittenProtected<StackEventMap> {
       return scratchBuffer(this.context);
     });
 
-    this.#setStateFromQueue();
+    this.#handleStateFromQueue();
 
     return result;
   }
@@ -177,7 +177,7 @@ export class Stack extends EmittenProtected<StackEventMap> {
       fadeMs: secToMs(this.#fadeSec),
     });
 
-    newSound.on('statechange', this.#setStateFromQueue);
+    newSound.on('statechange', this.#handleStateFromQueue);
     newSound.once('ended', this.#handleSoundEnded);
 
     const newQueue = [...this.#queue, newSound];
@@ -205,9 +205,9 @@ export class Stack extends EmittenProtected<StackEventMap> {
     this.emit('statechange', value);
   }
 
-  #setStateFromQueue() {
+  #handleStateFromQueue = () => {
     this.#setState(this.playing ? 'playing' : 'idle');
-  }
+  };
 
   #handleSoundEnded = (event?: SoundEndedEvent) => {
     // TODO: `event` should never be `undefined`.

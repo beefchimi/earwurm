@@ -34,8 +34,6 @@ export function unlockAudioContext(
       source.disconnect();
 
       INTERACTION_EVENTS.forEach((type) => {
-        console.log('INTERACTION_EVENTS > remove > type', type);
-
         document.removeEventListener(type, unlock, {capture: true});
       });
 
@@ -47,8 +45,6 @@ export function unlockAudioContext(
   }
 
   INTERACTION_EVENTS.forEach((type) => {
-    console.log('INTERACTION_EVENTS > add > type', type);
-
     document.addEventListener(type, unlock, {
       capture: true,
       once: true,
