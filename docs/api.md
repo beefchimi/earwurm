@@ -106,11 +106,11 @@ manager.activeEvents;
 // Returns the current `AudioContext > state`. This may trigger
 // immediately upon `new Earwurm()` if the `AudioContext` is
 // “unlocked” right away.
-(event: ManagerEventMap['statechange'], listener: (state?: ManagerState) => void)
+(event: 'statechange', listener: (state: ManagerState) => void)
 
 // Event called whenever an error is occured on the `AudioContext`.
 // This could be a result of: failed to resume, failed to close.
-(event: ManagerEventMap['error'], listener: (message?: CombinedErrorMessage) => void)
+(event: 'error', listener: (error: CombinedErrorMessage) => void)
 ```
 
 **Static members:**
@@ -228,11 +228,11 @@ soundStack.activeEvents;
 // the `Stack`. As sounds cycle through their various states, the
 // `Stack` will determine if any `Sound` is currently `playing`.
 // Possible `StackState` values are: `idle`, `loading`, `playing`.
-(event: StackEventMap['statechange'], listener: (state?: StackState) => void)
+(event: 'statechange', listener: (state: StackState) => void)
 
 // Event called whenever an error is occured on the `Stack`.
 // This could be a result of: failed to load the `path`.
-(event: StackEventMap['error'], listener: ({id, message}?: StackError) => void)
+(event: 'error', listener: ({id, message}: StackError) => void)
 ```
 
 **Static members:**
@@ -321,13 +321,13 @@ sound.duration;
 // Event called whenever `Sound > state` is changed.
 // Possible `SoundState` values are:
 // `created`, `playing`, `paused`, and `stopping`.
-(event: SoundEventMap['statechange'], listener: (state?: SoundState) => void)
+(event: 'statechange', listener: (state: SoundState) => void)
 
 // Event called on the audio `source` node whenenver
 // a `Sound` reaches either it’s “end duration”,
 // or has been stopped / removed from the `Stack`.
 // This will NOT get called each time a “loop” repeats.
-(event: SoundEventMap['ended'], listener: ({id, source}?: SoundEndedEvent) => void)
+(event: 'ended', listener: ({id, source}: SoundEndedEvent) => void)
 ```
 
 ## Events API
@@ -343,17 +343,17 @@ All 3 components of `Earwurm` _(`manager`, `stack` and `sound`)_ each have “ev
 const component = new Earwurm();
 
 // Register an event listener for a specified event.
-component.on(event, listener: (value?) => void);
-
-// Remove any previously registered event listener.
-component.off(event, listener: (value?) => void);
+component.on(event, listener: (value) => void);
 
 // Register an event listener that will remove itself
 // after only a single execution.
-component.once(event, listener: (value?) => void);
+component.once(event, listener: (value) => void);
+
+// Remove any previously registered event listener.
+component.off(event, listener: (value) => void);
 
 // Register an event listener that will return the
 // corresponding `.off()` function, allowing for
 // easier removal of anonymous functions.
-const registered = component.disposable(event, listener: (value?) => void);
+const registered = component.on(event, listener: (value) => void);
 ```

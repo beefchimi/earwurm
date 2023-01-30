@@ -49,22 +49,25 @@
     "release": "npm run build && changeset publish"
   },
   "dependencies": {
-    "emitten": "^0.2.0"
+    "emitten": "^0.3.0"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.4.8",
     "@changesets/cli": "^2.26.0",
     "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "^5.49.0",
-    "eslint": "^8.32.0",
+    "eslint": "^8.33.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-config-standard-with-typescript": "^33.0.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-n": "^15.6.1",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-promise": "^6.1.1",
-    "typescript": "^4.9.4",
+    "typescript": "^4.9.5",
     "vite": "^4.0.4",
     "vite-plugin-dts": "^1.7.1"
+  },
+  "peerDependencies": {
+    "emitten": "^0.3.0"
   }
 }

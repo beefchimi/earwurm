@@ -7,10 +7,11 @@ export type CombinedErrorMessage = [string, string];
 
 export type ManagerState = AudioContextState | 'suspending' | 'interrupted';
 
-export interface ManagerEventMap {
-  statechange: ManagerState;
-  error: CombinedErrorMessage;
-}
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export type ManagerEventMap = {
+  statechange(state: ManagerState): void;
+  error(error: CombinedErrorMessage): void;
+};
 
 export interface ManagerConfig {
   volume?: number;
@@ -36,10 +37,11 @@ export interface StackError {
   message: CombinedErrorMessage;
 }
 
-export interface StackEventMap {
-  statechange: StackState;
-  error: StackError;
-}
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export type StackEventMap = {
+  statechange(state: StackState): void;
+  error(error: StackError): void;
+};
 
 export interface StackConfig {
   volume?: number;
@@ -60,11 +62,12 @@ export interface SoundEndedEvent {
   source: AudioBufferSourceNode;
 }
 
-export interface SoundEventMap {
-  statechange: SoundState;
-  ended: SoundEndedEvent;
-  // loop: boolean;
-}
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export type SoundEventMap = {
+  statechange(state: SoundState): void;
+  ended(event: SoundEndedEvent): void;
+  // loop(ended: boolean): void;
+};
 
 export interface SoundConfig {
   volume?: number;
