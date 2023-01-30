@@ -1,5 +1,4 @@
-import {EmittenProtected} from 'emitten';
-import type {EmittenListener} from 'emitten';
+import {EmittenCommon} from 'emitten';
 
 import {getErrorMessage, fetchAudioBuffer, scratchBuffer} from './helpers';
 import {clamp, msToSec, secToMs} from './utilities';
@@ -8,6 +7,7 @@ import {tokens} from './tokens';
 import type {
   StackId,
   StackState,
+  StackError,
   StackEventMap,
   StackConfig,
   SoundId,
@@ -16,14 +16,14 @@ import type {
 
 import {Sound} from './Sound';
 
-export class Stack extends EmittenProtected<StackEventMap> {
+export class Stack extends EmittenCommon<StackEventMap> {
   static readonly maxStackSize = tokens.maxStackSize;
 
   static #loadError = (
     id: StackId,
     path: string,
     error: string,
-  ): StackEventMap['error'] => ({
+  ): StackError => ({
     id,
     message: [`Failed to load: ${path}`, getErrorMessage(error)],
   });
@@ -209,41 +209,9 @@ export class Stack extends EmittenProtected<StackEventMap> {
     this.#setState(this.playing ? 'playing' : 'idle');
   };
 
-  #handleSoundEnded = (event?: SoundEndedEvent) => {
+  #handleSoundEnded = (event: SoundEndedEvent) => {
     // TODO: `event` should never be `undefined`.
     // This needs to be fixed within `Emitten`.
     this.#setQueue(this.#queue.filter(({id}) => id !== event?.id));
   };
-
-  ///
-  /// Emitten method exposure
-
-  public off<TKey extends keyof StackEventMap>(
-    eventName: TKey,
-    listener: EmittenListener<StackEventMap[TKey]>,
-  ) {
-    super.off(eventName, listener);
-  }
-
-  public on<TKey extends keyof StackEventMap>(
-    eventName: TKey,
-    listener: EmittenListener<StackEventMap[TKey]>,
-  ) {
-    super.on(eventName, listener);
-  }
-
-  public once<TKey extends keyof StackEventMap>(
-    eventName: TKey,
-    listener: EmittenListener<StackEventMap[TKey]>,
-  ) {
-    super.once(eventName, listener);
-  }
-
-  public disposable<TKey extends keyof StackEventMap>(
-    eventName: TKey,
-    listener: EmittenListener<StackEventMap[TKey]>,
-  ) {
-    const result = super.disposable(eventName, listener);
-    return result;
-  }
 }

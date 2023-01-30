@@ -1,5 +1,4 @@
-import {EmittenProtected} from 'emitten';
-import type {EmittenListener} from 'emitten';
+import {EmittenCommon} from 'emitten';
 
 import {getErrorMessage, unlockAudioContext} from './helpers';
 import {clamp, msToSec, secToMs} from './utilities';
@@ -16,7 +15,7 @@ import type {
 
 import {Stack} from './Stack';
 
-export class Earwurm extends EmittenProtected<ManagerEventMap> {
+export class Earwurm extends EmittenCommon<ManagerEventMap> {
   static readonly maxStackSize = tokens.maxStackSize;
   static readonly suspendAfterMs = tokens.suspendAfterMs;
 
@@ -291,36 +290,4 @@ export class Earwurm extends EmittenProtected<ManagerEventMap> {
       this.#autoSuspend();
     }
   };
-
-  ///
-  /// Emitten method exposure
-
-  public off<TKey extends keyof ManagerEventMap>(
-    eventName: TKey,
-    listener: EmittenListener<ManagerEventMap[TKey]>,
-  ) {
-    super.off(eventName, listener);
-  }
-
-  public on<TKey extends keyof ManagerEventMap>(
-    eventName: TKey,
-    listener: EmittenListener<ManagerEventMap[TKey]>,
-  ) {
-    super.on(eventName, listener);
-  }
-
-  public once<TKey extends keyof ManagerEventMap>(
-    eventName: TKey,
-    listener: EmittenListener<ManagerEventMap[TKey]>,
-  ) {
-    super.once(eventName, listener);
-  }
-
-  public disposable<TKey extends keyof ManagerEventMap>(
-    eventName: TKey,
-    listener: EmittenListener<ManagerEventMap[TKey]>,
-  ) {
-    const result = super.disposable(eventName, listener);
-    return result;
-  }
 }
