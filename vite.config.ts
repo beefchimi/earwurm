@@ -18,4 +18,7 @@ export default defineConfig({
     minify: false,
   },
   plugins: [dts()],
+  test: {
+    environment: 'happy-dom',
+  },
 });
