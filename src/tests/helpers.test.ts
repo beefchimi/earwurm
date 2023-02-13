@@ -1,4 +1,4 @@
-import {describe, it, expect, vi} from 'vitest';
+import {beforeEach, describe, it, expect, vi} from 'vitest';
 
 import {
   getErrorMessage,
@@ -6,13 +6,23 @@ import {
   scratchBuffer,
   unlockAudioContext,
 } from '../helpers';
-import {AudioContextMock} from './mock';
 
-vi.stubGlobal('AudioContext', AudioContextMock);
+import {
+  audioBufferSourceNodeEndedEvent,
+  MockAudioBuffer,
+  MockAudioBufferSourceNode,
+  MockAudioContext,
+} from './mock';
+
+vi.stubGlobal('AudioBuffer', MockAudioBuffer);
+vi.stubGlobal('AudioBufferSourceNode', MockAudioBufferSourceNode);
+vi.stubGlobal('AudioContext', MockAudioContext);
 
 describe('Helpers', () => {
-  // TODO: Need to mock `AudioContext`.
-  const mockAudioContext = new AudioContext();
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.restoreAllMocks();
+  });
 
   describe('getErrorMessage', () => {
     it('returns message from basic object', () => {
@@ -46,9 +56,11 @@ describe('Helpers', () => {
 
   // TODO: Complete these tests
   describe.skip.concurrent('fetchAudioBuffer', () => {
+    const mockContext = new AudioContext();
+
     it('throws Error on bogus path', async () => {
       const mockPath = './path/nowhere.webm';
-      const result = await fetchAudioBuffer(mockPath, mockAudioContext);
+      const result = await fetchAudioBuffer(mockPath, mockContext);
 
       expect(result).toThrowError('something');
     });
@@ -56,33 +68,76 @@ describe('Helpers', () => {
     it.todo('returns ArrayBuffer');
   });
 
-  // TODO: Complete these tests
-  describe.skip('scratchBuffer', () => {
+  describe('scratchBuffer', () => {
+    const mockContext = new AudioContext();
+
     it('creates a short silent AudioBuffer', () => {
-      const result = scratchBuffer(mockAudioContext);
+      const result = scratchBuffer(mockContext);
+
       expect(result).toBeInstanceOf(AudioBuffer);
+
+      expect(result).toHaveProperty('length', 1);
+      expect(result).toHaveProperty('numberOfChannels', 1);
+      expect(result).toHaveProperty('sampleRate', 22050);
     });
   });
 
-  // TODO: Complete these tests
-  describe.skip('unlockAudioContext', () => {
+  describe('unlockAudioContext', () => {
     it('resumes AudioContext state', () => {
-      expect(mockAudioContext.state).toBe('suspended');
+      const mockContext = new AudioContext();
 
-      unlockAudioContext(mockAudioContext);
+      const spyCreateBuffer = vi.spyOn(mockContext, 'createBuffer');
+      const spyResume = vi.spyOn(mockContext, 'resume');
 
-      // TODO: Simulate document click.
-      expect(mockAudioContext.state).toBe('resumed');
+      const spySourceConnect = vi.spyOn(
+        AudioBufferSourceNode.prototype,
+        'connect',
+      );
+      const spySourceStart = vi.spyOn(AudioBufferSourceNode.prototype, 'start');
+
+      unlockAudioContext(mockContext);
+
+      expect(spyCreateBuffer).toBeCalledTimes(1);
+      expect(spyResume).not.toBeCalled();
+      expect(spySourceConnect).not.toBeCalled();
+      expect(spySourceStart).not.toBeCalled();
+
+      // Unlocks upon any of these events:
+      // `click`, `keydown`, `touchstart`, and `touchend`.
+      const clickEvent = new Event('click');
+      document.dispatchEvent(clickEvent);
+
+      expect(spyResume).toBeCalledTimes(2);
+      expect(spySourceConnect).toBeCalledWith(mockContext.destination);
+      expect(spySourceStart).toBeCalledTimes(1);
     });
 
-    it('calls onEnded after interaction event', () => {
+    // TODO: Figure out how to properly reset the `unlockAudioContext`
+    // so that it can be called again in a 2nd test.
+    it.skip('calls onEnded after interaction event', () => {
+      const mockContext = new AudioContext();
+
+      vi.spyOn(
+        AudioBufferSourceNode.prototype,
+        'addEventListener',
+      ).mockImplementation(audioBufferSourceNodeEndedEvent);
+
       const mockEnded = vi.fn();
+      const spySourceDisconnect = vi.spyOn(
+        AudioBufferSourceNode.prototype,
+        'disconnect',
+      );
 
-      unlockAudioContext(mockAudioContext, mockEnded);
-      expect(mockEnded).not.toHaveBeenCalled();
+      unlockAudioContext(mockContext, mockEnded);
 
-      // TODO: Simulate document click.
-      expect(mockEnded).toHaveBeenCalledTimes(1);
+      expect(spySourceDisconnect).not.toBeCalled();
+      expect(mockEnded).not.toBeCalled();
+
+      const keydownEvent = new Event('keydown');
+      document.dispatchEvent(keydownEvent);
+
+      expect(spySourceDisconnect).toBeCalledTimes(1);
+      expect(mockEnded).toBeCalledTimes(1);
     });
   });
 });
