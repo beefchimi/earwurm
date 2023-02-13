@@ -1,7 +1,3 @@
-export type Mutable<T> = {
-  -readonly [Key in keyof T]: T[Key];
-};
-
 export type TimeoutId = number | ReturnType<typeof setTimeout>;
 
 // Tuple: custom error, original error.
