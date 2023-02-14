@@ -1,4 +1,4 @@
-import {beforeEach, describe, it, expect, vi} from 'vitest';
+import {beforeEach, afterEach, describe, it, expect, vi} from 'vitest';
 
 import {
   getErrorMessage,
@@ -83,6 +83,16 @@ describe('Helpers', () => {
   });
 
   describe('unlockAudioContext', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.advanceTimersToNextTimer();
+      vi.clearAllTimers();
+      vi.useRealTimers();
+    });
+
     it('resumes AudioContext state', () => {
       const mockContext = new AudioContext();
 
@@ -112,9 +122,7 @@ describe('Helpers', () => {
       expect(spySourceStart).toBeCalledTimes(1);
     });
 
-    // TODO: Figure out how to properly reset the `unlockAudioContext`
-    // so that it can be called again in a 2nd test.
-    it.skip('calls onEnded after interaction event', () => {
+    it('calls onEnded after interaction event', () => {
       const mockContext = new AudioContext();
 
       vi.spyOn(
