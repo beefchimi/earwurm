@@ -19,6 +19,8 @@ vi.stubGlobal('AudioBufferSourceNode', MockAudioBufferSourceNode);
 vi.stubGlobal('AudioContext', MockAudioContext);
 
 describe('Helpers', () => {
+  const mockContext = new AudioContext();
+
   beforeEach(() => {
     vi.clearAllMocks();
     vi.restoreAllMocks();
@@ -54,23 +56,31 @@ describe('Helpers', () => {
     });
   });
 
-  // TODO: Complete these tests
-  describe.skip.concurrent('fetchAudioBuffer', () => {
-    const mockContext = new AudioContext();
-
-    it('throws Error on bogus path', async () => {
+  describe.concurrent('fetchAudioBuffer', () => {
+    it('throws parse Error on bogus path', async () => {
       const mockPath = './path/nowhere.webm';
-      const result = await fetchAudioBuffer(mockPath, mockContext);
 
-      expect(result).toThrowError('something');
+      await expect(
+        async () => await fetchAudioBuffer(mockPath, mockContext),
+      ).rejects.toThrowError(`Failed to parse URL from ${mockPath}`);
     });
 
-    it.todo('returns ArrayBuffer');
+    it.todo('throws network error on bad reponse');
+
+    it('returns AudioBuffer', async () => {
+      // The `happy-dom > fetch` will fail if passing
+      // a imported asset path.
+      const mockUrl = 'https://picsum.photos/200';
+
+      await expect(
+        fetchAudioBuffer(mockUrl, mockContext),
+      ).resolves.toBeInstanceOf(AudioBuffer);
+    });
+
+    it.todo('passes custom options to fetch');
   });
 
   describe('scratchBuffer', () => {
-    const mockContext = new AudioContext();
-
     it('creates a short silent AudioBuffer', () => {
       const result = scratchBuffer(mockContext);
 
@@ -94,8 +104,6 @@ describe('Helpers', () => {
     });
 
     it('resumes AudioContext state', () => {
-      const mockContext = new AudioContext();
-
       const spyCreateBuffer = vi.spyOn(mockContext, 'createBuffer');
       const spyResume = vi.spyOn(mockContext, 'resume');
 
@@ -123,8 +131,6 @@ describe('Helpers', () => {
     });
 
     it('calls onEnded after interaction event', () => {
-      const mockContext = new AudioContext();
-
       vi.spyOn(
         AudioBufferSourceNode.prototype,
         'addEventListener',
