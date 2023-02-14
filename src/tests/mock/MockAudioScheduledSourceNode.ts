@@ -14,10 +14,16 @@ export class MockAudioScheduledSourceNode
   start(when?: number | undefined): void {
     // eslint-disable-next-line no-console
     console.log(internalMessage('start', when));
+
+    setTimeout(() => {
+      this.dispatchEvent(new Event('ended'));
+    }, 100);
   }
 
   stop(when?: number | undefined): void {
     // eslint-disable-next-line no-console
     console.log(internalMessage('stop', when));
+
+    this.dispatchEvent(new Event('ended'));
   }
 }
