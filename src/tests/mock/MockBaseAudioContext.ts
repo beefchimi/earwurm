@@ -124,13 +124,25 @@ export class MockBaseAudioContext
     successCallback?: DecodeSuccessCallback | null | undefined,
     errorCallback?: DecodeErrorCallback | null | undefined,
   ): Promise<AudioBuffer> {
-    throw new Error(
-      internalMessage(
-        'decodeAudioData',
-        audioData,
-        successCallback,
-        errorCallback,
-      ),
-    );
+    return await new Promise((resolve) => {
+      const buffer = new MockAudioBuffer({
+        length: 1,
+        numberOfChannels: 2,
+        sampleRate: 44100,
+      });
+
+      // eslint-disable-next-line no-console
+      console.log(
+        internalMessage(
+          'decodeAudioData',
+          audioData,
+          successCallback,
+          errorCallback,
+          buffer,
+        ),
+      );
+
+      resolve(buffer);
+    });
   }
 }
