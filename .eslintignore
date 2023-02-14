@@ -3,6 +3,7 @@ scrap
 
 # Ignore artifacts:
 build/
+config/
 coverage/
 dist/
 storybook-static/
