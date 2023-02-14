@@ -20,5 +20,6 @@ export default defineConfig({
   plugins: [dts()],
   test: {
     environment: 'happy-dom',
+    setupFiles: 'config/tests-setup',
   },
 });
