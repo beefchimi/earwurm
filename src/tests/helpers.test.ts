@@ -6,25 +6,10 @@ import {
   scratchBuffer,
   unlockAudioContext,
 } from '../helpers';
-
-import {
-  audioBufferSourceNodeEndedEvent,
-  MockAudioBuffer,
-  MockAudioBufferSourceNode,
-  MockAudioContext,
-} from './mock';
-
-vi.stubGlobal('AudioBuffer', MockAudioBuffer);
-vi.stubGlobal('AudioBufferSourceNode', MockAudioBufferSourceNode);
-vi.stubGlobal('AudioContext', MockAudioContext);
+import {audioBufferSourceNodeEndedEvent} from './mock';
 
 describe('Helpers', () => {
   const mockContext = new AudioContext();
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-    vi.restoreAllMocks();
-  });
 
   describe('getErrorMessage', () => {
     it('returns message from basic object', () => {
