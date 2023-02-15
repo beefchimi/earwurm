@@ -20,10 +20,6 @@
     "noImplicitReturns": true,
     "skipLibCheck": true
   },
-  "include": ["./src/**/*", "./config/tests-setup.ts", "./vite.config.ts"],
-  "exclude": ["./node_modules/**/*"],
-  "files": [
-    "./config/definitions/audio.d.ts",
-    "./config/definitions/images.d.ts"
-  ]
+  "include": ["./vite.config.ts", "./src/**/*", "./config/**/*"],
+  "exclude": ["./node_modules/**/*"]
 }
