@@ -13,4 +13,5 @@ export {MockAudioParam} from './MockAudioParam';
 export {MockAudioScheduledSourceNode} from './MockAudioScheduledSourceNode';
 export {MockAudioWorklet} from './MockAudioWorklet';
 export {MockBaseAudioContext} from './MockBaseAudioContext';
+export {MockGainNode} from './MockGainNode';
 export {MockWorklet} from './MockWorklet';
