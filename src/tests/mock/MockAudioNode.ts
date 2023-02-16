@@ -1,13 +1,15 @@
+// We cannot import `MockBaseAudioContext` and instantiate it.
+// Doing so would create a circular dependency that creates
+// a recursive call between `MockAudioNode` and `MockBaseAudioContext`.
+const typecastContext = {};
+
+/*
 import {createErrorMessage} from './mock-utils';
 
 function internalMessage(methodName: string, ...args: unknown[]) {
   return createErrorMessage('AudioNode', methodName, ...args);
 }
-
-// We cannot import `MockBaseAudioContext` and instantiate it.
-// Doing so would create a circular dependency that creates
-// a recursive call between `MockAudioNode` and `MockBaseAudioContext`.
-const typecastContext = {};
+*/
 
 export class MockAudioNode extends EventTarget implements AudioNode {
   channelCount = 2;
@@ -31,12 +33,10 @@ export class MockAudioNode extends EventTarget implements AudioNode {
   ): AudioNode;
   connect(destinationParam: AudioParam, output?: number | undefined): void;
   connect(
-    destinationNode: unknown,
-    output?: unknown,
-    input?: unknown,
+    _destinationNode: unknown,
+    _output?: unknown,
+    _input?: unknown,
   ): AudioNode {
-    // eslint-disable-next-line no-console
-    console.log(internalMessage('connect', destinationNode, output, input));
     return this;
   }
 
@@ -48,11 +48,8 @@ export class MockAudioNode extends EventTarget implements AudioNode {
   disconnect(destinationParam: AudioParam): void;
   disconnect(destinationParam: AudioParam, output: number): void;
   disconnect(
-    destinationNode?: unknown,
-    output?: unknown,
-    input?: unknown,
-  ): void {
-    // eslint-disable-next-line no-console
-    console.log(internalMessage('disconnect', destinationNode, output, input));
-  }
+    _destinationNode?: unknown,
+    _output?: unknown,
+    _input?: unknown,
+  ): void {}
 }
