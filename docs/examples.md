@@ -12,9 +12,9 @@ In order to start making noise, we need to have a `Earwurm` instance to work wit
 
 ```ts
 const manager = new Earwurm();
-manager.add({id: 'MySound', path: 'path/to/my/sound.webm'});
+manager.add({id: 'MyStack', path: 'path/to/my/sound.webm'});
 
-const stack = manager.get('MySound');
+const stack = manager.get('MyStack');
 ```
 
 **Enabling autoplay:**
@@ -24,17 +24,12 @@ Most browsers will intentionally block audio from playing automatically. The use
 With that said, sometimes you just _need to autoplay audio_. In that case, you likely need to “unlock” the ability to play audio.
 
 ```ts
-// Check if the browser has allowed audio to be played.
-// If not, manually unlock it.
-if (!manager.unlocked) {
-  // No audio from this context has been played yet,
-  // so we will unlock it.
-  manager.unlock();
-}
+// It is safe to call `unlock()` even if the browser
+// has already “unlocked” the `AudioContext`.
+manager.unlock();
 
-// Now that we are “unlocked”, the `unlocked` property
-// should be `true`, and we can play a `Sound` without
-// it being trigger by a user interaction.
+// You can always check `unlocked` status before
+// performing an audio action.
 if (manager.unlocked) stack.play();
 ```
 
@@ -80,7 +75,7 @@ Similarly, we can remove entries that we have already added:
 ```ts
 // Remove one entry at a time, referencing the `id`
 // that was used when added.
-manager.remove('Some-Source');
+manager.remove('SomeStack');
 
 // If you call `.remove()` on an `id` that does not exist,
 // the result will simply be an empty array.
@@ -151,7 +146,7 @@ Depending on the `duration` of the `Sound`, rapid consecutive calls to `.prepare
 This is referred to as the “Overlapping pattern”:
 
 ```tsx
-const overlapStack = manager.get('MySound');
+const overlapStack = manager.get('MyStack');
 
 async function handleOverlappingPlay() {
   if (!overlapStack) return;
@@ -172,7 +167,7 @@ If you do not want consecutive plays of a `Sound` to overlap, you can restrict t
 In this example, we will avoid additional calls to `.prepare()` if the `queue` exceeds `1`. This is refferd to as the “One-at-a-time pattern”:
 
 ```tsx
-const singleStack = manager.get('MySound');
+const singleStack = manager.get('MyStack');
 
 // Each attempt to `play` will early return if there are
 // sounds in the `queue`, preventing overlapping sounds.
@@ -214,7 +209,7 @@ async function handleSinglePlay() {
 A variation of the “One-at-a-time pattern” is the “Restart pattern”. Here, we will check if the `Sound` is `playing`, and if `true`, simply “restart it” from the beginning:
 
 ```tsx
-const restartStack = manager.get('MySound');
+const restartStack = manager.get('MyStack');
 
 // Each attempt to `play` (while already playing)
 // will stop then restart the `Sound`.
@@ -240,7 +235,7 @@ If you are re-using the same `Sound` in multiple places throughout the app, it c
 Here is another example of the “One-at-a-time pattern”, but referrencing a specific variable:
 
 ```tsx
-const stack = manager.get('MySound');
+const stack = manager.get('MyStack');
 let sound = await stack?.prepare();
 
 sound?.on('ended', () => {
