@@ -4,6 +4,7 @@ import {MockAudioBufferSourceNode} from './MockAudioBufferSourceNode';
 import {MockAudioDestinationNode} from './MockAudioDestinationNode';
 import {MockAudioListener} from './MockAudioListener';
 import {MockAudioWorklet} from './MockAudioWorklet';
+import {MockGainNode} from './MockGainNode';
 
 function internalMessage(methodName: string, ...args: unknown[]) {
   return createErrorMessage('BaseAudioContext', methodName, ...args);
@@ -71,7 +72,9 @@ export class MockBaseAudioContext
   }
 
   createGain(): GainNode {
-    throw new Error(internalMessage('createGain'));
+    // Might need to pass `options`...
+    // which are inferred from `context`?
+    return new MockGainNode(this);
   }
 
   createIIRFilter(feedforward: number[], feedback: number[]): IIRFilterNode {
@@ -120,9 +123,9 @@ export class MockBaseAudioContext
   }
 
   async decodeAudioData(
-    audioData: ArrayBuffer,
-    successCallback?: DecodeSuccessCallback | null | undefined,
-    errorCallback?: DecodeErrorCallback | null | undefined,
+    _audioData: ArrayBuffer,
+    _successCallback?: DecodeSuccessCallback | null | undefined,
+    _errorCallback?: DecodeErrorCallback | null | undefined,
   ): Promise<AudioBuffer> {
     return await new Promise((resolve) => {
       const buffer = new MockAudioBuffer({
@@ -130,17 +133,6 @@ export class MockBaseAudioContext
         numberOfChannels: 2,
         sampleRate: 44100,
       });
-
-      // eslint-disable-next-line no-console
-      console.log(
-        internalMessage(
-          'decodeAudioData',
-          audioData,
-          successCallback,
-          errorCallback,
-          buffer,
-        ),
-      );
 
       resolve(buffer);
     });

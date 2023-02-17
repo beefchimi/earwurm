@@ -1,9 +1,12 @@
-import {createErrorMessage} from './mock-utils';
 import {MockAudioNode} from './MockAudioNode';
+
+/*
+import {createErrorMessage} from './mock-utils';
 
 function internalMessage(methodName: string, ...args: unknown[]) {
   return createErrorMessage('AudioScheduledSourceNode', methodName, ...args);
 }
+*/
 
 export class MockAudioScheduledSourceNode
   extends MockAudioNode
@@ -11,19 +14,15 @@ export class MockAudioScheduledSourceNode
 {
   onended: AudioScheduledSourceNode['onended'] = null;
 
-  start(when?: number | undefined): void {
-    // eslint-disable-next-line no-console
-    console.log(internalMessage('start', when));
-
+  start(_when?: number | undefined): void {
+    // Artificial timeout for sound duration.
     setTimeout(() => {
       this.dispatchEvent(new Event('ended'));
     }, 100);
   }
 
-  stop(when?: number | undefined): void {
-    // eslint-disable-next-line no-console
-    console.log(internalMessage('stop', when));
-
+  stop(_when?: number | undefined): void {
+    // Could pass `when` as delay for `setTimeout`.
     this.dispatchEvent(new Event('ended'));
   }
 }

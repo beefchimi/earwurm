@@ -334,6 +334,8 @@ sound.duration;
 
 All 3 components of `Earwurm` _(`manager`, `stack` and `sound`)_ each have “event emitter” capabilities.
 
+For more detailed documentation, [please see the `Emitten` docs](https://github.com/beefchimi/emitten#emitten).
+
 **Methods:**
 
 ```ts
@@ -352,8 +354,12 @@ component.once(event, listener: (value) => void);
 // Remove any previously registered event listener.
 component.off(event, listener: (value) => void);
 
-// Register an event listener that will return the
-// corresponding `.off()` function, allowing for
-// easier removal of anonymous functions.
-const registered = component.on(event, listener: (value) => void);
+// Capture the “off function” from `.on()` so that
+// you can manually call it, allowing for easier
+// removal of anonymous functions.
+const dispose = component.on(event, listener: (value) => void);
+
+// Calling this will remove the listener
+// just like `.off(event, listener)` would.
+dispose();
 ```

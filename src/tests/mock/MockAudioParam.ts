@@ -1,3 +1,4 @@
+import {secToMs} from '../../utilities';
 import {createErrorMessage} from './mock-utils';
 
 function internalMessage(methodName: string, ...args: unknown[]) {
@@ -16,8 +17,8 @@ export class MockAudioParam implements AudioParam {
     throw new Error(internalMessage('cancelAndHoldAtTime', cancelTime));
   }
 
-  cancelScheduledValues(cancelTime: number): AudioParam {
-    throw new Error(internalMessage('cancelScheduledValues', cancelTime));
+  cancelScheduledValues(_cancelTime: number): AudioParam {
+    return this;
   }
 
   exponentialRampToValueAtTime(value: number, endTime: number): AudioParam {
@@ -27,7 +28,13 @@ export class MockAudioParam implements AudioParam {
   }
 
   linearRampToValueAtTime(value: number, endTime: number): AudioParam {
-    throw new Error(internalMessage('linearRampToValueAtTime', value, endTime));
+    const ms = secToMs(endTime);
+
+    setTimeout(() => {
+      this.value = value;
+    }, ms);
+
+    return this;
   }
 
   setTargetAtTime(
@@ -40,8 +47,9 @@ export class MockAudioParam implements AudioParam {
     );
   }
 
-  setValueAtTime(value: number, startTime: number): AudioParam {
-    throw new Error(internalMessage('setValueAtTime', value, startTime));
+  setValueAtTime(value: number, _startTime: number): AudioParam {
+    this.value = value;
+    return this;
   }
 
   setValueCurveAtTime(

@@ -1,6 +1,8 @@
 import {MockAudioScheduledSourceNode} from './MockAudioScheduledSourceNode';
 import {MockAudioParam} from './MockAudioParam';
 
+const mockParam = new MockAudioParam();
+
 export class MockAudioBufferSourceNode
   extends MockAudioScheduledSourceNode
   implements AudioBufferSourceNode
@@ -24,8 +26,9 @@ export class MockAudioBufferSourceNode
     this.loopEnd = options?.loopEnd ?? 0;
     this.loopStart = options?.loopStart ?? 0;
 
-    // Not sure if `option` values need to be passed.
-    this.detune = new MockAudioParam();
-    this.playbackRate = new MockAudioParam();
+    // Not sure if `option` values need to be passed...
+    // if so, we might need to make each instance unique.
+    this.detune = mockParam;
+    this.playbackRate = mockParam;
   }
 }
