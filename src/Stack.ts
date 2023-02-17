@@ -146,7 +146,7 @@ export class Stack extends EmittenCommon<StackEventMap> {
     const buffer = await this.#load();
 
     this.#totalSoundsCreated++;
-    const newId = `${this.id}-${id ?? this.#totalSoundsCreated++}`;
+    const newId = id?.length ? id : `${this.id}-${this.#totalSoundsCreated}`;
 
     return this.#create(newId, buffer);
   }
@@ -180,7 +180,10 @@ export class Stack extends EmittenCommon<StackEventMap> {
     newSound.on('statechange', this.#handleStateFromQueue);
     newSound.once('ended', this.#handleSoundEnded);
 
+    // We do not filter out identical `id` values,
+    // so duplicate custom ids are possible.
     const newQueue = [...this.#queue, newSound];
+
     const upperBound = newQueue.length - (Stack.maxStackSize - 1);
     const outOfBounds = upperBound > 0 ? newQueue.slice(0, upperBound) : [];
 
