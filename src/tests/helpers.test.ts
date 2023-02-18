@@ -6,7 +6,7 @@ import {
   scratchBuffer,
   unlockAudioContext,
 } from '../helpers';
-import {audioBufferSourceNodeEndedEvent} from './mock';
+import {mockData, audioBufferSourceNodeEndedEvent} from './mock';
 
 describe('Helpers', () => {
   const mockContext = new AudioContext();
@@ -53,12 +53,8 @@ describe('Helpers', () => {
     it.todo('throws network error on bad reponse');
 
     it('returns AudioBuffer', async () => {
-      // The `happy-dom > fetch` will fail if passing
-      // a imported asset path.
-      const mockUrl = 'https://picsum.photos/200';
-
       await expect(
-        fetchAudioBuffer(mockUrl, mockContext),
+        fetchAudioBuffer(mockData.audio, mockContext),
       ).resolves.toBeInstanceOf(AudioBuffer);
     });
 
