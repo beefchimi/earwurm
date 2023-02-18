@@ -62,3 +62,5 @@ While we are intentionally keeping the scope of `Earwurm` to an absolute minimum
 15. Consider adding a `readonly parent` to both `Stack` and `Sound`.
     - The value of each would be `this` from either the `Manager` or the `Stack`.
     - Example: This would allow me to know what `Stack` manages a particular `Sound`.
+16. Consider setting `Stack > state` to `closed` on `teardown`.
+    - This way, there is a better mechanism to removing a `Stack` after listening to a `statechange`.
