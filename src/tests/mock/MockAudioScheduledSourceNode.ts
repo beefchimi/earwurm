@@ -18,7 +18,7 @@ export class MockAudioScheduledSourceNode
     // Artificial timeout for sound duration.
     setTimeout(() => {
       this.dispatchEvent(new Event('ended'));
-    }, 100);
+    }, 10);
   }
 
   stop(_when?: number | undefined): void {
