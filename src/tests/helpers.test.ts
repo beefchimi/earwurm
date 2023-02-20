@@ -1,4 +1,4 @@
-import {beforeEach, afterEach, describe, it, expect, vi} from 'vitest';
+import {afterEach, describe, it, expect, vi} from 'vitest';
 
 import {
   getErrorMessage,
@@ -41,7 +41,7 @@ describe('Helpers', () => {
     });
   });
 
-  describe.concurrent('fetchAudioBuffer', () => {
+  describe('fetchAudioBuffer', () => {
     it('throws parse Error on bogus path', async () => {
       const mockPath = './path/nowhere.webm';
 
@@ -74,14 +74,8 @@ describe('Helpers', () => {
   });
 
   describe('unlockAudioContext', () => {
-    beforeEach(() => {
-      vi.useFakeTimers();
-    });
-
     afterEach(() => {
       vi.advanceTimersToNextTimer();
-      vi.clearAllTimers();
-      vi.useRealTimers();
     });
 
     it('resumes AudioContext state', () => {
