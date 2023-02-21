@@ -1,4 +1,4 @@
-import {beforeEach, vi} from 'vitest';
+import {beforeEach, afterEach, vi} from 'vitest';
 
 import {
   MockAudioBuffer,
@@ -17,6 +17,12 @@ vi.stubGlobal('AudioNode', MockAudioNode);
 vi.stubGlobal('AudioParam', MockAudioParam);
 
 beforeEach(() => {
+  vi.useFakeTimers();
   vi.clearAllMocks();
   vi.restoreAllMocks();
+});
+
+afterEach(() => {
+  vi.clearAllTimers();
+  vi.useRealTimers();
 });

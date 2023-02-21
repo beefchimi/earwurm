@@ -1,3 +1,4 @@
+export {mockData} from './mock-data';
 export {
   createErrorMessage,
   audioBufferSourceNodeEndedEvent,

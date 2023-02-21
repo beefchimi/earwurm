@@ -1,4 +1,4 @@
-import {beforeEach, afterEach, describe, it, expect, vi} from 'vitest';
+import {describe, it, expect, vi} from 'vitest';
 
 import {Sound} from '../Sound';
 import type {SoundEventMap} from '../types';
@@ -183,15 +183,6 @@ describe('Sound component', () => {
   });
 
   describe('events', () => {
-    beforeEach(() => {
-      vi.useFakeTimers();
-    });
-
-    afterEach(() => {
-      vi.clearAllTimers();
-      vi.useRealTimers();
-    });
-
     const mockConstructorArgs: SoundConstructor = [
       'TestEvents',
       defaultAudioBuffer,

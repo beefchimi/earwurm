@@ -146,7 +146,7 @@ export class Stack extends EmittenCommon<StackEventMap> {
     const buffer = await this.#load();
 
     this.#totalSoundsCreated++;
-    const newId = `${this.id}-${id ?? this.#totalSoundsCreated++}`;
+    const newId = id?.length ? id : `${this.id}-${this.#totalSoundsCreated}`;
 
     return this.#create(newId, buffer);
   }
@@ -180,15 +180,25 @@ export class Stack extends EmittenCommon<StackEventMap> {
     newSound.on('statechange', this.#handleStateFromQueue);
     newSound.once('ended', this.#handleSoundEnded);
 
+    // We do not filter out identical `id` values,
+    // so duplicate custom ids are possible... which means
+    // identical ids could get wrongfully captured by any
+    // `queue/key` filtering.
     const newQueue = [...this.#queue, newSound];
-    const upperBound = newQueue.length - (Stack.maxStackSize - 1);
+
+    const upperBound = newQueue.length - Stack.maxStackSize;
     const outOfBounds = upperBound > 0 ? newQueue.slice(0, upperBound) : [];
+    const outOfBoundsIds = outOfBounds.map(({id}) => id);
+
+    const filteredQueue = newQueue.filter(
+      ({id}) => !outOfBoundsIds.includes(id),
+    );
 
     outOfBounds.forEach((expiredSound) => {
       expiredSound.stop();
     });
 
-    this.#setQueue(newQueue);
+    this.#setQueue(filteredQueue);
 
     return newSound;
   }
@@ -210,8 +220,6 @@ export class Stack extends EmittenCommon<StackEventMap> {
   };
 
   #handleSoundEnded = (event: SoundEndedEvent) => {
-    // TODO: `event` should never be `undefined`.
-    // This needs to be fixed within `Emitten`.
-    this.#setQueue(this.#queue.filter(({id}) => id !== event?.id));
+    this.#setQueue(this.#queue.filter(({id}) => id !== event.id));
   };
 }
