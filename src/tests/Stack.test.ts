@@ -113,10 +113,17 @@ describe('Stack component', () => {
       const testStack = new Stack(...mockConstructorArgs);
       const sound = await testStack.prepare();
 
+      expect(testStack.state).toBe('idle');
       expect(testStack.playing).toBe(false);
+
       sound.play();
+
+      expect(testStack.state).toBe('playing');
       expect(testStack.playing).toBe(true);
+
       vi.advanceTimersByTime(10);
+
+      expect(testStack.state).toBe('idle');
       expect(testStack.playing).toBe(false);
     });
   });
