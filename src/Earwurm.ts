@@ -263,7 +263,12 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     this.#setState('suspending');
 
     const resolveSuspension = () => {
-      this.#setState('suspended');
+      if (this._state !== 'closed') {
+        // Because all of these `AudioContext > state`
+        // methods are async, we need to make sure we don't
+        // set `suspended` after already `closed`.
+        this.#setState('suspended');
+      }
 
       if (this.#suspendId) clearTimeout(this.#suspendId);
       this.#suspendId = 0;
