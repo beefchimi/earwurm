@@ -18,11 +18,14 @@ export class MockBaseAudioContext
   // to update this value from within it’s constructor.
   sampleRate = 44100;
 
+  // Cannot be `readonly` becauase we need to mock
+  // updating `state` in various methods.
+  state: AudioContextState = 'suspended';
+
   readonly currentTime = 0;
   readonly audioWorklet = new MockAudioWorklet();
   readonly destination = new MockAudioDestinationNode();
   readonly listener = new MockAudioListener();
-  readonly state: AudioContextState = 'suspended';
   readonly onstatechange: AudioContext['onstatechange'] = null;
 
   createAnalyser(): AnalyserNode {
