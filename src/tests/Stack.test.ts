@@ -13,7 +13,7 @@ describe('Stack component', () => {
   const defaultAudioNode = new AudioNode();
 
   describe('initialization', () => {
-    const mockStack = new Stack(
+    const testStack = new Stack(
       'TestInit',
       mockData.audio,
       defaultContext,
@@ -21,17 +21,17 @@ describe('Stack component', () => {
     );
 
     it('is initialized with default values', () => {
-      expect(mockStack).toBeInstanceOf(Stack);
+      expect(testStack).toBeInstanceOf(Stack);
 
       // Class static properties
       expect(Stack).toHaveProperty('maxStackSize', tokens.maxStackSize);
 
       // Instance properties
-      expect(mockStack).toHaveProperty('volume', 1);
-      expect(mockStack).toHaveProperty('mute', false);
-      expect(mockStack).toHaveProperty('keys', []);
-      expect(mockStack).toHaveProperty('state', 'idle');
-      expect(mockStack).toHaveProperty('playing', false);
+      expect(testStack).toHaveProperty('volume', 1);
+      expect(testStack).toHaveProperty('mute', false);
+      expect(testStack).toHaveProperty('keys', []);
+      expect(testStack).toHaveProperty('state', 'idle');
+      expect(testStack).toHaveProperty('playing', false);
     });
   });
 
@@ -50,11 +50,11 @@ describe('Stack component', () => {
     ];
 
     it('contains ids of each unexpired Sound', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
+      const testStack = new Stack(...mockConstructorArgs);
 
-      const sound1 = await mockStack.prepare('One');
-      const sound2 = await mockStack.prepare('Two');
-      const sound3 = await mockStack.prepare('Three');
+      const sound1 = await testStack.prepare('One');
+      const sound2 = await testStack.prepare('Two');
+      const sound3 = await testStack.prepare('Three');
 
       sound1.play();
       vi.advanceTimersByTime(4);
@@ -62,13 +62,13 @@ describe('Stack component', () => {
       vi.advanceTimersByTime(4);
       sound3.play();
 
-      expect(mockStack.keys).toStrictEqual(['One', 'Two', 'Three']);
+      expect(testStack.keys).toStrictEqual(['One', 'Two', 'Three']);
       vi.advanceTimersByTime(2);
-      expect(mockStack.keys).toStrictEqual(['Two', 'Three']);
+      expect(testStack.keys).toStrictEqual(['Two', 'Three']);
       vi.advanceTimersByTime(4);
-      expect(mockStack.keys).toStrictEqual(['Three']);
+      expect(testStack.keys).toStrictEqual(['Three']);
       vi.advanceTimersByTime(4);
-      expect(mockStack.keys).toStrictEqual([]);
+      expect(testStack.keys).toStrictEqual([]);
     });
   });
 
@@ -81,15 +81,15 @@ describe('Stack component', () => {
     ];
 
     it('triggers `statechange` event for every state', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
+      const testStack = new Stack(...mockConstructorArgs);
       const spyState: StackEventMap['statechange'] = vi.fn((_state) => {});
 
-      mockStack.on('statechange', spyState);
+      testStack.on('statechange', spyState);
 
       expect(spyState).not.toBeCalled();
-      expect(mockStack.state).toBe('idle');
+      expect(testStack.state).toBe('idle');
 
-      const soundFoo = mockStack.prepare('Foo');
+      const soundFoo = testStack.prepare('Foo');
 
       expect(spyState).toBeCalledWith('loading');
       await soundFoo.then((sound) => sound.play());
@@ -110,14 +110,14 @@ describe('Stack component', () => {
     ];
 
     it('is `true` when any Sound is `playing`', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
-      const sound = await mockStack.prepare();
+      const testStack = new Stack(...mockConstructorArgs);
+      const sound = await testStack.prepare();
 
-      expect(mockStack.playing).toBe(false);
+      expect(testStack.playing).toBe(false);
       sound.play();
-      expect(mockStack.playing).toBe(true);
+      expect(testStack.playing).toBe(true);
       vi.advanceTimersByTime(10);
-      expect(mockStack.playing).toBe(false);
+      expect(testStack.playing).toBe(false);
     });
   });
 
@@ -130,19 +130,19 @@ describe('Stack component', () => {
     ];
 
     it('returns `undefined` when there is no matching Sound', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
-      await mockStack.prepare('RealId');
+      const testStack = new Stack(...mockConstructorArgs);
+      await testStack.prepare('RealId');
 
-      const requestedSound = mockStack.get('FakeId');
+      const requestedSound = testStack.get('FakeId');
       expect(requestedSound).toBe(undefined);
     });
 
     it('returns the requested Sound when present', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
+      const testStack = new Stack(...mockConstructorArgs);
 
       const mockSoundId = 'RealId';
-      const capturedSound = await mockStack.prepare(mockSoundId);
-      const requestedSound = mockStack.get(mockSoundId);
+      const capturedSound = await testStack.prepare(mockSoundId);
+      const requestedSound = testStack.get(mockSoundId);
 
       expect(requestedSound).toBeInstanceOf(Sound);
       expect(requestedSound).toBe(capturedSound);
@@ -158,17 +158,17 @@ describe('Stack component', () => {
     ];
 
     it('returns `false` when there is no matching Sound', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
-      const hasSound = mockStack.has('FakeId');
+      const testStack = new Stack(...mockConstructorArgs);
+      const hasSound = testStack.has('FakeId');
       expect(hasSound).toBe(false);
     });
 
     it('returns `true` when the requested Sound is present', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
+      const testStack = new Stack(...mockConstructorArgs);
 
       const mockSoundId = 'RealId';
-      await mockStack.prepare(mockSoundId);
-      const hasSound = mockStack.has(mockSoundId);
+      await testStack.prepare(mockSoundId);
+      const hasSound = testStack.has(mockSoundId);
 
       expect(hasSound).toBe(true);
     });
@@ -183,27 +183,27 @@ describe('Stack component', () => {
     ];
 
     it('pauses and retains every Sound within the Stack', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
+      const testStack = new Stack(...mockConstructorArgs);
 
-      const sound1 = await mockStack.prepare('One');
-      const sound2 = await mockStack.prepare('Two');
-      const sound3 = await mockStack.prepare('Three');
+      const sound1 = await testStack.prepare('One');
+      const sound2 = await testStack.prepare('Two');
+      const sound3 = await testStack.prepare('Three');
 
       const spySound1Pause = vi.spyOn(sound1, 'pause');
       const spySound2Pause = vi.spyOn(sound2, 'pause');
       const spySound3Pause = vi.spyOn(sound3, 'pause');
 
-      expect(mockStack.state).toBe('idle');
-      expect(mockStack.keys).toHaveLength(3);
+      expect(testStack.state).toBe('idle');
+      expect(testStack.keys).toHaveLength(3);
 
       sound1.play();
       sound2.play();
       sound3.play();
 
-      expect(mockStack.state).toBe('playing');
-      mockStack.pause();
-      expect(mockStack.state).toBe('idle');
-      expect(mockStack.keys).toHaveLength(3);
+      expect(testStack.state).toBe('playing');
+      testStack.pause();
+      expect(testStack.state).toBe('idle');
+      expect(testStack.keys).toHaveLength(3);
 
       expect(spySound1Pause).toBeCalled();
       expect(spySound2Pause).toBeCalled();
@@ -211,11 +211,11 @@ describe('Stack component', () => {
     });
 
     it('returns instance', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
-      await mockStack.prepare('Foo');
-      const instance = mockStack.pause();
+      const testStack = new Stack(...mockConstructorArgs);
+      await testStack.prepare('Foo');
+      const instance = testStack.pause();
 
-      expect(instance).toBe(mockStack);
+      expect(instance).toBe(testStack);
     });
   });
 
@@ -228,27 +228,27 @@ describe('Stack component', () => {
     ];
 
     it('stops and removes every Sound within the Stack', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
+      const testStack = new Stack(...mockConstructorArgs);
 
-      const sound1 = await mockStack.prepare('One');
-      const sound2 = await mockStack.prepare('Two');
-      const sound3 = await mockStack.prepare('Three');
+      const sound1 = await testStack.prepare('One');
+      const sound2 = await testStack.prepare('Two');
+      const sound3 = await testStack.prepare('Three');
 
       const spySound1Stop = vi.spyOn(sound1, 'stop');
       const spySound2Stop = vi.spyOn(sound2, 'stop');
       const spySound3Stop = vi.spyOn(sound3, 'stop');
 
-      expect(mockStack.state).toBe('idle');
-      expect(mockStack.keys).toHaveLength(3);
+      expect(testStack.state).toBe('idle');
+      expect(testStack.keys).toHaveLength(3);
 
       sound1.play();
       sound2.play();
       sound3.play();
 
-      expect(mockStack.state).toBe('playing');
-      mockStack.stop();
-      expect(mockStack.state).toBe('idle');
-      expect(mockStack.keys).toHaveLength(0);
+      expect(testStack.state).toBe('playing');
+      testStack.stop();
+      expect(testStack.state).toBe('idle');
+      expect(testStack.keys).toHaveLength(0);
 
       expect(spySound1Stop).toBeCalled();
       expect(spySound2Stop).toBeCalled();
@@ -256,11 +256,11 @@ describe('Stack component', () => {
     });
 
     it('returns instance', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
-      await mockStack.prepare('Foo');
-      const instance = mockStack.stop();
+      const testStack = new Stack(...mockConstructorArgs);
+      await testStack.prepare('Foo');
+      const instance = testStack.stop();
 
-      expect(instance).toBe(mockStack);
+      expect(instance).toBe(testStack);
     });
   });
 
@@ -273,79 +273,79 @@ describe('Stack component', () => {
     ];
 
     it('calls stop()', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
-      const spyStop = vi.spyOn(mockStack, 'stop');
+      const testStack = new Stack(...mockConstructorArgs);
+      const spyStop = vi.spyOn(testStack, 'stop');
 
       expect(spyStop).not.toBeCalled();
-      mockStack.teardown();
+      testStack.teardown();
       expect(spyStop).toBeCalledTimes(1);
     });
 
     it('empties all active events', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
+      const testStack = new Stack(...mockConstructorArgs);
 
-      mockStack.on('error', vi.fn());
-      mockStack.on('statechange', vi.fn());
+      testStack.on('error', vi.fn());
+      testStack.on('statechange', vi.fn());
 
-      expect(mockStack.activeEvents).toHaveLength(2);
-      mockStack.teardown();
-      expect(mockStack.activeEvents).toHaveLength(0);
+      expect(testStack.activeEvents).toHaveLength(2);
+      testStack.teardown();
+      expect(testStack.activeEvents).toHaveLength(0);
     });
 
     it('returns instance', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
-      await mockStack.prepare('Foo');
-      const instance = mockStack.stop();
+      const testStack = new Stack(...mockConstructorArgs);
+      await testStack.prepare('Foo');
+      const instance = testStack.stop();
 
-      expect(instance).toBe(mockStack);
+      expect(instance).toBe(testStack);
     });
   });
 
   describe('prepare()', () => {
-    const mockStackId = 'TestPrepare';
+    const testStackId = 'TestPrepare';
     const mockConstructorArgs: StackConstructor = [
-      mockStackId,
+      testStackId,
       mockData.audio,
       defaultContext,
       defaultAudioNode,
     ];
 
     it('auto-assigns an id when none is provided', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
+      const testStack = new Stack(...mockConstructorArgs);
 
-      await mockStack.prepare();
-      await mockStack.prepare();
-      await mockStack.prepare();
+      await testStack.prepare();
+      await testStack.prepare();
+      await testStack.prepare();
 
-      expect(mockStack.keys).toStrictEqual([
-        `${mockStackId}-1`,
-        `${mockStackId}-2`,
-        `${mockStackId}-3`,
+      expect(testStack.keys).toStrictEqual([
+        `${testStackId}-1`,
+        `${testStackId}-2`,
+        `${testStackId}-3`,
       ]);
     });
 
     it('assigns the provided id and continues to increment internal counter', async () => {
       const mockSoundId1 = 'Foo';
       const mockSoundId3 = 'Bar';
-      const mockStack = new Stack(...mockConstructorArgs);
+      const testStack = new Stack(...mockConstructorArgs);
 
-      await mockStack.prepare(mockSoundId1);
-      await mockStack.prepare();
-      await mockStack.prepare(mockSoundId3);
-      await mockStack.prepare();
+      await testStack.prepare(mockSoundId1);
+      await testStack.prepare();
+      await testStack.prepare(mockSoundId3);
+      await testStack.prepare();
 
-      expect(mockStack.keys).toStrictEqual([
+      expect(testStack.keys).toStrictEqual([
         mockSoundId1,
-        `${mockStackId}-2`,
+        `${testStackId}-2`,
         mockSoundId3,
-        `${mockStackId}-4`,
+        `${testStackId}-4`,
       ]);
     });
 
     it('returns a Promise containing the newly created Sound', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
+      const testStack = new Stack(...mockConstructorArgs);
       const mockSoundId = 'Foo';
-      const sound = mockStack.prepare(mockSoundId);
+      const sound = testStack.prepare(mockSoundId);
 
       expect(sound).toBeInstanceOf(Promise);
       await expect(sound).resolves.toBeInstanceOf(Sound);
@@ -362,34 +362,34 @@ describe('Stack component', () => {
     ];
 
     it('sets state to `loading` until fetch is resolved', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
-      const sound = mockStack.prepare();
+      const testStack = new Stack(...mockConstructorArgs);
+      const sound = testStack.prepare();
 
-      expect(mockStack.state).toBe('loading');
+      expect(testStack.state).toBe('loading');
       await sound;
-      expect(mockStack.state).toBe('idle');
+      expect(testStack.state).toBe('idle');
     });
 
     it('returns state to `playing` if a Sound was already playing', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
+      const testStack = new Stack(...mockConstructorArgs);
 
-      expect(mockStack.state).toBe('idle');
-      await mockStack.prepare().then((sound) => sound.play());
-      expect(mockStack.state).toBe('playing');
+      expect(testStack.state).toBe('idle');
+      await testStack.prepare().then((sound) => sound.play());
+      expect(testStack.state).toBe('playing');
 
-      const unplayedSound = mockStack.prepare();
+      const unplayedSound = testStack.prepare();
 
-      expect(mockStack.state).toBe('loading');
+      expect(testStack.state).toBe('loading');
       await unplayedSound;
-      expect(mockStack.state).toBe('playing');
+      expect(testStack.state).toBe('playing');
     });
 
     it('emits error when encountered', async () => {
-      const mockStackId = 'TestLoadFail';
+      const testStackId = 'TestLoadFail';
       const mockPath = 'fake/path/file.mp3';
 
-      const mockStack = new Stack(
-        mockStackId,
+      const testStack = new Stack(
+        testStackId,
         mockPath,
         defaultContext,
         defaultAudioNode,
@@ -397,11 +397,11 @@ describe('Stack component', () => {
 
       const spyError: StackEventMap['error'] = vi.fn((_error) => {});
 
-      mockStack.on('error', spyError);
-      await mockStack.prepare();
+      testStack.on('error', spyError);
+      await testStack.prepare();
 
       expect(spyError).toBeCalledWith({
-        id: mockStackId,
+        id: testStackId,
         message: [
           `Failed to load: ${mockPath}`,
           expect.stringContaining(mockPath),
@@ -410,14 +410,14 @@ describe('Stack component', () => {
     });
 
     it('returns scratchBuffer on error', async () => {
-      const mockStack = new Stack(
+      const testStack = new Stack(
         'TestLoadScratch',
         'path/to/no/where.webm',
         defaultContext,
         defaultAudioNode,
       );
 
-      const scratchSound = await mockStack.prepare();
+      const scratchSound = await testStack.prepare();
       const scratchBuffer = scratchSound.buffer;
 
       expect(scratchBuffer).toBeInstanceOf(AudioBuffer);
@@ -431,11 +431,11 @@ describe('Stack component', () => {
   });
 
   describe('#create()', () => {
-    const mockStackId = 'TestCreate';
+    const testStackId = 'TestCreate';
     const mockFadeMs = 8;
 
     const mockConstructorArgs: StackConstructor = [
-      mockStackId,
+      testStackId,
       mockData.audio,
       defaultContext,
       defaultAudioNode,
@@ -447,10 +447,10 @@ describe('Stack component', () => {
     }
 
     it('constructs Sound', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
+      const testStack = new Stack(...mockConstructorArgs);
 
       const mockSoundId = 'Foo';
-      const sound = await mockStack.prepare(mockSoundId);
+      const sound = await testStack.prepare(mockSoundId);
 
       expect(sound).toHaveProperty('id', mockSoundId);
       expect(sound).toHaveProperty('buffer', {
@@ -469,16 +469,16 @@ describe('Stack component', () => {
     });
 
     it('registers `statechange` multi-listener on Sound', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
-      const sound = await mockStack.prepare();
+      const testStack = new Stack(...mockConstructorArgs);
+      const sound = await testStack.prepare();
 
       sound.play().pause();
       expect(sound.activeEvents).toContain('statechange');
     });
 
     it('registers `ended` single-listener on Sound', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
-      const sound = await mockStack.prepare();
+      const testStack = new Stack(...mockConstructorArgs);
+      const sound = await testStack.prepare();
 
       sound.play();
       // No way to really check that the event is removed,
@@ -487,12 +487,12 @@ describe('Stack component', () => {
     });
 
     it('expires old sounds that fall outside of the `maxStackSize`', async () => {
-      const mockStack = new Stack(...mockConstructorArgs);
+      const testStack = new Stack(...mockConstructorArgs);
       const spyEnded: SoundEventMap['ended'] = vi.fn((_ended) => {});
 
       // Fill the `queue` up with the exact max number of Sounds.
       const pendingSounds = arrayOfLength(Stack.maxStackSize).map(
-        async () => await mockStack.prepare(),
+        async () => await testStack.prepare(),
       );
 
       const sounds = await Promise.all(pendingSounds);
@@ -507,26 +507,26 @@ describe('Stack component', () => {
 
       // Order will be different because of `async` Sound creation,
       // but `strictEqual` comparison doesn't care about order.
-      expect(mockStack.keys).toStrictEqual([
-        `${mockStackId}-1`,
-        `${mockStackId}-2`,
-        `${mockStackId}-3`,
-        `${mockStackId}-4`,
-        `${mockStackId}-5`,
-        `${mockStackId}-6`,
-        `${mockStackId}-7`,
-        `${mockStackId}-8`,
+      expect(testStack.keys).toStrictEqual([
+        `${testStackId}-1`,
+        `${testStackId}-2`,
+        `${testStackId}-3`,
+        `${testStackId}-4`,
+        `${testStackId}-5`,
+        `${testStackId}-6`,
+        `${testStackId}-7`,
+        `${testStackId}-8`,
       ]);
       expect(spyEnded).not.toBeCalled();
 
       // Add more sounds before any current Sound has finished playing.
       const additionalSounds = arrayOfLength(additionalSoundsCount).map(
-        async () => await mockStack.prepare(),
+        async () => await testStack.prepare(),
       );
 
       await Promise.all(additionalSounds);
 
-      expect(mockStack.keys).toHaveLength(Stack.maxStackSize);
+      expect(testStack.keys).toHaveLength(Stack.maxStackSize);
       expect(spyEnded).toBeCalledTimes(additionalSoundsCount);
     });
   });
