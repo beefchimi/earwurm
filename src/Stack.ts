@@ -221,5 +221,10 @@ export class Stack extends EmittenCommon<StackEventMap> {
 
   #handleSoundEnded = (event: SoundEndedEvent) => {
     this.#setQueue(this.#queue.filter(({id}) => id !== event.id));
+
+    // If we had a "stopping/destroying"-like state for `Sound`,
+    // then we wouldn't have to call this here, as it would be
+    // automatically updated from the `newSound.on('statechange')`.
+    this.#handleStateFromQueue();
   };
 }
