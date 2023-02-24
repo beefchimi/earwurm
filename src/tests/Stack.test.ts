@@ -309,9 +309,9 @@ describe('Stack component', () => {
   });
 
   describe('prepare()', () => {
-    const testStackId = 'TestPrepare';
+    const mockStackId = 'TestPrepare';
     const mockConstructorArgs: StackConstructor = [
-      testStackId,
+      mockStackId,
       mockData.audio,
       defaultContext,
       defaultAudioNode,
@@ -325,9 +325,9 @@ describe('Stack component', () => {
       await testStack.prepare();
 
       expect(testStack.keys).toStrictEqual([
-        `${testStackId}-1`,
-        `${testStackId}-2`,
-        `${testStackId}-3`,
+        `${mockStackId}-1`,
+        `${mockStackId}-2`,
+        `${mockStackId}-3`,
       ]);
     });
 
@@ -343,9 +343,9 @@ describe('Stack component', () => {
 
       expect(testStack.keys).toStrictEqual([
         mockSoundId1,
-        `${testStackId}-2`,
+        `${mockStackId}-2`,
         mockSoundId3,
-        `${testStackId}-4`,
+        `${mockStackId}-4`,
       ]);
     });
 
@@ -392,11 +392,11 @@ describe('Stack component', () => {
     });
 
     it('emits error when encountered', async () => {
-      const testStackId = 'TestLoadFail';
+      const mockStackId = 'TestLoadFail';
       const mockPath = 'fake/path/file.mp3';
 
       const testStack = new Stack(
-        testStackId,
+        mockStackId,
         mockPath,
         defaultContext,
         defaultAudioNode,
@@ -408,7 +408,7 @@ describe('Stack component', () => {
       await testStack.prepare();
 
       expect(spyError).toBeCalledWith({
-        id: testStackId,
+        id: mockStackId,
         message: [
           `Failed to load: ${mockPath}`,
           expect.stringContaining(mockPath),
@@ -438,11 +438,11 @@ describe('Stack component', () => {
   });
 
   describe('#create()', () => {
-    const testStackId = 'TestCreate';
+    const mockStackId = 'TestCreate';
     const mockFadeMs = 8;
 
     const mockConstructorArgs: StackConstructor = [
-      testStackId,
+      mockStackId,
       mockData.audio,
       defaultContext,
       defaultAudioNode,
@@ -515,14 +515,14 @@ describe('Stack component', () => {
       // Order will be different because of `async` Sound creation,
       // but `strictEqual` comparison doesn't care about order.
       expect(testStack.keys).toStrictEqual([
-        `${testStackId}-1`,
-        `${testStackId}-2`,
-        `${testStackId}-3`,
-        `${testStackId}-4`,
-        `${testStackId}-5`,
-        `${testStackId}-6`,
-        `${testStackId}-7`,
-        `${testStackId}-8`,
+        `${mockStackId}-1`,
+        `${mockStackId}-2`,
+        `${mockStackId}-3`,
+        `${mockStackId}-4`,
+        `${mockStackId}-5`,
+        `${mockStackId}-6`,
+        `${mockStackId}-7`,
+        `${mockStackId}-8`,
       ]);
       expect(spyEnded).not.toBeCalled();
 
