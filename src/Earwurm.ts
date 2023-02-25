@@ -26,7 +26,6 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
 
   #context = new AudioContext();
   #gainNode = this.#context.createGain();
-  #outputNode = this.#gainNode.connect(this.#context.destination);
 
   #fadeSec = 0;
   #request: ManagerConfig['request'];
@@ -45,6 +44,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     this.#fadeSec = config?.fadeMs ? msToSec(config.fadeMs) : this.#fadeSec;
     this.#request = config?.request ?? undefined;
 
+    this.#gainNode.connect(this.#context.destination);
     this.#gainNode.gain.setValueAtTime(this._volume, this.#context.currentTime);
     this.#autoSuspend();
 
@@ -126,7 +126,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     const newStacks = entries.map(({id, path}) => {
       newKeys.push(id);
 
-      const newStack = new Stack(id, path, this.#context, this.#outputNode, {
+      const newStack = new Stack(id, path, this.#context, this.#gainNode, {
         fadeMs: secToMs(this.#fadeSec),
         request: this.#request,
       });
