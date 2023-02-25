@@ -12,7 +12,6 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   // "True private" properties
   #source: AudioBufferSourceNode;
   #gainNode: GainNode;
-  #outputNode: AudioNode;
   #fadeSec = 0;
   #started = false;
 
@@ -20,7 +19,7 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     readonly id: SoundId,
     readonly buffer: AudioBuffer,
     readonly context: AudioContext,
-    readonly destination: AudioNode,
+    readonly destination: GainNode | AudioNode,
     config?: SoundConfig,
   ) {
     super();
@@ -28,12 +27,11 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     this._volume = config?.volume ?? this._volume;
     this.#fadeSec = config?.fadeMs ? msToSec(config.fadeMs) : this.#fadeSec;
 
-    this.#source = this.context.createBufferSource();
     this.#gainNode = this.context.createGain();
-    this.#outputNode = this.#gainNode.connect(this.destination);
+    this.#source = this.context.createBufferSource();
     this.#source.buffer = buffer;
 
-    this.#source.connect(this.#outputNode);
+    this.#source.connect(this.#gainNode).connect(this.destination);
     this.#gainNode.gain.setValueAtTime(this._volume, this.context.currentTime);
 
     // We could `emit` a "created" event, but it wouldn't get caught
