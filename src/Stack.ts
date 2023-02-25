@@ -34,7 +34,6 @@ export class Stack extends EmittenCommon<StackEventMap> {
   private _state: StackState = 'idle';
 
   #gainNode: GainNode;
-  #outputNode: AudioNode;
   #fadeSec = 0;
   #totalSoundsCreated = 0;
   #request: StackConfig['request'];
@@ -44,7 +43,7 @@ export class Stack extends EmittenCommon<StackEventMap> {
     readonly id: StackId,
     readonly path: string,
     readonly context: AudioContext,
-    readonly destination: AudioNode,
+    readonly destination: GainNode | AudioNode,
     config?: StackConfig,
   ) {
     super();
@@ -54,8 +53,8 @@ export class Stack extends EmittenCommon<StackEventMap> {
     this.#request = config?.request ?? undefined;
 
     this.#gainNode = this.context.createGain();
-    this.#outputNode = this.#gainNode.connect(this.destination);
 
+    this.#gainNode.connect(this.destination);
     this.#gainNode.gain.setValueAtTime(this._volume, this.context.currentTime);
   }
 
@@ -173,7 +172,7 @@ export class Stack extends EmittenCommon<StackEventMap> {
   }
 
   #create(id: SoundId, buffer: AudioBuffer) {
-    const newSound = new Sound(id, buffer, this.context, this.#outputNode, {
+    const newSound = new Sound(id, buffer, this.context, this.#gainNode, {
       fadeMs: secToMs(this.#fadeSec),
     });
 
