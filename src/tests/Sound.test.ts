@@ -90,6 +90,17 @@ describe('Sound component', () => {
       expect(spySourceStart).toBeCalledTimes(1);
     });
 
+    it('does not call `start()` a 2nd time', () => {
+      const testSound = new Sound(...mockConstructorArgs);
+      const spySourceStart = vi.spyOn(AudioBufferSourceNode.prototype, 'start');
+
+      testSound.play().play().play();
+      expect(spySourceStart).toBeCalledTimes(1);
+    });
+
+    // TODO: Figure out how to check `#source` for `playbackRate.value`.
+    it.todo('unpauses the source');
+
     it('updates state', () => {
       const testSound = new Sound(...mockConstructorArgs);
 
