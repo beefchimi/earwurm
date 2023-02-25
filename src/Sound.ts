@@ -14,6 +14,7 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   #gainNode: GainNode;
   #outputNode: AudioNode;
   #fadeSec = 0;
+  #started = false;
 
   constructor(
     readonly id: SoundId,
@@ -97,7 +98,15 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   }
 
   play() {
-    this.#source.start();
+    if (!this.#started) {
+      this.#source.start();
+      this.#started = true;
+    }
+
+    if (this._state === 'paused') {
+      this.#source.playbackRate.value = 1;
+    }
+
     this.#setState('playing');
 
     return this;
@@ -131,6 +140,8 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   }
 
   #handleEnded = () => {
+    // Intentionally not setting `stopping` state here,
+    // but we may want ot consider a "ending" state instead.
     this.emit('ended', {id: this.id, source: this.#source});
   };
 }
