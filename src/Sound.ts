@@ -1,6 +1,7 @@
 import {EmittenCommon} from 'emitten';
 
 import {clamp, msToSec} from './utilities';
+import {tokens} from './tokens';
 import type {SoundId, SoundState, SoundEventMap, SoundConfig} from './types';
 
 export class Sound extends EmittenCommon<SoundEventMap> {
@@ -103,6 +104,7 @@ export class Sound extends EmittenCommon<SoundEventMap> {
 
     if (this._state === 'paused') {
       this.#source.playbackRate.value = 1;
+      this.mute = false;
     }
 
     this.#setState('playing');
@@ -111,11 +113,15 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   }
 
   pause() {
-    // There is no `pause/resume` API for a `AudioBufferSourceNode`,
-    // so we may have to set `playbackRate.value = 0` instead.
-    // https://github.com/WebAudio/web-audio-api-v2/issues/105
+    if (this._state === 'paused') return this;
 
-    this.#source.playbackRate.value = 0;
+    // There is no `pause/resume` API for a `AudioBufferSourceNode`.
+    // Lowering the `playbackRate` isn't ideal as technically the
+    // audio is still playing in the background and using resources.
+    // https://github.com/WebAudio/web-audio-api-v2/issues/105
+    this.#source.playbackRate.value = tokens.minPlaybackRate;
+    this.mute = true;
+
     this.#setState('paused');
 
     return this;
