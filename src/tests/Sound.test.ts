@@ -98,8 +98,18 @@ describe('Sound component', () => {
       expect(spySourceStart).toBeCalledTimes(1);
     });
 
-    // TODO: Figure out how to check `#source` for `playbackRate.value`.
-    it.todo('unpauses the source');
+    it('unpauses the source', () => {
+      const testSound = new Sound(...mockConstructorArgs);
+
+      // TODO: Figure out how to check `#source` for `playbackRate.value`.
+      expect(testSound.mute).toBe(false);
+      testSound.play();
+      expect(testSound.mute).toBe(false);
+      testSound.pause();
+      expect(testSound.mute).toBe(true);
+      testSound.play();
+      expect(testSound.mute).toBe(false);
+    });
 
     it('updates state', () => {
       const testSound = new Sound(...mockConstructorArgs);
@@ -124,8 +134,15 @@ describe('Sound component', () => {
       defaultAudioNode,
     ];
 
-    // TODO: Figure out how to check `#source` for `playbackRate.value`.
-    it.todo('pauses the source');
+    it('pauses the source', () => {
+      const testSound = new Sound(...mockConstructorArgs);
+
+      // TODO: Figure out how to check `#source` for `playbackRate.value`.
+      testSound.play();
+      expect(testSound.mute).toBe(false);
+      testSound.pause();
+      expect(testSound.mute).toBe(true);
+    });
 
     it('updates state', () => {
       const testSound = new Sound(...mockConstructorArgs);
@@ -133,6 +150,9 @@ describe('Sound component', () => {
       testSound.play().pause();
       expect(testSound.state).toBe('paused');
     });
+
+    // This condition is already covered in `events`.
+    // it('does not update state again if already paused');
 
     it('returns instance', () => {
       const testSound = new Sound(...mockConstructorArgs);
@@ -219,6 +239,26 @@ describe('Sound component', () => {
 
       testSound.stop();
       expect(spyStateChange).toBeCalledWith('stopping');
+    });
+
+    it('does not emit redundant state changes', () => {
+      const testSound = new Sound(...mockConstructorArgs);
+      const spyStateChange: SoundEventMap['statechange'] = vi.fn(
+        (_state) => {},
+      );
+
+      testSound.on('statechange', spyStateChange);
+
+      testSound.play();
+      expect(spyStateChange).toBeCalledTimes(1);
+      expect(spyStateChange).toBeCalledWith('playing');
+
+      testSound.pause();
+      expect(spyStateChange).toBeCalledTimes(2);
+      expect(spyStateChange).toBeCalledWith('paused');
+
+      testSound.pause();
+      expect(spyStateChange).not.toBeCalledTimes(3);
     });
 
     it('emits `ended` event once sound has finished', () => {
