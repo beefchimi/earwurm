@@ -40,14 +40,35 @@ export class MockAudioContext
   }
 
   async close(): Promise<void> {
-    throw new Error(internalMessage('close'));
+    // Setting + dispatching state outside of the
+    // Promise to avoid complicated async testing.
+    this.state = 'closed';
+    this.dispatchEvent(new Event('statechange'));
+
+    await new Promise((resolve) => {
+      resolve(() => {});
+    });
   }
 
   async resume(): Promise<void> {
-    throw new Error(internalMessage('resume'));
+    // Setting + dispatching state outside of the
+    // Promise to avoid complicated async testing.
+    this.state = 'running';
+    this.dispatchEvent(new Event('statechange'));
+
+    await new Promise((resolve) => {
+      resolve(() => {});
+    });
   }
 
   async suspend(): Promise<void> {
-    throw new Error(internalMessage('suspend'));
+    // Setting + dispatching state outside of the
+    // Promise to avoid complicated async testing.
+    this.state = 'suspended';
+    this.dispatchEvent(new Event('statechange'));
+
+    await new Promise((resolve) => {
+      resolve(() => {});
+    });
   }
 }

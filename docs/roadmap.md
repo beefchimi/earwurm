@@ -64,3 +64,19 @@ While we are intentionally keeping the scope of `Earwurm` to an absolute minimum
     - Example: This would allow me to know what `Stack` manages a particular `Sound`.
 16. Consider setting `Stack > state` to `closed` on `teardown`.
     - This way, there is a better mechanism to removing a `Stack` after listening to a `statechange`.
+
+### Additional
+
+Maybe there is some value in passing an array of `GainNode/AudioNode` for `destination`? If so, that might look something like:
+
+```ts
+export type AudioOutputs = [...GainNode[], AudioNode];
+
+constructor(readonly outputs: AudioOutputs);
+
+let lastConnection: GainNode | AudioNode = this.#gainNode;
+
+outputs.forEach((node) => {
+  lastConnection = lastConnection.connect(node);
+});
+```

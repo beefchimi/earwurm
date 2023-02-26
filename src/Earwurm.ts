@@ -26,7 +26,6 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
 
   #context = new AudioContext();
   #gainNode = this.#context.createGain();
-  #outputNode: AudioNode;
 
   #fadeSec = 0;
   #request: ManagerConfig['request'];
@@ -44,8 +43,8 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     this._volume = config?.volume ?? this._volume;
     this.#fadeSec = config?.fadeMs ? msToSec(config.fadeMs) : this.#fadeSec;
     this.#request = config?.request ?? undefined;
-    this.#outputNode = this.#gainNode.connect(this.#context.destination);
 
+    this.#gainNode.connect(this.#context.destination);
     this.#gainNode.gain.setValueAtTime(this._volume, this.#context.currentTime);
     this.#autoSuspend();
 
@@ -127,7 +126,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     const newStacks = entries.map(({id, path}) => {
       newKeys.push(id);
 
-      const newStack = new Stack(id, path, this.#context, this.#outputNode, {
+      const newStack = new Stack(id, path, this.#context, this.#gainNode, {
         fadeMs: secToMs(this.#fadeSec),
         request: this.#request,
       });
@@ -263,7 +262,12 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     this.#setState('suspending');
 
     const resolveSuspension = () => {
-      this.#setState('suspended');
+      if (this._state !== 'closed') {
+        // Because all of these `AudioContext > state`
+        // methods are async, we need to make sure we don't
+        // set `suspended` after already `closed`.
+        this.#setState('suspended');
+      }
 
       if (this.#suspendId) clearTimeout(this.#suspendId);
       this.#suspendId = 0;
