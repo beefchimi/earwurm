@@ -3,6 +3,7 @@ import {describe, it, expect, vi} from 'vitest';
 import {Stack} from '../Stack';
 import {Sound} from '../Sound';
 import {tokens} from '../tokens';
+import {arrayOfLength} from '../utilities';
 import type {StackEventMap, SoundEventMap} from '../types';
 import {mockData} from './mock';
 
@@ -451,10 +452,6 @@ describe('Stack component', () => {
       {fadeMs: mockFadeMs},
     ];
 
-    function arrayOfLength(length: number) {
-      return Array.from(Array(length));
-    }
-
     it('constructs Sound', async () => {
       const testStack = new Stack(...mockConstructorArgs);
 
@@ -501,7 +498,7 @@ describe('Stack component', () => {
 
       // Fill the `queue` up with the exact max number of Sounds.
       const pendingSounds = arrayOfLength(Stack.maxStackSize).map(
-        async () => await testStack.prepare(),
+        async (_index) => await testStack.prepare(),
       );
 
       const sounds = await Promise.all(pendingSounds);
@@ -530,7 +527,7 @@ describe('Stack component', () => {
 
       // Add more sounds before any current Sound has finished playing.
       const additionalSounds = arrayOfLength(additionalSoundsCount).map(
-        async () => await testStack.prepare(),
+        async (_index) => await testStack.prepare(),
       );
 
       await Promise.all(additionalSounds);
