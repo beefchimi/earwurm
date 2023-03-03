@@ -200,6 +200,8 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
         ]);
       });
 
+    this.empty();
+
     return this;
   }
 
