@@ -391,6 +391,8 @@ describe('Stack component', () => {
       expect(testStack.state).toBe('playing');
     });
 
+    it.todo('passes `request` to `fetchAudioBuffer`');
+
     it('emits error when encountered', async () => {
       const mockStackId = 'TestLoadFail';
       const mockPath = 'fake/path/file.mp3';
