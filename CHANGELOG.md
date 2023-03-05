@@ -1,5 +1,13 @@
 # earwurm
 
+## 0.3.0
+
+### Minor Changes
+
+- 2e81cd3: Earwurm now empties all events on teardown.
+- 2e81cd3: Earwurm now triggers autoSuspend conditionally on init and whenever state changes to "running".
+- 2e81cd3: Revise some method types for TypeScript strict mode.
+
 ## 0.2.0
 
 ### Minor Changes
