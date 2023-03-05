@@ -1,4 +1,5 @@
 import {MockAudioNode} from './MockAudioNode';
+import {mockData} from './mock-data';
 
 /*
 import {createErrorMessage} from './mock-utils';
@@ -18,7 +19,7 @@ export class MockAudioScheduledSourceNode
     // Artificial timeout for sound duration.
     setTimeout(() => {
       this.dispatchEvent(new Event('ended'));
-    }, 10);
+    }, mockData.playDurationMs);
   }
 
   stop(_when?: number | undefined): void {

@@ -3,6 +3,7 @@ import {describe, it, expect, vi} from 'vitest';
 import {Stack} from '../Stack';
 import {Sound} from '../Sound';
 import {tokens} from '../tokens';
+import {arrayOfLength} from '../utilities';
 import type {StackEventMap, SoundEventMap} from '../types';
 import {mockData} from './mock';
 
@@ -52,22 +53,25 @@ describe('Stack component', () => {
     it('contains ids of each unexpired Sound', async () => {
       const testStack = new Stack(...mockConstructorArgs);
 
+      const mockDurationHalf = Math.floor(mockData.playDurationMs / 2);
+      const mockDurationQuarter = Math.floor(mockData.playDurationMs / 4);
+
       const sound1 = await testStack.prepare('One');
       const sound2 = await testStack.prepare('Two');
       const sound3 = await testStack.prepare('Three');
 
       sound1.play();
-      vi.advanceTimersByTime(4);
+      vi.advanceTimersByTime(mockDurationQuarter);
       sound2.play();
-      vi.advanceTimersByTime(4);
+      vi.advanceTimersByTime(mockDurationQuarter);
       sound3.play();
 
       expect(testStack.keys).toStrictEqual(['One', 'Two', 'Three']);
-      vi.advanceTimersByTime(2);
+      vi.advanceTimersByTime(mockDurationHalf);
       expect(testStack.keys).toStrictEqual(['Two', 'Three']);
-      vi.advanceTimersByTime(4);
+      vi.advanceTimersByTime(mockDurationQuarter);
       expect(testStack.keys).toStrictEqual(['Three']);
-      vi.advanceTimersByTime(4);
+      vi.advanceTimersByTime(mockDurationQuarter);
       expect(testStack.keys).toStrictEqual([]);
     });
   });
@@ -121,7 +125,7 @@ describe('Stack component', () => {
       expect(testStack.state).toBe('playing');
       expect(testStack.playing).toBe(true);
 
-      vi.advanceTimersByTime(10);
+      vi.advanceTimersByTime(mockData.playDurationMs);
 
       expect(testStack.state).toBe('idle');
       expect(testStack.playing).toBe(false);
@@ -391,6 +395,8 @@ describe('Stack component', () => {
       expect(testStack.state).toBe('playing');
     });
 
+    it.todo('passes `request` to `fetchAudioBuffer`');
+
     it('emits error when encountered', async () => {
       const mockStackId = 'TestLoadFail';
       const mockPath = 'fake/path/file.mp3';
@@ -449,10 +455,6 @@ describe('Stack component', () => {
       {fadeMs: mockFadeMs},
     ];
 
-    function arrayOfLength(length: number) {
-      return Array.from(Array(length));
-    }
-
     it('constructs Sound', async () => {
       const testStack = new Stack(...mockConstructorArgs);
 
@@ -499,7 +501,7 @@ describe('Stack component', () => {
 
       // Fill the `queue` up with the exact max number of Sounds.
       const pendingSounds = arrayOfLength(Stack.maxStackSize).map(
-        async () => await testStack.prepare(),
+        async (_index) => await testStack.prepare(),
       );
 
       const sounds = await Promise.all(pendingSounds);
@@ -528,7 +530,7 @@ describe('Stack component', () => {
 
       // Add more sounds before any current Sound has finished playing.
       const additionalSounds = arrayOfLength(additionalSoundsCount).map(
-        async () => await testStack.prepare(),
+        async (_index) => await testStack.prepare(),
       );
 
       await Promise.all(additionalSounds);

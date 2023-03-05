@@ -11,6 +11,7 @@ import type {
   ManagerConfig,
   LibraryEntry,
   LibraryKeys,
+  StackEventMap,
 } from './types';
 
 import {Stack} from './Stack';
@@ -46,7 +47,8 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
 
     this.#gainNode.connect(this.#context.destination);
     this.#gainNode.gain.setValueAtTime(this._volume, this.#context.currentTime);
-    this.#autoSuspend();
+
+    if (this._unlocked) this.#autoSuspend();
 
     this.#context.addEventListener('statechange', this.#handleStateChange);
   }
@@ -178,13 +180,6 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     this.#library.forEach((stack) => stack.teardown());
     this.#setLibrary([]);
 
-    this.#queuedResume = false;
-
-    if (this.#suspendId) {
-      clearTimeout(this.#suspendId);
-      this.#suspendId = 0;
-    }
-
     this.#context
       .close()
       .then(() => {
@@ -199,6 +194,8 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
           getErrorMessage(error),
         ]);
       });
+
+    this.empty();
 
     return this;
   }
@@ -230,9 +227,13 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
           getErrorMessage(error),
         ]);
       });
-
-      this.#queuedResume = false;
     }
+
+    this.#clearSuspendResume();
+  }
+
+  #clearSuspendResume() {
+    this.#queuedResume = false;
 
     if (this.#suspendId) {
       clearTimeout(this.#suspendId);
@@ -253,8 +254,10 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
 
     if (value === 'running') {
       this._unlocked = true;
+      this.#autoSuspend();
     } else if (value === 'closed') {
       this._unlocked = false;
+      this.#clearSuspendResume();
     }
   }
 
@@ -287,7 +290,12 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     this.#setState(this.#context.state);
   };
 
-  #handleStackStateChange = () => {
+  #handleStackStateChange: StackEventMap['statechange'] = (state) => {
+    // We don't care about re-setting the auto-suspension each time
+    // a new `Sound` is prepared... but it will do that anyways
+    // since `Stack` returns to `idle` once loaded.
+    if (state === 'loading') return;
+
     if (this.playing) {
       this.#autoResume();
     } else {

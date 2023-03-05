@@ -1,9 +1,32 @@
 import {describe, it, expect} from 'vitest';
-import {clamp, progressPercentage, msToSec, secToMs} from '../utilities';
+import {
+  arrayOfLength,
+  clamp,
+  progressPercentage,
+  msToSec,
+  secToMs,
+} from '../utilities';
 
 describe('Utilities', () => {
+  describe('Array', () => {
+    describe('arrayOfLength()', () => {
+      it('returns an empty array by default', () => {
+        const result = arrayOfLength();
+        expect(result).toStrictEqual([]);
+      });
+
+      it('returns an array of incremented index values', () => {
+        const mockLength = 6;
+        const result = arrayOfLength(mockLength);
+
+        expect(result).toStrictEqual([0, 1, 2, 3, 4, 5]);
+        expect(result).toHaveLength(mockLength);
+      });
+    });
+  });
+
   describe('Numbers', () => {
-    describe('clamp', () => {
+    describe('clamp()', () => {
       it('returns preference', () => {
         const mockArgs = {
           preference: 10,
@@ -41,7 +64,7 @@ describe('Utilities', () => {
       });
     });
 
-    describe('progressPercentage', () => {
+    describe('progressPercentage()', () => {
       it('returns percentage integer', () => {
         const result = progressPercentage(6, 20);
         expect(result).toBe(30);
@@ -57,14 +80,14 @@ describe('Utilities', () => {
   });
 
   describe('Time', () => {
-    describe('msToSec', () => {
+    describe('msToSec()', () => {
       it('converts to seconds', () => {
         const result = msToSec(1234);
         expect(result).toBe(1.234);
       });
     });
 
-    describe('secToMs', () => {
+    describe('secToMs()', () => {
       it('converts to milliseconds', () => {
         const result = secToMs(5.678);
         expect(result).toBe(5678);

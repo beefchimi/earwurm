@@ -11,7 +11,7 @@ import {mockData, audioBufferSourceNodeEndedEvent} from './mock';
 describe('Helpers', () => {
   const mockContext = new AudioContext();
 
-  describe('getErrorMessage', () => {
+  describe('getErrorMessage()', () => {
     it('returns message from basic object', () => {
       const mockError = {
         message: 'foo',
@@ -41,7 +41,7 @@ describe('Helpers', () => {
     });
   });
 
-  describe('fetchAudioBuffer', () => {
+  describe('fetchAudioBuffer()', () => {
     it('throws parse Error on bogus path', async () => {
       const mockPath = './path/nowhere.webm';
 
@@ -61,7 +61,7 @@ describe('Helpers', () => {
     it.todo('passes custom options to fetch');
   });
 
-  describe('scratchBuffer', () => {
+  describe('scratchBuffer()', () => {
     it('creates a short silent AudioBuffer', () => {
       const result = scratchBuffer(mockContext);
 
@@ -73,7 +73,7 @@ describe('Helpers', () => {
     });
   });
 
-  describe('unlockAudioContext', () => {
+  describe('unlockAudioContext()', () => {
     afterEach(() => {
       vi.advanceTimersToNextTimer();
     });
