@@ -47,7 +47,7 @@
     "lint": "eslint . --ext .ts,.tsx",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "coverage": "vitest --coverage",
+    "coverage": "vitest --run --coverage",
     "report": "changeset",
     "release": "npm run build && changeset publish"
   },
