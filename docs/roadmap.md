@@ -4,17 +4,11 @@ While we are intentionally keeping the scope of `Earwurm` to an absolute minimum
 
 ## Tasks
 
-1. Ability to `seek()`.
-2. Ability to set `speed`.
-3. Ability to set `pitch`.
-4. Calculate `elapsed` time per-sound.
+1. Calculate `elapsed` time per-sound.
    - If this can be achieved _(taking into consideration how `speed` will influence the calculation of `elapsed`)_, then we can add a `progress` event.
-5. Support `sprite`.
-6. Tests.
-7. Finish docs.
+2. Finish docs.
    - We need to elaborate on returning a `scratchBuffer` if the `fetch` fails.
    - If we failed to load the sound, return a “scratch buffer” so that we can still register an `ended` listener and call `.stop()` on the `source`. Since `Stack` will `emit` an `error` event with the `Sound > id`, consumer’s can listen for that event and perform their own handling.
-8. …and more…
 
 ## Considerations
 
