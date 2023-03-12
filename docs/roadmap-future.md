@@ -94,46 +94,6 @@ sound.onProgress(({elapsed, progress}) => void);
 sound.onError((error) => void);
 ```
 
-## Expectations
-
-When it comes time to add `sprite` support, I can imagine two different implementations:
-
-```ts
-const manager = new Earwurm();
-
-// This implementation probably isn’t ideal,
-// as we would be calling the same `fetch()` request
-// multiple times before a `cache` can be made.
-manager.add(
-  {
-    id: 'SpritePart1',
-    path: 'path/to/sprite.webm',
-    range: [0, 1000],
-  },
-  {
-    id: 'SpritePart2',
-    path: 'path/to/sprite.webm',
-    range: [1000, 2000],
-  },
-  {
-    id: 'SpritePart3',
-    path: 'path/to/sprite.webm',
-    range: [2000, 3000],
-  },
-);
-
-// Doing it all in “one-go” is likely better:
-manager.add({
-  id: 'MySprite',
-  path: 'path/to/sprite.webm',
-  sprite: {
-    key1: [0, 1000],
-    key2: [1000, 2000],
-    key3: [2000, 3000],
-  },
-});
-```
-
 ## Concerns
 
 - `Sound > stop()`: It is possible we will have to wait before calling `.empty()`.
