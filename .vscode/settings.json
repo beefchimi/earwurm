@@ -1,14 +1,11 @@
 {
-  "css.validate": false,
-  "scss.validate": false,
-  "javascript.validate.enable": false,
-  "stylelint.enable": true,
   "editor.codeActionsOnSave": {
     "source.fixAll": true
   },
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "eslint.validate": ["javascript", "typescript"],
+  "stylelint.enable": true,
   "typescript.tsdk": "./node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "files.exclude": {
