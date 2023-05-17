@@ -1,14 +1,13 @@
 {
   "recommendations": [
+    "codezombiech.gitignore",
+    "github.vscode-github-actions",
+    "EditorConfig.editorconfig",
     "christian-kohler.npm-intellisense",
     "christian-kohler.path-intellisense",
-    "codezombiech.gitignore",
+    "Gruntfuggly.todo-tree",
     "DavidAnson.vscode-markdownlint",
     "dbaeumer.vscode-eslint",
-    "EditorConfig.editorconfig",
-    "esbenp.prettier-vscode",
-    "Gruntfuggly.todo-tree",
-    "stylelint.vscode-stylelint",
-    "mrmlnc.vscode-scss"
+    "esbenp.prettier-vscode"
   ]
 }
