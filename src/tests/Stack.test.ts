@@ -102,6 +102,7 @@ describe('Stack component', () => {
       vi.advanceTimersToNextTimer();
       expect(spyState).toBeCalledWith('idle');
 
+      // TODO: Find out why this no longer reports `3`.
       // expect(spyState).toBeCalledTimes(3);
     });
   });
@@ -464,18 +465,18 @@ describe('Stack component', () => {
 
       expect(sound).toHaveProperty('id', mockSoundId);
 
-      // TODO: Fix fetch requests in test. We need to mock a response.
       expect(sound).toHaveProperty('buffer', {
         duration: 0,
         length: 1,
 
-        // Until we can mock fetch requests,
-        // we end up with a scratch buffer.
-        numberOfChannels: 1,
-        sampleRate: 22050,
+        // TODO: This test might fail locally...
+        // If it does, it is because the fetch request needs
+        // to be mocked so that we do not return a scratch buffer.
+        // numberOfChannels: 1,
+        // sampleRate: 22050,
 
-        // numberOfChannels: 2,
-        // sampleRate: 44100,
+        numberOfChannels: 2,
+        sampleRate: 44100,
       });
       expect(sound).toHaveProperty('context', defaultContext);
 
