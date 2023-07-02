@@ -1,5 +1,15 @@
 # earwurm
 
+## 0.4.0
+
+### Minor Changes
+
+- f2f911d: Upgrade to TypeScript 5.
+
+### Patch Changes
+
+- d41dfd5: Various dependency bumps.
+
 ## 0.3.0
 
 ### Minor Changes
