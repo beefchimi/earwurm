@@ -1,19 +1,22 @@
-👽️ dependency:
-  - any: ['**/package*', '**/yarn.lock', '.pnp.*']
-📝 documentation: '**/!(CHANGELOG|LICENSE|MIGRATION).@(md|mdx)'
-🔖 release: '**/CHANGELOG.md'
-🧪 testing: '**/*.@(spec|test).@(js|jsx|ts|tsx)'
-🔧 tooling:
+🧰 Dependency:
+  - any: ['package-lock.json', 'yarn.lock']
+📚 Documentation:
+  - any: ['README.md', 'docs/**']
+🔖 Release: 'CHANGELOG.md'
+⚖️ Legal: 'LICENSE'
+🧪 Testing: '**/*.test.ts'
+🔧 Tooling:
   - any:
       [
         '*',
-        '.github/**/*',
-        '.vscode/**/*',
+        '.github/**',
+        '.vscode/**',
         '.yarn*',
-        '.yarn/**/*',
-        'config/**/*',
-        'scripts/**/*',
-        '!package*',
+        '.yarn/**',
+        'config/**',
+        'scripts/**',
+        '!LICENSE',
+        '!package.lock',
         '!yarn.lock',
-        '!*.@(md|mdx)',
+        '!*.md',
       ]
