@@ -15,4 +15,5 @@ jobs:
       - name: Apply PR labels
         uses: actions/labeler@v4
         with:
+          dot: true
           repo-token: ${{ secrets.GITHUB_TOKEN }}
