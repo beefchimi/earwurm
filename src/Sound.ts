@@ -13,7 +13,7 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   // "True private" properties
   readonly #source: AudioBufferSourceNode;
   readonly #gainNode: GainNode;
-  readonly #fadeSec = 0;
+  readonly #fadeSec: number = 0;
   #started = false;
 
   constructor(

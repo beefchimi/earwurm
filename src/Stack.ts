@@ -34,7 +34,7 @@ export class Stack extends EmittenCommon<StackEventMap> {
   private _state: StackState = 'idle';
 
   readonly #gainNode: GainNode;
-  readonly #fadeSec = 0;
+  readonly #fadeSec: number = 0;
   #totalSoundsCreated = 0;
   readonly #request: StackConfig['request'];
   #queue: Sound[] = [];

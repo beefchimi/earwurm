@@ -28,7 +28,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
   readonly #context = new AudioContext();
   readonly #gainNode = this.#context.createGain();
 
-  readonly #fadeSec = 0;
+  readonly #fadeSec: number = 0;
   readonly #request: ManagerConfig['request'];
   #library: Stack[] = [];
   #suspendId: TimeoutId = 0;
