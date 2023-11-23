@@ -25,11 +25,11 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
   private _keys: LibraryKeys = [];
   private _state: ManagerState = 'suspended';
 
-  #context = new AudioContext();
-  #gainNode = this.#context.createGain();
+  readonly #context = new AudioContext();
+  readonly #gainNode = this.#context.createGain();
 
-  #fadeSec = 0;
-  #request: ManagerConfig['request'];
+  readonly #fadeSec = 0;
+  readonly #request: ManagerConfig['request'];
   #library: Stack[] = [];
   #suspendId: TimeoutId = 0;
   #queuedResume = false;
@@ -261,7 +261,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     }
   }
 
-  #handleSuspend = () => {
+  readonly #handleSuspend = () => {
     this.#setState('suspending');
 
     const resolveSuspension = () => {
@@ -283,14 +283,14 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     this.#context.suspend().then(resolveSuspension).catch(resolveSuspension);
   };
 
-  #handleStateChange = () => {
+  readonly #handleStateChange = () => {
     // TypeScript doesn’t seem to have a way to qualify the
     // `Event` as having come from an `AudioContext`, so we
     // won’t bother using `event.target.state`.
     this.#setState(this.#context.state);
   };
 
-  #handleStackStateChange: StackEventMap['statechange'] = (state) => {
+  readonly #handleStackStateChange: StackEventMap['statechange'] = (state) => {
     // We don't care about re-setting the auto-suspension each time
     // a new `Sound` is prepared... but it will do that anyways
     // since `Stack` returns to `idle` once loaded.

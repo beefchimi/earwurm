@@ -19,7 +19,7 @@ import {Sound} from './Sound';
 export class Stack extends EmittenCommon<StackEventMap> {
   static readonly maxStackSize = tokens.maxStackSize;
 
-  static #loadError = (
+  static readonly #loadError = (
     id: StackId,
     path: string,
     error: string,
@@ -33,10 +33,10 @@ export class Stack extends EmittenCommon<StackEventMap> {
   private _keys: SoundId[] = [];
   private _state: StackState = 'idle';
 
-  #gainNode: GainNode;
-  #fadeSec = 0;
+  readonly #gainNode: GainNode;
+  readonly #fadeSec = 0;
   #totalSoundsCreated = 0;
-  #request: StackConfig['request'];
+  readonly #request: StackConfig['request'];
   #queue: Sound[] = [];
 
   constructor(
@@ -214,15 +214,15 @@ export class Stack extends EmittenCommon<StackEventMap> {
     this.emit('statechange', value);
   }
 
-  #handleStateFromQueue = () => {
+  readonly #handleStateFromQueue = () => {
     this.#setState(this.playing ? 'playing' : 'idle');
   };
 
-  #handleSoundState: SoundEventMap['statechange'] = (_state) => {
+  readonly #handleSoundState: SoundEventMap['statechange'] = (_state) => {
     this.#handleStateFromQueue();
   };
 
-  #handleSoundEnded: SoundEventMap['ended'] = (event) => {
+  readonly #handleSoundEnded: SoundEventMap['ended'] = (event) => {
     this.#setQueue(this.#queue.filter(({id}) => id !== event.id));
 
     // We only set `stopping` state when `.stop()` is called.
