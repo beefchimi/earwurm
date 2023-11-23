@@ -1,22 +1,20 @@
-🧰 Dependency:
-  - any: ['package-lock.json', 'yarn.lock']
+🧰 Dependency: package-lock.json
 📚 Documentation:
-  - any: ['README.md', 'docs/**']
-🔖 Release: 'CHANGELOG.md'
-⚖️ Legal: 'LICENSE'
+  - README.md
+  - docs/**
+⚖️ Legal: LICENSE
+🔖 Release: CHANGELOG.md
 🧪 Testing: '**/*.test.ts'
-🔧 Tooling:
-  - any:
-      [
-        '*',
-        '.github/**',
-        '.vscode/**',
-        '.yarn*',
-        '.yarn/**',
-        'config/**',
-        'scripts/**',
-        '!LICENSE',
-        '!package.lock',
-        '!yarn.lock',
-        '!*.md',
-      ]
+🛠️ Tooling:
+  - .github/**
+  - .vscode/**
+  - .editorconfig
+  - .eslintignore
+  - .eslintrc.cjs
+  - .gitignore
+  - .nvmrc
+  - .prettierrc
+  - config/**,
+  - package.json
+  - tsconfig.json
+  - vite.config.ts
