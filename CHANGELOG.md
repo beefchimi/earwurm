@@ -1,5 +1,11 @@
 # earwurm
 
+## 0.5.1
+
+### Patch Changes
+
+- ff464bf: Include prettier in devDependencies
+
 ## 0.5.0
 
 ### Minor Changes
