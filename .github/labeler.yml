@@ -14,7 +14,7 @@
   - .gitignore
   - .nvmrc
   - .prettierrc
-  - config/**,
+  - config/**
   - package.json
   - tsconfig.json
   - vite.config.ts
