@@ -1,5 +1,11 @@
 # earwurm
 
+## 0.5.0
+
+### Minor Changes
+
+- 2ce6f50: Upgrade to Vite 5
+
 ## 0.4.0
 
 ### Minor Changes
