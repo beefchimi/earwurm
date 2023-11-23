@@ -10,8 +10,9 @@
   - .vscode/**
   - .editorconfig
   - .eslintignore
-  - .eslintrc.cjs
+  - .eslintrc
   - .gitignore
+  - .npmignore
   - .nvmrc
   - .prettierrc
   - config/**
