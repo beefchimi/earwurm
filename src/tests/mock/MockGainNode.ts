@@ -4,7 +4,10 @@ import {MockAudioParam} from './MockAudioParam';
 export class MockGainNode extends MockAudioNode implements GainNode {
   readonly gain = new MockAudioParam();
 
-  constructor(readonly context: BaseAudioContext, options?: GainOptions) {
+  constructor(
+    readonly context: BaseAudioContext,
+    options?: GainOptions,
+  ) {
     super();
 
     this.channelCount = options?.channelCount ?? 2;

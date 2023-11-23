@@ -1,9 +1,4 @@
 node_modules/
-scrap
-
-# Ignore artifacts:
-build/
-config/definitions
 coverage/
 dist/
-storybook-static/
+scrap/

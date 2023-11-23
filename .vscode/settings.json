@@ -16,7 +16,6 @@
   "search.exclude": {
     "**/node_modules": true,
     "lib": true,
-    "dist/": true,
-    "storybook-static/": true
+    "dist/": true
   }
 }

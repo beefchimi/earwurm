@@ -11,9 +11,9 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   private _state: SoundState = 'created';
 
   // "True private" properties
-  #source: AudioBufferSourceNode;
-  #gainNode: GainNode;
-  #fadeSec = 0;
+  readonly #source: AudioBufferSourceNode;
+  readonly #gainNode: GainNode;
+  readonly #fadeSec: number = 0;
   #started = false;
 
   constructor(
@@ -143,7 +143,7 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     this.emit('statechange', value);
   }
 
-  #handleEnded = () => {
+  readonly #handleEnded = () => {
     // Intentionally not setting `stopping` state here,
     // but we may want ot consider a "ending" state instead.
     this.emit('ended', {id: this.id, source: this.#source});
