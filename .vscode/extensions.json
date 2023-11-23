@@ -5,7 +5,7 @@
     "EditorConfig.editorconfig",
     "christian-kohler.npm-intellisense",
     "christian-kohler.path-intellisense",
-    "Gruntfuggly.todo-tree",
+    "aaron-bond.better-comments",
     "DavidAnson.vscode-markdownlint",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode"
