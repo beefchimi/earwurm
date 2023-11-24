@@ -1,5 +1,11 @@
 # earwurm
 
+## 0.5.2
+
+### Patch Changes
+
+- ae3a112: Fix failure to resolve types in some projects.
+
 ## 0.5.1
 
 ### Patch Changes
