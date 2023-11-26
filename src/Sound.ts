@@ -129,7 +129,7 @@ export class Sound extends EmittenCommon<SoundEventMap> {
 
   stop() {
     this.#setState('stopping');
-    this.#source.stop();
+    if (this.#started) this.#source.stop();
     this.#source.disconnect();
     this.empty();
 
