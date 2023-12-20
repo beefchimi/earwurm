@@ -274,6 +274,25 @@ describe('Sound component', () => {
       expect(spyEnded).toBeCalledWith({
         id: testSound.id,
         source: expect.any(AudioBufferSourceNode),
+        neverStarted: false,
+      });
+    });
+
+    it('emits `ended` event for a stopped sound that was never started', () => {
+      const testSound = new Sound(...mockConstructorArgs);
+      const spyEnded: SoundEventMap['ended'] = vi.fn((_event) => {});
+
+      testSound.on('ended', spyEnded);
+
+      expect(spyEnded).not.toBeCalled();
+      vi.advanceTimersToNextTimer();
+
+      testSound.stop();
+
+      expect(spyEnded).toBeCalledWith({
+        id: testSound.id,
+        source: expect.any(AudioBufferSourceNode),
+        neverStarted: true,
       });
     });
   });

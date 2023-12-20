@@ -35,8 +35,8 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     this.#source.connect(this.#gainNode).connect(this.destination);
     this.#gainNode.gain.setValueAtTime(this._volume, this.context.currentTime);
 
-    // We could `emit` a "created" event, but it wouldn't get caught
-    // by any listeners, since those cannot be attached until after creation.
+    // The `ended` event is fired either when the sound has played its full duration,
+    // or the `.stop()` method has been called.
     this.#source.addEventListener('ended', this.#handleEnded, {once: true});
   }
 
@@ -129,7 +129,16 @@ export class Sound extends EmittenCommon<SoundEventMap> {
 
   stop() {
     this.#setState('stopping');
-    if (this.#started) this.#source.stop();
+
+    if (this.#started) {
+      this.#source.stop();
+    } else {
+      // Required to manually emit the `ended` event for "un-started" sounds.
+      this.#handleEnded();
+    }
+
+    // Should `disconnect` and `empty` be moved into `#handleEnded`?
+    // Would this actually matter?
     this.#source.disconnect();
     this.empty();
 
@@ -145,7 +154,11 @@ export class Sound extends EmittenCommon<SoundEventMap> {
 
   readonly #handleEnded = () => {
     // Intentionally not setting `stopping` state here,
-    // but we may want ot consider a "ending" state instead.
-    this.emit('ended', {id: this.id, source: this.#source});
+    // but we may want to consider a "ending" state instead.
+    this.emit('ended', {
+      id: this.id,
+      source: this.#source,
+      neverStarted: !this.#started,
+    });
   };
 }
