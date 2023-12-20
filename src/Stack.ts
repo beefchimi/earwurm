@@ -223,10 +223,7 @@ export class Stack extends EmittenCommon<StackEventMap> {
   };
 
   readonly #handleSoundEnded: SoundEventMap['ended'] = (event) => {
-    // TODO: We need to clear sounds from the `queue` that were never
-    // "started". Ideally, we hook into a `disconnect` event.
     this.#setQueue(this.#queue.filter(({id}) => id !== event.id));
-
     // We only set `stopping` state when `.stop()` is called.
     // There is no `statechange` specifically for "ended".
     this.#handleStateFromQueue();
