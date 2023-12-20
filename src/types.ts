@@ -61,6 +61,7 @@ export type SoundState = 'created' | 'playing' | 'paused' | 'stopping';
 export interface SoundEndedEvent {
   id: SoundId;
   source: AudioBufferSourceNode;
+  neverStarted: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
