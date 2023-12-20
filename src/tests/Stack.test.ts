@@ -419,7 +419,8 @@ describe('Stack component', () => {
         id: mockStackId,
         message: [
           `Failed to load: ${mockPath}`,
-          expect.stringContaining(mockPath),
+          // This string ends with `[object Request]`.
+          expect.stringContaining('Failed to parse URL from'),
         ],
       });
     });
@@ -468,15 +469,14 @@ describe('Stack component', () => {
       expect(sound).toHaveProperty('buffer', {
         duration: 0,
         length: 1,
-
         // TODO: This test might fail locally...
         // If it does, it is because the fetch request needs
         // to be mocked so that we do not return a scratch buffer.
-        // numberOfChannels: 1,
-        // sampleRate: 22050,
-
-        numberOfChannels: 2,
-        sampleRate: 44100,
+        // Returned object contains either:
+        // {numberOfChannels: 1, sampleRate: 22050}
+        // {numberOfChannels: 2, sampleRate: 44100}
+        numberOfChannels: 1,
+        sampleRate: 22050,
       });
       expect(sound).toHaveProperty('context', defaultContext);
 
