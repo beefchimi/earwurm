@@ -1,6 +1,7 @@
 import {describe, it, expect} from 'vitest';
 import {
   arrayOfLength,
+  arrayShallowEquals,
   clamp,
   progressPercentage,
   msToSec,
@@ -21,6 +22,21 @@ describe('Utilities', () => {
 
         expect(result).toStrictEqual([0, 1, 2, 3, 4, 5]);
         expect(result).toHaveLength(mockLength);
+      });
+    });
+
+    describe('arrayShallowEquals()', () => {
+      it('returns `true` when matching', () => {
+        const result = arrayShallowEquals(
+          [true, false, null, undefined, 0, 1, 'end'],
+          [true, false, null, undefined, 0, 1, 'end'],
+        );
+        expect(result).toBe(true);
+      });
+
+      it('returns `false` when at least one value is unmatched', () => {
+        const result = arrayShallowEquals([true, false], [false, true]);
+        expect(result).toBe(false);
       });
     });
   });
