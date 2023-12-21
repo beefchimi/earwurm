@@ -133,7 +133,12 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
   add(...entries: LibraryEntry[]) {
     const newKeys: LibraryKeys = [];
 
-    const newStacks = entries.map(({id, path}) => {
+    const newStacks = entries.reduce<Stack[]>((collection, {id, path}) => {
+      const existingStack = this.get(id);
+      const identicalStack = existingStack?.path === path;
+
+      if (identicalStack) return collection;
+
       newKeys.push(id);
 
       const newStack = new Stack(id, path, this.#context, this.#gainNode, {
@@ -143,8 +148,8 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
 
       newStack.on('statechange', this.#handleStackStateChange);
 
-      return newStack;
-    });
+      return [...collection, newStack];
+    }, []);
 
     const replacedKeys = this.#library.reduce<LibraryKeys>(
       (collection, {id}) =>
@@ -152,7 +157,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
       [],
     );
 
-    this.remove(...replacedKeys);
+    if (replacedKeys.length) this.remove(...replacedKeys);
     this.#setLibrary([...this.#library, ...newStacks]);
 
     return newKeys;
