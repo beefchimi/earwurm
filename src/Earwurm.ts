@@ -63,6 +63,10 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
 
     this._volume = newVolume;
 
+    if (oldVolume !== newVolume) {
+      this.emit('volume', newVolume);
+    }
+
     if (this._mute) return;
 
     this.#gainNode.gain
@@ -79,6 +83,10 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
   }
 
   set mute(value: boolean) {
+    if (this._mute !== value) {
+      this.emit('mute', value);
+    }
+
     this._mute = value;
 
     const fromValue = value ? this._volume : 0;
