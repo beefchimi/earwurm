@@ -2,7 +2,7 @@ import {afterEach, describe, it, expect, vi} from 'vitest';
 
 import {msToSec} from '../utilities';
 import {Sound} from '../Sound';
-import type {SoundConfig} from '../types';
+import type {SoundConfig, SoundEventMap} from '../types';
 
 // This test covers any shared implementation between
 // each component. Eventually, I will create a proper
@@ -68,6 +68,27 @@ describe('Abstract implementation', () => {
       // Then, `advanceTimersToNextTimer()` and check that
       // `gain.value` is `0`.
       expect(spyGainRamp).toBeCalledWith(0, endTime);
+    });
+
+    it('triggers mute event when set to a unique value', async () => {
+      const spyMuteChange: SoundEventMap['mute'] = vi.fn((_state) => {});
+
+      mockSound.on('mute', spyMuteChange);
+      expect(spyMuteChange).not.toBeCalled();
+
+      mockSound.mute = false;
+      expect(spyMuteChange).not.toBeCalled();
+
+      mockSound.mute = true;
+      expect(spyMuteChange).toBeCalledWith(true);
+
+      mockSound.mute = false;
+      expect(spyMuteChange).toBeCalledWith(false);
+
+      mockSound.off('mute', spyMuteChange);
+
+      mockSound.mute = true;
+      expect(spyMuteChange).not.toHaveBeenLastCalledWith(true);
     });
   });
 
@@ -187,6 +208,32 @@ describe('Abstract implementation', () => {
       // Then, `advanceTimersToNextTimer()` and check that
       // `gain.value` is `newValue`.
       expect(spyGainRamp).toBeCalledWith(newValue, endTime);
+    });
+
+    it('triggers volume event when set to a unique value (regardless of mute state)', async () => {
+      const spyVolumeChange: SoundEventMap['volume'] = vi.fn((_state) => {});
+
+      mockSound.on('volume', spyVolumeChange);
+      expect(spyVolumeChange).not.toBeCalled();
+
+      mockSound.volume = 1;
+      expect(spyVolumeChange).not.toBeCalled();
+
+      mockSound.mute = true;
+      mockSound.volume = 0.8;
+      expect(spyVolumeChange).toBeCalledWith(0.8);
+
+      mockSound.mute = false;
+      mockSound.volume = 0;
+      expect(spyVolumeChange).toBeCalledWith(0);
+
+      mockSound.volume = 1;
+      expect(spyVolumeChange).toBeCalledWith(1);
+
+      mockSound.off('volume', spyVolumeChange);
+
+      mockSound.volume = 0.6;
+      expect(spyVolumeChange).not.toBeCalledWith(0.6);
     });
   });
 });
