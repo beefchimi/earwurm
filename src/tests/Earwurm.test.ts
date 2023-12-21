@@ -20,6 +20,7 @@ describe('Earwurm component', () => {
     {id: 'One', path: 'to/no/file.mp3'},
     {id: 'Two', path: ''},
   ];
+  const mockInitialKeys: LibraryKeys = mockEntries.map(({id}) => id);
 
   afterEach(() => {
     mockManager.teardown();
@@ -250,6 +251,50 @@ describe('Earwurm component', () => {
       expect(mockManager.keys).toHaveLength(4);
     });
 
+    it('emits `keys` event with new and old `keys`', async () => {
+      const spyKeysChange: ManagerEventMap['keys'] = vi.fn((_value) => {});
+
+      mockManager.on('keys', spyKeysChange);
+      expect(spyKeysChange).not.toBeCalled();
+
+      mockManager.add(...mockEntries);
+      expect(spyKeysChange).toBeCalledWith(mockInitialKeys, []);
+      expect(spyKeysChange).toBeCalledTimes(1);
+
+      // Does not add/remove when both `id + path` are identical.
+      mockManager.add(mockEntries[0]);
+      expect(spyKeysChange).not.toBeCalledTimes(2);
+
+      const mockUniqueEntry: LibraryEntry = {
+        id: 'Unique',
+        path: 'does/not/overwrite/anything.wav',
+      };
+      const mockChangedEntries: LibraryEntry[] = [
+        mockUniqueEntry,
+        mockEntries[1],
+      ];
+
+      mockManager.add(...mockChangedEntries);
+      expect(spyKeysChange).toBeCalledTimes(2);
+      expect(spyKeysChange).toBeCalledWith(
+        [...mockInitialKeys, mockUniqueEntry.id],
+        mockInitialKeys,
+      );
+
+      const keysSnapshot = mockManager.keys;
+
+      // Emits twice as an existing key is removed then re-added
+      // as a result of the `path` value changing.
+      mockManager.add({...mockUniqueEntry, path: 'changed'});
+      expect(spyKeysChange).toBeCalledTimes(4);
+
+      expect(spyKeysChange).toBeCalledWith(mockInitialKeys, keysSnapshot);
+      expect(spyKeysChange).toHaveBeenLastCalledWith(
+        keysSnapshot,
+        mockInitialKeys,
+      );
+    });
+
     // TODO: Figure out how best to read `fadeMs` and `request` from Stack.
     it.skip('passes `fadeMs` and `request` to Stack', async () => {
       const mockConfig: ManagerConfig = {
@@ -289,6 +334,22 @@ describe('Earwurm component', () => {
 
       const capturedKeys = mockManager.remove('Foo', 'Bar');
       expect(capturedKeys).toStrictEqual([]);
+    });
+
+    it('emits `keys` event with new and old `keys`', async () => {
+      const spyKeysChange: ManagerEventMap['keys'] = vi.fn((_value) => {});
+
+      mockManager.add(...mockEntries);
+      mockManager.on('keys', spyKeysChange);
+
+      mockManager.remove('Foo', 'Bar');
+      expect(spyKeysChange).not.toBeCalled();
+
+      mockManager.remove(mockEntries[1].id);
+      expect(spyKeysChange).toBeCalledWith(
+        [mockEntries[0].id, mockEntries[2].id],
+        mockInitialKeys,
+      );
     });
 
     it('tears down Stacks before removing from library', async () => {
@@ -392,6 +453,18 @@ describe('Earwurm component', () => {
 
       mockManager.teardown();
       expect(mockManager.keys).toStrictEqual([]);
+    });
+
+    it('emits `keys` event with empty array', async () => {
+      const spyKeysChange: ManagerEventMap['keys'] = vi.fn((_value) => {});
+
+      mockManager.add(...mockEntries);
+
+      mockManager.on('keys', spyKeysChange);
+      expect(spyKeysChange).not.toBeCalled();
+
+      mockManager.teardown();
+      expect(spyKeysChange).toBeCalledWith([], mockInitialKeys);
     });
 
     it('does not resume the AudioContext', async () => {

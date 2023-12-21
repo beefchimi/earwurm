@@ -1,7 +1,7 @@
 import {EmittenCommon} from 'emitten';
 
 import {getErrorMessage, unlockAudioContext} from './helpers';
-import {clamp, msToSec, secToMs} from './utilities';
+import {arrayShallowEquals, clamp, msToSec, secToMs} from './utilities';
 import {tokens} from './tokens';
 
 import type {
@@ -255,8 +255,16 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
   }
 
   #setLibrary(library: Stack[]) {
+    const oldKeys = this._keys;
+    const newKeys = library.map(({id}) => id);
+    const identicalKeys = arrayShallowEquals(oldKeys, newKeys);
+
     this.#library = library;
-    this._keys = this.#library.map(({id}) => id);
+    this._keys = newKeys;
+
+    if (!identicalKeys) {
+      this.emit('keys', newKeys, oldKeys);
+    }
   }
 
   #setState(value: ManagerState) {
