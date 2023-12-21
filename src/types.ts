@@ -12,6 +12,8 @@ export type ManagerState = AudioContextState | 'suspending' | 'interrupted';
 export type ManagerEventMap = {
   statechange: (state: ManagerState) => void;
   error: (error: CombinedErrorMessage) => void;
+  volume: (level: number) => void;
+  mute: (muted: boolean) => void;
 };
 
 export interface ManagerConfig {
@@ -42,6 +44,8 @@ export interface StackError {
 export type StackEventMap = {
   statechange: (state: StackState) => void;
   error: (error: StackError) => void;
+  volume: (level: number) => void;
+  mute: (muted: boolean) => void;
 };
 
 export interface StackConfig {
@@ -69,6 +73,8 @@ export type SoundEventMap = {
   statechange: (state: SoundState) => void;
   ended: (event: SoundEndedEvent) => void;
   // loop(ended: boolean): void;
+  volume: (level: number) => void;
+  mute: (muted: boolean) => void;
 };
 
 export interface SoundConfig {
