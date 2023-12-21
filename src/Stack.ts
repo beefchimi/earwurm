@@ -68,6 +68,10 @@ export class Stack extends EmittenCommon<StackEventMap> {
 
     this._volume = newVolume;
 
+    if (oldVolume !== newVolume) {
+      this.emit('volume', newVolume);
+    }
+
     if (this._mute) return;
 
     this.#gainNode.gain
@@ -84,6 +88,10 @@ export class Stack extends EmittenCommon<StackEventMap> {
   }
 
   set mute(value: boolean) {
+    if (this._mute !== value) {
+      this.emit('mute', value);
+    }
+
     this._mute = value;
 
     const fromValue = value ? this._volume : 0;
