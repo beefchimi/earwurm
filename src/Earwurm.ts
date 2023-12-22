@@ -10,7 +10,7 @@ import type {
   ManagerEventMap,
   ManagerConfig,
   LibraryEntry,
-  LibraryKeys,
+  StackId,
   StackEventMap,
 } from './types';
 
@@ -27,7 +27,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
 
   private _volume = 1;
   private _mute = false;
-  private _keys: LibraryKeys = [];
+  private _keys: StackId[] = [];
   private _state: ManagerState = 'suspended';
 
   readonly #context = new AudioContext();
@@ -136,7 +136,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
   }
 
   add(...entries: LibraryEntry[]) {
-    const newKeys: LibraryKeys = [];
+    const newKeys: StackId[] = [];
 
     const newStacks = entries.reduce<Stack[]>((collection, {id, path}) => {
       const existingStack = this.get(id);
@@ -156,7 +156,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
       return [...collection, newStack];
     }, []);
 
-    const replacedKeys = this.#library.reduce<LibraryKeys>(
+    const replacedKeys = this.#library.reduce<StackId[]>(
       (collection, {id}) =>
         newKeys.includes(id) ? [...collection, id] : collection,
       [],
@@ -168,8 +168,8 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     return newKeys;
   }
 
-  remove(...ids: LibraryKeys) {
-    const removedKeys: LibraryKeys = [];
+  remove(...ids: StackId[]) {
+    const removedKeys: StackId[] = [];
 
     const filteredLibrary = this.#library.filter((stack) => {
       const match = ids.includes(stack.id);

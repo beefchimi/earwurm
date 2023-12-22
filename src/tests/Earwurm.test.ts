@@ -8,7 +8,7 @@ import type {
   ManagerEventMap,
   ManagerConfig,
   LibraryEntry,
-  LibraryKeys,
+  StackId,
 } from '../types';
 import {mockData} from './mock';
 
@@ -20,7 +20,7 @@ describe('Earwurm component', () => {
     {id: 'One', path: 'to/no/file.mp3'},
     {id: 'Two', path: ''},
   ];
-  const mockInitialKeys: LibraryKeys = mockEntries.map(({id}) => id);
+  const mockInitialKeys: StackId[] = mockEntries.map(({id}) => id);
 
   afterEach(() => {
     mockManager.teardown();
@@ -314,10 +314,7 @@ describe('Earwurm component', () => {
     it('removes any present Stacks', async () => {
       mockManager.add(...mockEntries);
 
-      const mockRemovedKeys: LibraryKeys = [
-        mockEntries[0].id,
-        mockEntries[1].id,
-      ];
+      const mockRemovedKeys: StackId[] = [mockEntries[0].id, mockEntries[1].id];
       const capturedKeys = mockManager.remove(...mockRemovedKeys);
 
       expect(mockManager.keys).toStrictEqual([mockEntries[2].id]);
