@@ -145,11 +145,6 @@ export class Sound extends EmittenCommon<SoundEventMap> {
       this.#handleEnded();
     }
 
-    // Should `disconnect` and `empty` be moved into `#handleEnded`?
-    // Would this actually matter?
-    this.#source.disconnect();
-    this.empty();
-
     return this;
   }
 
@@ -168,5 +163,11 @@ export class Sound extends EmittenCommon<SoundEventMap> {
       source: this.#source,
       neverStarted: !this.#started,
     });
+
+    // This needs to happen AFTER our artifical `ended` event is emitted.
+    // Otherwise, the native `ended` event may not be called in time
+    // after triggering `source.stop()`.
+    this.#source.disconnect();
+    this.empty();
   };
 }
