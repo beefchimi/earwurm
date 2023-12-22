@@ -19,12 +19,11 @@ export type ManagerState = AudioContextState | 'suspending' | 'interrupted';
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type ManagerEventMap = {
-  // TODO: Rename this to `state`.
-  statechange: (current: ManagerState) => void;
-  error: (message: CombinedErrorMessage) => void;
+  state: (current: ManagerState) => void;
+  keys: (newKeys: LibraryKeys, oldKeys: LibraryKeys) => void;
   volume: (level: number) => void;
   mute: (muted: boolean) => void;
-  keys: (newKeys: LibraryKeys, oldKeys: LibraryKeys) => void;
+  error: (message: CombinedErrorMessage) => void;
 };
 
 export interface ManagerConfig {
@@ -54,9 +53,9 @@ export interface StackError {
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type StackEventMap = {
   statechange: (state: StackState) => void;
-  error: (error: StackError) => void;
   volume: (level: number) => void;
   mute: (muted: boolean) => void;
+  error: (error: StackError) => void;
 };
 
 export interface StackConfig {
