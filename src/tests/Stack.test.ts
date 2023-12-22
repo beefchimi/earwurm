@@ -487,12 +487,12 @@ describe('Stack component', () => {
       // expect(sound).toHaveProperty('options.fadeMs', mockFadeMs);
     });
 
-    it('registers `statechange` multi-listener on Sound', async () => {
+    it('registers `state` multi-listener on Sound', async () => {
       const testStack = new Stack(...mockConstructorArgs);
       const sound = await testStack.prepare();
 
       sound.play().pause();
-      expect(sound.activeEvents).toContain('statechange');
+      expect(sound.activeEvents).toContain('state');
     });
 
     it('registers `ended` single-listener on Sound', async () => {

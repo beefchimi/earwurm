@@ -184,7 +184,7 @@ export class Stack extends EmittenCommon<StackEventMap> {
       fadeMs: secToMs(this.#fadeSec),
     });
 
-    newSound.on('statechange', this.#handleSoundState);
+    newSound.on('state', this.#handleSoundState);
     newSound.once('ended', this.#handleSoundEnded);
 
     // We do not filter out identical `id` values,
@@ -226,14 +226,14 @@ export class Stack extends EmittenCommon<StackEventMap> {
     this.#setState(this.playing ? 'playing' : 'idle');
   };
 
-  readonly #handleSoundState: SoundEventMap['statechange'] = (_current) => {
+  readonly #handleSoundState: SoundEventMap['state'] = (_current) => {
     this.#handleStateFromQueue();
   };
 
   readonly #handleSoundEnded: SoundEventMap['ended'] = (event) => {
     this.#setQueue(this.#queue.filter(({id}) => id !== event.id));
     // We only set `stopping` state when `.stop()` is called.
-    // There is no `statechange` specifically for "ended".
+    // There is no `state` change specifically for "ended".
     this.#handleStateFromQueue();
   };
 }
