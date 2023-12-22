@@ -23,7 +23,7 @@ export type ManagerEventMap = {
   keys: (newKeys: LibraryKeys, oldKeys: LibraryKeys) => void;
   volume: (level: number) => void;
   mute: (muted: boolean) => void;
-  error: (message: CombinedErrorMessage) => void;
+  error: (messages: CombinedErrorMessage) => void;
 };
 
 export interface ManagerConfig {
@@ -55,7 +55,7 @@ export type StackEventMap = {
   state: (current: StackState) => void;
   volume: (level: number) => void;
   mute: (muted: boolean) => void;
-  error: (error: StackError) => void;
+  error: (message: StackError) => void;
 };
 
 export interface StackConfig {
@@ -80,7 +80,7 @@ export interface SoundEndedEvent {
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type SoundEventMap = {
-  statechange: (state: SoundState) => void;
+  state: (current: SoundState) => void;
   ended: (event: SoundEndedEvent) => void;
   // loop(ended: boolean): void;
   volume: (level: number) => void;

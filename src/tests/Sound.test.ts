@@ -213,6 +213,8 @@ describe('Sound component', () => {
     });
   });
 
+  // Some events are covered in other tests:
+  // `volume` and `mute`.
   describe('events', () => {
     const mockConstructorArgs: SoundConstructor = [
       'TestEvents',
@@ -221,44 +223,39 @@ describe('Sound component', () => {
       defaultAudioNode,
     ];
 
-    it('emits an event for every statechange', () => {
+    it('emits an event for every state', () => {
       const testSound = new Sound(...mockConstructorArgs);
-      const spyStateChange: SoundEventMap['statechange'] = vi.fn(
-        (_state) => {},
-      );
+      const spyState: SoundEventMap['state'] = vi.fn((_current) => {});
 
-      testSound.on('statechange', spyStateChange);
-
-      expect(spyStateChange).not.toBeCalled();
+      testSound.on('state', spyState);
+      expect(spyState).not.toBeCalled();
 
       testSound.play();
-      expect(spyStateChange).toBeCalledWith('playing');
+      expect(spyState).toBeCalledWith('playing');
 
       testSound.pause();
-      expect(spyStateChange).toBeCalledWith('paused');
+      expect(spyState).toBeCalledWith('paused');
 
       testSound.stop();
-      expect(spyStateChange).toBeCalledWith('stopping');
+      expect(spyState).toBeCalledWith('stopping');
     });
 
     it('does not emit redundant state changes', () => {
       const testSound = new Sound(...mockConstructorArgs);
-      const spyStateChange: SoundEventMap['statechange'] = vi.fn(
-        (_state) => {},
-      );
+      const spyState: SoundEventMap['state'] = vi.fn((_current) => {});
 
-      testSound.on('statechange', spyStateChange);
+      testSound.on('state', spyState);
 
       testSound.play();
-      expect(spyStateChange).toBeCalledTimes(1);
-      expect(spyStateChange).toBeCalledWith('playing');
+      expect(spyState).toBeCalledTimes(1);
+      expect(spyState).toBeCalledWith('playing');
 
       testSound.pause();
-      expect(spyStateChange).toBeCalledTimes(2);
-      expect(spyStateChange).toBeCalledWith('paused');
+      expect(spyState).toBeCalledTimes(2);
+      expect(spyState).toBeCalledWith('paused');
 
       testSound.pause();
-      expect(spyStateChange).not.toBeCalledTimes(3);
+      expect(spyState).not.toBeCalledTimes(3);
     });
 
     it('emits `ended` event once sound has finished', () => {

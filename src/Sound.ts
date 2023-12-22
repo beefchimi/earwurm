@@ -157,7 +157,7 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     if (this._state === value) return;
 
     this._state = value;
-    this.emit('statechange', value);
+    this.emit('state', value);
   }
 
   readonly #handleEnded = () => {
