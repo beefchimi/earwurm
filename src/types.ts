@@ -20,7 +20,7 @@ export type ManagerState = AudioContextState | 'suspending' | 'interrupted';
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type ManagerEventMap = {
   state: (current: ManagerState) => void;
-  keys: (newKeys: LibraryKeys, oldKeys: LibraryKeys) => void;
+  keys: (newKeys: StackId[], oldKeys: StackId[]) => void;
   volume: (level: number) => void;
   mute: (muted: boolean) => void;
   error: (messages: CombinedErrorMessage) => void;
@@ -36,8 +36,6 @@ export interface LibraryEntry {
   id: StackId;
   path: string;
 }
-
-export type LibraryKeys = StackId[];
 
 ///
 /// Stack
