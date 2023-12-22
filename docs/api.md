@@ -106,11 +106,21 @@ manager.activeEvents;
 // Returns the current `AudioContext > state`. This may trigger
 // immediately upon `new Earwurm()` if the `AudioContext` is
 // “unlocked” right away.
-(event: 'statechange', listener: (state: ManagerState) => void)
+(event: 'state', listener: (current: ManagerState) => void)
+
+// Event called whenever the `keys` property changes. This is useful
+// to subscribe to changes in the internal “stack library”.
+(event: 'keys', listener: (newKeys: LibraryKeys, oldKeys: LibraryKeys) => void)
+
+// Event called whenever the `volume` property changes.
+(event: 'volume', listener: (level: number) => void)
+
+// Event called whenever the `mute` property changes.
+(event: 'mute', listener: (muted: boolean) => void)
 
 // Event called whenever an error is occured on the `AudioContext`.
 // This could be a result of: failed to resume, failed to close.
-(event: 'error', listener: (error: CombinedErrorMessage) => void)
+(event: 'error', listener: (messages: CombinedErrorMessage) => void)
 ```
 
 **Static members:**
@@ -228,7 +238,13 @@ soundStack.activeEvents;
 // the `Stack`. As sounds cycle through their various states, the
 // `Stack` will determine if any `Sound` is currently `playing`.
 // Possible `StackState` values are: `idle`, `loading`, `playing`.
-(event: 'statechange', listener: (state: StackState) => void)
+(event: 'state', listener: (current: StackState) => void)
+
+// Event called whenever the `volume` property changes.
+(event: 'volume', listener: (level: number) => void)
+
+// Event called whenever the `mute` property changes.
+(event: 'mute', listener: (muted: boolean) => void)
 
 // Event called whenever an error is occured on the `Stack`.
 // This could be a result of: failed to load the `path`.
@@ -321,13 +337,19 @@ sound.duration;
 // Event called whenever `Sound > state` is changed.
 // Possible `SoundState` values are:
 // `created`, `playing`, `paused`, and `stopping`.
-(event: 'statechange', listener: (state: SoundState) => void)
+(event: 'state', listener: (current: SoundState) => void)
 
 // Event called on the audio `source` node whenenver
 // a `Sound` reaches either it’s “end duration”,
 // or has been stopped / removed from the `Stack`.
 // This will NOT get called each time a “loop” repeats.
 (event: 'ended', listener: ({id, source}: SoundEndedEvent) => void)
+
+// Event called whenever the `volume` property changes.
+(event: 'volume', listener: (level: number) => void)
+
+// Event called whenever the `mute` property changes.
+(event: 'mute', listener: (muted: boolean) => void)
 ```
 
 ## Events API
