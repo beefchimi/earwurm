@@ -271,7 +271,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     if (this._state === value) return;
 
     this._state = value;
-    this.emit('statechange', value);
+    this.emit('state', value);
 
     if (value === 'running') {
       this._unlocked = true;

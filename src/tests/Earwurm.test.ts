@@ -68,10 +68,10 @@ describe('Earwurm component', () => {
   describe('state', () => {
     const clickEvent = new Event('click');
 
-    it('triggers `statechange` event for every state', async () => {
-      const spyState: ManagerEventMap['statechange'] = vi.fn((_state) => {});
+    it('triggers `state` event for every state', async () => {
+      const spyState: ManagerEventMap['state'] = vi.fn((_current) => {});
 
-      mockManager.on('statechange', spyState);
+      mockManager.on('state', spyState);
 
       expect(spyState).not.toBeCalled();
       expect(mockManager.state).toBe('suspended');
@@ -164,23 +164,21 @@ describe('Earwurm component', () => {
     });
 
     it('does not unlock if already unlocked', async () => {
-      const spyStateChange: ManagerEventMap['statechange'] = vi.fn(
-        (_state) => {},
-      );
+      const spyState: ManagerEventMap['state'] = vi.fn((_current) => {});
 
-      mockManager.on('statechange', spyStateChange);
-      expect(spyStateChange).not.toBeCalled();
+      mockManager.on('state', spyState);
+      expect(spyState).not.toBeCalled();
 
       mockManager.unlock();
       document.dispatchEvent(clickEvent);
 
-      expect(spyStateChange).toBeCalledTimes(1);
-      expect(spyStateChange).toBeCalledWith('running');
+      expect(spyState).toBeCalledTimes(1);
+      expect(spyState).toBeCalledWith('running');
 
       mockManager.unlock();
       document.dispatchEvent(clickEvent);
 
-      expect(spyStateChange).not.toBeCalledTimes(2);
+      expect(spyState).not.toBeCalledTimes(2);
     });
 
     it('restores lock upon close', async () => {
@@ -252,18 +250,18 @@ describe('Earwurm component', () => {
     });
 
     it('emits `keys` event with new and old `keys`', async () => {
-      const spyKeysChange: ManagerEventMap['keys'] = vi.fn((_value) => {});
+      const spyKeys: ManagerEventMap['keys'] = vi.fn((_new, _old) => {});
 
-      mockManager.on('keys', spyKeysChange);
-      expect(spyKeysChange).not.toBeCalled();
+      mockManager.on('keys', spyKeys);
+      expect(spyKeys).not.toBeCalled();
 
       mockManager.add(...mockEntries);
-      expect(spyKeysChange).toBeCalledWith(mockInitialKeys, []);
-      expect(spyKeysChange).toBeCalledTimes(1);
+      expect(spyKeys).toBeCalledWith(mockInitialKeys, []);
+      expect(spyKeys).toBeCalledTimes(1);
 
       // Does not add/remove when both `id + path` are identical.
       mockManager.add(mockEntries[0]);
-      expect(spyKeysChange).not.toBeCalledTimes(2);
+      expect(spyKeys).not.toBeCalledTimes(2);
 
       const mockUniqueEntry: LibraryEntry = {
         id: 'Unique',
@@ -275,8 +273,8 @@ describe('Earwurm component', () => {
       ];
 
       mockManager.add(...mockChangedEntries);
-      expect(spyKeysChange).toBeCalledTimes(2);
-      expect(spyKeysChange).toBeCalledWith(
+      expect(spyKeys).toBeCalledTimes(2);
+      expect(spyKeys).toBeCalledWith(
         [...mockInitialKeys, mockUniqueEntry.id],
         mockInitialKeys,
       );
@@ -286,13 +284,10 @@ describe('Earwurm component', () => {
       // Emits twice as an existing key is removed then re-added
       // as a result of the `path` value changing.
       mockManager.add({...mockUniqueEntry, path: 'changed'});
-      expect(spyKeysChange).toBeCalledTimes(4);
+      expect(spyKeys).toBeCalledTimes(4);
 
-      expect(spyKeysChange).toBeCalledWith(mockInitialKeys, keysSnapshot);
-      expect(spyKeysChange).toHaveBeenLastCalledWith(
-        keysSnapshot,
-        mockInitialKeys,
-      );
+      expect(spyKeys).toBeCalledWith(mockInitialKeys, keysSnapshot);
+      expect(spyKeys).toHaveBeenLastCalledWith(keysSnapshot, mockInitialKeys);
     });
 
     // TODO: Figure out how best to read `fadeMs` and `request` from Stack.
@@ -337,16 +332,16 @@ describe('Earwurm component', () => {
     });
 
     it('emits `keys` event with new and old `keys`', async () => {
-      const spyKeysChange: ManagerEventMap['keys'] = vi.fn((_value) => {});
+      const spyKeys: ManagerEventMap['keys'] = vi.fn((_new, _old) => {});
 
       mockManager.add(...mockEntries);
-      mockManager.on('keys', spyKeysChange);
+      mockManager.on('keys', spyKeys);
 
       mockManager.remove('Foo', 'Bar');
-      expect(spyKeysChange).not.toBeCalled();
+      expect(spyKeys).not.toBeCalled();
 
       mockManager.remove(mockEntries[1].id);
-      expect(spyKeysChange).toBeCalledWith(
+      expect(spyKeys).toBeCalledWith(
         [mockEntries[0].id, mockEntries[2].id],
         mockInitialKeys,
       );
@@ -364,31 +359,31 @@ describe('Earwurm component', () => {
         },
       ];
 
-      const spyStack1StateChange = vi.fn();
-      const spyStack2StateChange = vi.fn();
+      const spyStack1State = vi.fn();
+      const spyStack2State = vi.fn();
 
       mockManager.add(...mockEntries);
 
       const stack1 = mockManager.get(mockEntries[1].id);
-      stack1?.on('statechange', spyStack1StateChange);
+      stack1?.on('statechange', spyStack1State);
       await stack1?.prepare().then((sound) => sound.play());
 
-      expect(spyStack1StateChange).toBeCalledTimes(3);
+      expect(spyStack1State).toBeCalledTimes(3);
       expect(stack1?.state).toBe('playing');
 
       const stack2 = mockManager.get(mockEntries[2].id);
-      stack2?.on('statechange', spyStack2StateChange);
+      stack2?.on('statechange', spyStack2State);
       await stack2?.prepare().then((sound) => sound.play());
 
-      expect(spyStack2StateChange).toBeCalledTimes(3);
+      expect(spyStack2State).toBeCalledTimes(3);
       expect(stack2?.state).toBe('playing');
 
       mockManager.add(...mockChangedEntries);
 
-      expect(spyStack1StateChange).toBeCalledTimes(4);
+      expect(spyStack1State).toBeCalledTimes(4);
       expect(stack1?.state).toBe('idle');
 
-      expect(spyStack2StateChange).toBeCalledTimes(4);
+      expect(spyStack2State).toBeCalledTimes(4);
       expect(stack2?.state).toBe('idle');
     });
   });
@@ -456,15 +451,15 @@ describe('Earwurm component', () => {
     });
 
     it('emits `keys` event with empty array', async () => {
-      const spyKeysChange: ManagerEventMap['keys'] = vi.fn((_value) => {});
+      const spyKeys: ManagerEventMap['keys'] = vi.fn((_new, _old) => {});
 
       mockManager.add(...mockEntries);
 
-      mockManager.on('keys', spyKeysChange);
-      expect(spyKeysChange).not.toBeCalled();
+      mockManager.on('keys', spyKeys);
+      expect(spyKeys).not.toBeCalled();
 
       mockManager.teardown();
-      expect(spyKeysChange).toBeCalledWith([], mockInitialKeys);
+      expect(spyKeys).toBeCalledWith([], mockInitialKeys);
     });
 
     it('does not resume the AudioContext', async () => {
@@ -525,7 +520,7 @@ describe('Earwurm component', () => {
     it('throws error if AudioContext cannot be closed', async () => {
       const mockErrorMessage = 'Mock error message';
 
-      const spyError: ManagerEventMap['error'] = vi.fn((_error) => {});
+      const spyError: ManagerEventMap['error'] = vi.fn((_message) => {});
       mockManager.on('error', spyError);
 
       vi.spyOn(AudioContext.prototype, 'close').mockImplementationOnce(() => {
@@ -543,11 +538,11 @@ describe('Earwurm component', () => {
     });
 
     it('removes any event listeners', async () => {
+      const spyState = vi.fn();
       const spyError = vi.fn();
-      const spyStateChange = vi.fn();
 
+      mockManager.on('state', spyState);
       mockManager.on('error', spyError);
-      mockManager.on('statechange', spyStateChange);
 
       expect(mockManager.activeEvents).toHaveLength(2);
       mockManager.teardown();
@@ -625,21 +620,19 @@ describe('Earwurm component', () => {
     });
 
     it('triggers state changes', async () => {
-      const spyStateChange: ManagerEventMap['statechange'] = vi.fn(
-        (_state) => {},
-      );
+      const spyState: ManagerEventMap['state'] = vi.fn((_current) => {});
 
-      mockManager.on('statechange', spyStateChange);
+      mockManager.on('state', spyState);
 
-      expect(spyStateChange).not.toBeCalled();
+      expect(spyState).not.toBeCalled();
 
       mockManager.unlock();
       document.dispatchEvent(clickEvent);
 
-      expect(spyStateChange).toBeCalledWith('running');
+      expect(spyState).toBeCalledWith('running');
       vi.advanceTimersByTime(tokens.suspendAfterMs);
-      expect(spyStateChange).toBeCalledWith('suspending');
-      expect(spyStateChange).toBeCalledWith('suspended');
+      expect(spyState).toBeCalledWith('suspending');
+      expect(spyState).toBeCalledWith('suspended');
     });
 
     // TODO: Is there any good way / value in testing these conditions?
@@ -695,6 +688,6 @@ describe('Earwurm component', () => {
   });
 
   // All events are covered in other tests:
-  // `statechange`, `error`, `volume`, `mute`, and `library`.
+  // `state`, `keys`, `volume`, `mute`, and `error`.
   // describe('events', () => {});
 });
