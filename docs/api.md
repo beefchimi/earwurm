@@ -110,7 +110,7 @@ manager.activeEvents;
 
 // Event called whenever the `keys` property changes. This is useful
 // to subscribe to changes in the internal “stack library”.
-(event: 'keys', listener: (newKeys: StackId[], oldKeys: StackId[]) => void)
+(event: 'library', listener: (newKeys: StackId[], oldKeys: StackId[]) => void)
 
 // Event called whenever the `volume` property changes.
 (event: 'volume', listener: (level: number) => void)
