@@ -71,24 +71,24 @@ describe('Abstract implementation', () => {
     });
 
     it('triggers mute event when set to a unique value', async () => {
-      const spyMuteChange: SoundEventMap['mute'] = vi.fn((_state) => {});
+      const spyMute: SoundEventMap['mute'] = vi.fn((_muted) => {});
 
-      mockSound.on('mute', spyMuteChange);
-      expect(spyMuteChange).not.toBeCalled();
-
-      mockSound.mute = false;
-      expect(spyMuteChange).not.toBeCalled();
-
-      mockSound.mute = true;
-      expect(spyMuteChange).toBeCalledWith(true);
+      mockSound.on('mute', spyMute);
+      expect(spyMute).not.toBeCalled();
 
       mockSound.mute = false;
-      expect(spyMuteChange).toBeCalledWith(false);
-
-      mockSound.off('mute', spyMuteChange);
+      expect(spyMute).not.toBeCalled();
 
       mockSound.mute = true;
-      expect(spyMuteChange).not.toHaveBeenLastCalledWith(true);
+      expect(spyMute).toBeCalledWith(true);
+
+      mockSound.mute = false;
+      expect(spyMute).toBeCalledWith(false);
+
+      mockSound.off('mute', spyMute);
+
+      mockSound.mute = true;
+      expect(spyMute).not.toHaveBeenLastCalledWith(true);
     });
   });
 
@@ -211,29 +211,29 @@ describe('Abstract implementation', () => {
     });
 
     it('triggers volume event when set to a unique value (regardless of mute state)', async () => {
-      const spyVolumeChange: SoundEventMap['volume'] = vi.fn((_state) => {});
+      const spyVolume: SoundEventMap['volume'] = vi.fn((_level) => {});
 
-      mockSound.on('volume', spyVolumeChange);
-      expect(spyVolumeChange).not.toBeCalled();
+      mockSound.on('volume', spyVolume);
+      expect(spyVolume).not.toBeCalled();
 
       mockSound.volume = 1;
-      expect(spyVolumeChange).not.toBeCalled();
+      expect(spyVolume).not.toBeCalled();
 
       mockSound.mute = true;
       mockSound.volume = 0.8;
-      expect(spyVolumeChange).toBeCalledWith(0.8);
+      expect(spyVolume).toBeCalledWith(0.8);
 
       mockSound.mute = false;
       mockSound.volume = 0;
-      expect(spyVolumeChange).toBeCalledWith(0);
+      expect(spyVolume).toBeCalledWith(0);
 
       mockSound.volume = 1;
-      expect(spyVolumeChange).toBeCalledWith(1);
+      expect(spyVolume).toBeCalledWith(1);
 
-      mockSound.off('volume', spyVolumeChange);
+      mockSound.off('volume', spyVolume);
 
       mockSound.volume = 0.6;
-      expect(spyVolumeChange).not.toBeCalledWith(0.6);
+      expect(spyVolume).not.toBeCalledWith(0.6);
     });
   });
 });
