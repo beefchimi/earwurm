@@ -52,7 +52,7 @@ export interface StackError {
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type StackEventMap = {
-  statechange: (state: StackState) => void;
+  state: (current: StackState) => void;
   volume: (level: number) => void;
   mute: (muted: boolean) => void;
   error: (error: StackError) => void;

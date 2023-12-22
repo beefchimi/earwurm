@@ -219,14 +219,14 @@ export class Stack extends EmittenCommon<StackEventMap> {
     if (this._state === value) return;
 
     this._state = value;
-    this.emit('statechange', value);
+    this.emit('state', value);
   }
 
   readonly #handleStateFromQueue = () => {
     this.#setState(this.playing ? 'playing' : 'idle');
   };
 
-  readonly #handleSoundState: SoundEventMap['statechange'] = (_state) => {
+  readonly #handleSoundState: SoundEventMap['statechange'] = (_current) => {
     this.#handleStateFromQueue();
   };
 

@@ -84,11 +84,11 @@ describe('Stack component', () => {
       defaultAudioNode,
     ];
 
-    it('triggers `statechange` event for every state', async () => {
+    it('triggers `state` event for every possible value', async () => {
       const testStack = new Stack(...mockConstructorArgs);
-      const spyState: StackEventMap['statechange'] = vi.fn((_state) => {});
+      const spyState: StackEventMap['state'] = vi.fn((_current) => {});
 
-      testStack.on('statechange', spyState);
+      testStack.on('state', spyState);
 
       expect(spyState).not.toBeCalled();
       expect(testStack.state).toBe('idle');
@@ -297,8 +297,8 @@ describe('Stack component', () => {
     it('empties all active events', async () => {
       const testStack = new Stack(...mockConstructorArgs);
 
+      testStack.on('state', vi.fn());
       testStack.on('error', vi.fn());
-      testStack.on('statechange', vi.fn());
 
       expect(testStack.activeEvents).toHaveLength(2);
       testStack.teardown();
@@ -410,7 +410,7 @@ describe('Stack component', () => {
         defaultAudioNode,
       );
 
-      const spyError: StackEventMap['error'] = vi.fn((_error) => {});
+      const spyError: StackEventMap['error'] = vi.fn((_message) => {});
 
       testStack.on('error', spyError);
       await testStack.prepare();
@@ -550,6 +550,7 @@ describe('Stack component', () => {
     });
   });
 
-  // Both `statechange` and `error` are covered in other tests.
+  // All events are covered in other tests:
+  // `state`, `volume`, `mute`, and `error`.
   // describe('events', () => {});
 });
