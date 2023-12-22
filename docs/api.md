@@ -240,6 +240,10 @@ soundStack.activeEvents;
 // Possible `StackState` values are: `idle`, `loading`, `playing`.
 (event: 'state', listener: (current: StackState) => void)
 
+// Event called whenever the `keys` property changes. This is useful
+// to subscribe to changes in the internal “sound queue”.
+(event: 'queue', listener: (newKeys: SoundId[], oldKeys: SoundId[]) => void)
+
 // Event called whenever the `volume` property changes.
 (event: 'volume', listener: (level: number) => void)
 

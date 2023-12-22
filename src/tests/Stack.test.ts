@@ -210,6 +210,28 @@ describe('Stack component', () => {
       expect(spySound3Stop).toBeCalled();
     });
 
+    it('emits `queue` event for each stopped Sound', async () => {
+      const spyQueue: StackEventMap['queue'] = vi.fn((_new, _old) => {});
+
+      mockStack.on('queue', spyQueue);
+      expect(spyQueue).not.toBeCalled();
+
+      await mockStack.prepare('One');
+      await mockStack.prepare('Two');
+      await mockStack.prepare('Three');
+
+      expect(spyQueue).toBeCalledTimes(3);
+      expect(spyQueue).toHaveBeenLastCalledWith(
+        ['One', 'Two', 'Three'],
+        ['One', 'Two'],
+      );
+
+      mockStack.stop();
+
+      expect(spyQueue).toBeCalledTimes(6);
+      expect(spyQueue).toHaveBeenLastCalledWith([], ['Three']);
+    });
+
     it('returns instance', async () => {
       await mockStack.prepare('Foo');
       const instance = mockStack.stop();
@@ -292,6 +314,31 @@ describe('Stack component', () => {
       expect(sound).toBeInstanceOf(Promise);
       await expect(sound).resolves.toBeInstanceOf(Sound);
       await expect(sound).resolves.toHaveProperty('id', mockSoundId);
+    });
+
+    it('emits `queue` event with new and old `keys`', async () => {
+      const mockSoundId1 = 'Foo';
+      const mockSoundId2 = 'Bar';
+      const spyQueue: StackEventMap['queue'] = vi.fn((_new, _old) => {});
+
+      mockStack.on('queue', spyQueue);
+      expect(spyQueue).not.toBeCalled();
+      expect(mockStack.keys).toHaveLength(0);
+
+      await mockStack.prepare(mockSoundId1);
+
+      expect(spyQueue).toBeCalledTimes(1);
+      expect(spyQueue).toBeCalledWith([mockSoundId1], []);
+      expect(mockStack.keys).toHaveLength(1);
+
+      await mockStack.prepare(mockSoundId2);
+
+      expect(spyQueue).toBeCalledTimes(2);
+      expect(spyQueue).toBeCalledWith(
+        [mockSoundId1, mockSoundId2],
+        [mockSoundId1],
+      );
+      expect(mockStack.keys).toHaveLength(2);
     });
   });
 

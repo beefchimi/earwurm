@@ -51,6 +51,7 @@ export interface StackError {
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type StackEventMap = {
   state: (current: StackState) => void;
+  queue: (newKeys: SoundId[], oldKeys: SoundId[]) => void;
   volume: (level: number) => void;
   mute: (muted: boolean) => void;
   error: (message: StackError) => void;

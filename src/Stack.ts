@@ -1,7 +1,7 @@
 import {EmittenCommon} from 'emitten';
 
 import {getErrorMessage, fetchAudioBuffer, scratchBuffer} from './helpers';
-import {clamp, msToSec, secToMs} from './utilities';
+import {arrayShallowEquals, clamp, msToSec, secToMs} from './utilities';
 import {tokens} from './tokens';
 
 import type {
@@ -201,18 +201,23 @@ export class Stack extends EmittenCommon<StackEventMap> {
       ({id}) => !outOfBoundsIds.includes(id),
     );
 
-    outOfBounds.forEach((expiredSound) => {
-      expiredSound.stop();
-    });
-
+    outOfBounds.forEach((expiredSound) => expiredSound.stop());
     this.#setQueue(filteredQueue);
 
     return newSound;
   }
 
   #setQueue(value: Sound[]) {
+    const oldKeys = [...this._keys];
+    const newKeys = value.map(({id}) => id);
+    const identicalKeys = arrayShallowEquals(oldKeys, newKeys);
+
     this.#queue = value;
-    this._keys = value.map(({id}) => id);
+    this._keys = newKeys;
+
+    if (!identicalKeys) {
+      this.emit('queue', newKeys, oldKeys);
+    }
   }
 
   #setState(value: StackState) {
