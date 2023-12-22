@@ -365,14 +365,14 @@ describe('Earwurm component', () => {
       mockManager.add(...mockEntries);
 
       const stack1 = mockManager.get(mockEntries[1].id);
-      stack1?.on('statechange', spyStack1State);
+      stack1?.on('state', spyStack1State);
       await stack1?.prepare().then((sound) => sound.play());
 
       expect(spyStack1State).toBeCalledTimes(3);
       expect(stack1?.state).toBe('playing');
 
       const stack2 = mockManager.get(mockEntries[2].id);
-      stack2?.on('statechange', spyStack2State);
+      stack2?.on('state', spyStack2State);
       await stack2?.prepare().then((sound) => sound.play());
 
       expect(spyStack2State).toBeCalledTimes(3);
@@ -520,7 +520,7 @@ describe('Earwurm component', () => {
     it('throws error if AudioContext cannot be closed', async () => {
       const mockErrorMessage = 'Mock error message';
 
-      const spyError: ManagerEventMap['error'] = vi.fn((_message) => {});
+      const spyError: ManagerEventMap['error'] = vi.fn((_messages) => {});
       mockManager.on('error', spyError);
 
       vi.spyOn(AudioContext.prototype, 'close').mockImplementationOnce(() => {
@@ -531,7 +531,7 @@ describe('Earwurm component', () => {
 
       /*
       expect(spyError).toBeCalledWith([
-        'Failed to close the Earwurm AudioContext.',
+        Earwurm.errorMessage.close,
         mockErrorMessage,
       ]);
       */

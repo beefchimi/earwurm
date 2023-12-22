@@ -20,6 +20,11 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
   static readonly maxStackSize = tokens.maxStackSize;
   static readonly suspendAfterMs = tokens.suspendAfterMs;
 
+  static readonly errorMessage = {
+    close: 'Failed to close the Earwurm AudioContext.',
+    resume: 'Failed to resume the Earwurm AudioContext.',
+  };
+
   private _volume = 1;
   private _mute = false;
   private _keys: LibraryKeys = [];
@@ -146,7 +151,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
         request: this.#request,
       });
 
-      newStack.on('statechange', this.#handleStackStateChange);
+      newStack.on('state', this.#handleStackState);
 
       return [...collection, newStack];
     }, []);
@@ -203,7 +208,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
       })
       .catch((error) => {
         this.emit('error', [
-          'Failed to close the Earwurm AudioContext.',
+          Earwurm.errorMessage.close,
           getErrorMessage(error),
         ]);
       });
@@ -236,7 +241,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     if (this._state === 'suspended' || this._state === 'interrupted') {
       this.#context.resume().catch((error) => {
         this.emit('error', [
-          'Failed to resume the Earwurm AudioContext.',
+          Earwurm.errorMessage.resume,
           getErrorMessage(error),
         ]);
       });
@@ -311,11 +316,11 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     this.#setState(this.#context.state);
   };
 
-  readonly #handleStackStateChange: StackEventMap['statechange'] = (state) => {
+  readonly #handleStackState: StackEventMap['state'] = (current) => {
     // We don't care about re-setting the auto-suspension each time
     // a new `Sound` is prepared... but it will do that anyways
     // since `Stack` returns to `idle` once loaded.
-    if (state === 'loading') return;
+    if (current === 'loading') return;
 
     if (this.playing) {
       this.#autoResume();
