@@ -249,19 +249,19 @@ describe('Earwurm component', () => {
       expect(mockManager.keys).toHaveLength(4);
     });
 
-    it('emits `keys` event with new and old `keys`', async () => {
-      const spyKeys: ManagerEventMap['keys'] = vi.fn((_new, _old) => {});
+    it('emits `library` event with new and old `keys`', async () => {
+      const spyLibrary: ManagerEventMap['library'] = vi.fn((_new, _old) => {});
 
-      mockManager.on('keys', spyKeys);
-      expect(spyKeys).not.toBeCalled();
+      mockManager.on('library', spyLibrary);
+      expect(spyLibrary).not.toBeCalled();
 
       mockManager.add(...mockEntries);
-      expect(spyKeys).toBeCalledWith(mockInitialKeys, []);
-      expect(spyKeys).toBeCalledTimes(1);
+      expect(spyLibrary).toBeCalledWith(mockInitialKeys, []);
+      expect(spyLibrary).toBeCalledTimes(1);
 
       // Does not add/remove when both `id + path` are identical.
       mockManager.add(mockEntries[0]);
-      expect(spyKeys).not.toBeCalledTimes(2);
+      expect(spyLibrary).not.toBeCalledTimes(2);
 
       const mockUniqueEntry: LibraryEntry = {
         id: 'Unique',
@@ -273,8 +273,8 @@ describe('Earwurm component', () => {
       ];
 
       mockManager.add(...mockChangedEntries);
-      expect(spyKeys).toBeCalledTimes(2);
-      expect(spyKeys).toBeCalledWith(
+      expect(spyLibrary).toBeCalledTimes(2);
+      expect(spyLibrary).toBeCalledWith(
         [...mockInitialKeys, mockUniqueEntry.id],
         mockInitialKeys,
       );
@@ -284,10 +284,13 @@ describe('Earwurm component', () => {
       // Emits twice as an existing key is removed then re-added
       // as a result of the `path` value changing.
       mockManager.add({...mockUniqueEntry, path: 'changed'});
-      expect(spyKeys).toBeCalledTimes(4);
+      expect(spyLibrary).toBeCalledTimes(4);
 
-      expect(spyKeys).toBeCalledWith(mockInitialKeys, keysSnapshot);
-      expect(spyKeys).toHaveBeenLastCalledWith(keysSnapshot, mockInitialKeys);
+      expect(spyLibrary).toBeCalledWith(mockInitialKeys, keysSnapshot);
+      expect(spyLibrary).toHaveBeenLastCalledWith(
+        keysSnapshot,
+        mockInitialKeys,
+      );
     });
 
     // TODO: Figure out how best to read `fadeMs` and `request` from Stack.
@@ -328,17 +331,17 @@ describe('Earwurm component', () => {
       expect(capturedKeys).toStrictEqual([]);
     });
 
-    it('emits `keys` event with new and old `keys`', async () => {
-      const spyKeys: ManagerEventMap['keys'] = vi.fn((_new, _old) => {});
+    it('emits `library` event with new and old `keys`', async () => {
+      const spyLibrary: ManagerEventMap['library'] = vi.fn((_new, _old) => {});
 
       mockManager.add(...mockEntries);
-      mockManager.on('keys', spyKeys);
+      mockManager.on('library', spyLibrary);
 
       mockManager.remove('Foo', 'Bar');
-      expect(spyKeys).not.toBeCalled();
+      expect(spyLibrary).not.toBeCalled();
 
       mockManager.remove(mockEntries[1].id);
-      expect(spyKeys).toBeCalledWith(
+      expect(spyLibrary).toBeCalledWith(
         [mockEntries[0].id, mockEntries[2].id],
         mockInitialKeys,
       );
@@ -447,16 +450,16 @@ describe('Earwurm component', () => {
       expect(mockManager.keys).toStrictEqual([]);
     });
 
-    it('emits `keys` event with empty array', async () => {
-      const spyKeys: ManagerEventMap['keys'] = vi.fn((_new, _old) => {});
+    it('emits `library` event with empty array', async () => {
+      const spyLibrary: ManagerEventMap['library'] = vi.fn((_new, _old) => {});
 
       mockManager.add(...mockEntries);
 
-      mockManager.on('keys', spyKeys);
-      expect(spyKeys).not.toBeCalled();
+      mockManager.on('library', spyLibrary);
+      expect(spyLibrary).not.toBeCalled();
 
       mockManager.teardown();
-      expect(spyKeys).toBeCalledWith([], mockInitialKeys);
+      expect(spyLibrary).toBeCalledWith([], mockInitialKeys);
     });
 
     it('does not resume the AudioContext', async () => {
@@ -685,6 +688,6 @@ describe('Earwurm component', () => {
   });
 
   // All events are covered in other tests:
-  // `state`, `keys`, `volume`, `mute`, and `error`.
+  // `state`, `library`, `volume`, `mute`, and `error`.
   // describe('events', () => {});
 });

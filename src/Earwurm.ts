@@ -260,7 +260,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
   }
 
   #setLibrary(library: Stack[]) {
-    const oldKeys = this._keys;
+    const oldKeys = [...this._keys];
     const newKeys = library.map(({id}) => id);
     const identicalKeys = arrayShallowEquals(oldKeys, newKeys);
 
@@ -268,7 +268,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     this._keys = newKeys;
 
     if (!identicalKeys) {
-      this.emit('keys', newKeys, oldKeys);
+      this.emit('library', newKeys, oldKeys);
     }
   }
 
