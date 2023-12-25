@@ -44,39 +44,24 @@ describe('Utilities', () => {
   describe('Numbers', () => {
     describe('clamp()', () => {
       it('returns preference', () => {
-        const mockArgs = {
-          preference: 10,
-          min: 1,
-          max: 100,
-        };
+        const mockArgs: Parameters<typeof clamp> = [1, 10, 100];
+        const result = clamp(...mockArgs);
 
-        const result = clamp(mockArgs);
-
-        expect(result).toBe(mockArgs.preference);
+        expect(result).toBe(10);
       });
 
       it('returns min', () => {
-        const mockArgs = {
-          preference: 1,
-          min: 10,
-          max: 100,
-        };
+        const mockArgs: Parameters<typeof clamp> = [10, 1, 100];
+        const result = clamp(...mockArgs);
 
-        const result = clamp(mockArgs);
-
-        expect(result).toBe(mockArgs.min);
+        expect(result).toBe(10);
       });
 
       it('returns max', () => {
-        const mockArgs = {
-          preference: 100,
-          min: 1,
-          max: 10,
-        };
+        const mockArgs: Parameters<typeof clamp> = [1, 100, 10];
+        const result = clamp(...mockArgs);
 
-        const result = clamp(mockArgs);
-
-        expect(result).toBe(mockArgs.max);
+        expect(result).toBe(10);
       });
     });
 
