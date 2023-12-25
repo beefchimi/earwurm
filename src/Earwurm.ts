@@ -64,7 +64,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
 
   set volume(value: number) {
     const oldVolume = this._volume;
-    const newVolume = clamp({preference: value, min: 0, max: 1});
+    const newVolume = clamp(0, value, 1);
 
     this._volume = newVolume;
 
