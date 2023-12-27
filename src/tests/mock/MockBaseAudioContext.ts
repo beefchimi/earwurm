@@ -22,7 +22,7 @@ export class MockBaseAudioContext
   // updating `state` in various methods.
   state: AudioContextState = 'suspended';
 
-  readonly currentTime = Date.now();
+  readonly currentTime = 0;
   readonly audioWorklet = new MockAudioWorklet();
   readonly destination = new MockAudioDestinationNode();
   readonly listener = new MockAudioListener();
