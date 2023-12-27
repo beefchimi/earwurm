@@ -308,6 +308,11 @@ sound.volume = 1;
 // Mute / unmute this `Sound`.
 sound.mute = true || false;
 
+// Set the `playbackRate` for this `Sound.
+// This value is a number used to multiply the speed of playback.
+// Default is `1`. Min is `0.25`. Max is `4`.
+sound.speed;
+
 // Toggle the “repetition” of the `Sound`. Will
 // repeat indefinitely if `true`, preventing the
 // `ended` event from firing.
@@ -323,6 +328,9 @@ sound.volume;
 // Get a `boolean` for whether or not this `Sound` is “mute”.
 sound.mute;
 
+// Get the current `playbackRate` for this `Sound.
+sound.speed;
+
 // Get a `boolean` for whether or not this `Sound` is
 // to repeat indefinitely.
 sound.loop;
@@ -330,9 +338,16 @@ sound.loop;
 // Get the “total play time” for this `Sound`.
 sound.duration;
 
+// Get the current `SoundProgressEvent` for this `Sound.
+sound.progress;
+
 // Get the current `state` for this `Sound`. Can be:
-// `created`, `playing`, `paused`, or `stopping`.
-sound.duration;
+// `created`, `playing`, `paused`, `stopping`, or `ending`.
+sound.state;
+
+// Get an array of all the events for this instance
+// that currently have listeners attached.
+sound.activeEvents;
 ```
 
 **Events:**
@@ -340,7 +355,7 @@ sound.duration;
 ```ts
 // Event called whenever `Sound > state` is changed.
 // Possible `SoundState` values are:
-// `created`, `playing`, `paused`, and `stopping`.
+// `created`, `playing`, `paused`, `stopping`, and `ending`.
 (event: 'state', listener: (current: SoundState) => void)
 
 // Event called on the audio `source` node whenenver
@@ -354,6 +369,14 @@ sound.duration;
 
 // Event called whenever the `mute` property changes.
 (event: 'mute', listener: (muted: boolean) => void)
+
+// Event called for every animation frame while `playing`.
+// Returns data representing:
+// elapsed: “seconds” into the current iteration of this `Sound`.
+// remaining: “seconds” until the end of the current iteration of this `Sound`.
+// percentage: “percentage progressed” into the current iteration of this `Sound`.
+// iterations: number of times this `Sound` has looped.
+(event: 'progress', listener: ({elapsed, remaining, percentage, iterations}: SoundProgressEvent) => void)
 ```
 
 ## Events API
