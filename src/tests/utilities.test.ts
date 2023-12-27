@@ -2,6 +2,7 @@ import {describe, it, expect} from 'vitest';
 import {
   arrayOfLength,
   arrayShallowEquals,
+  assertNumber,
   clamp,
   progressPercentage,
   msToSec,
@@ -42,6 +43,41 @@ describe('Utilities', () => {
   });
 
   describe('Numbers', () => {
+    describe('assertNumber()', () => {
+      it('accepts an integer', () => {
+        const result = assertNumber(123);
+        expect(result).toBe(true);
+      });
+
+      it('accepts a float', () => {
+        const result = assertNumber(123.456);
+        expect(result).toBe(true);
+      });
+
+      it('does not allow a bigint', () => {
+        const result = assertNumber(1000n);
+        expect(result).toBe(false);
+      });
+
+      it('does not allow NaN', () => {
+        const result = assertNumber(NaN);
+        expect(result).toBe(false);
+      });
+
+      it('does not allow Infinity', () => {
+        const result = assertNumber(Infinity);
+        expect(result).toBe(false);
+      });
+
+      it('does not allow other non-numnber types', () => {
+        expect(assertNumber(true)).toBe(false);
+        expect(assertNumber(false)).toBe(false);
+        expect(assertNumber({one: 1})).toBe(false);
+        expect(assertNumber([1, 2, 3])).toBe(false);
+        expect(assertNumber('123')).toBe(false);
+      });
+    });
+
     describe('clamp()', () => {
       it('returns preference', () => {
         const mockArgs: Parameters<typeof clamp> = [1, 10, 100];
@@ -76,6 +112,16 @@ describe('Utilities', () => {
         // Before Math.floor(), result should be:
         // 3.4782608695652173
         expect(result).toBe(3);
+      });
+
+      it('protects against NaN', () => {
+        const result = progressPercentage(0, 0);
+        expect(result).toBe(0);
+      });
+
+      it('protects against Infinity', () => {
+        const result = progressPercentage(2, 0);
+        expect(result).toBe(0);
       });
     });
   });
