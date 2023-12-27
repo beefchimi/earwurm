@@ -1,7 +1,8 @@
-import {describe, it, expect, vi} from 'vitest';
+import {afterEach, describe, it, expect, vi} from 'vitest';
 
 import {Sound} from '../Sound';
-import type {SoundEventMap} from '../types';
+import {tokens} from '../tokens';
+import type {SoundState, SoundEventMap} from '../types';
 
 type SoundConstructor = ConstructorParameters<typeof Sound>;
 
@@ -23,13 +24,20 @@ describe('Sound component', () => {
       defaultAudioNode,
     );
 
-    it('is initialized with default values', () => {
+    it('is initialized with default values', async () => {
       expect(testSound).toBeInstanceOf(Sound);
 
       expect(testSound).toHaveProperty('volume', 1);
       expect(testSound).toHaveProperty('mute', false);
+      expect(testSound).toHaveProperty('speed', 1);
       expect(testSound).toHaveProperty('loop', false);
       expect(testSound).toHaveProperty('duration', 0);
+      expect(testSound).toHaveProperty('progress', {
+        elapsed: 0,
+        remaining: 0,
+        percentage: 0,
+        iterations: 0,
+      });
       expect(testSound).toHaveProperty('state', 'created');
     });
   });
@@ -40,6 +48,105 @@ describe('Sound component', () => {
   // `volume` accessor is covered in `Abstract.test.ts`.
   // describe('volume', () => {});
 
+  describe('speed', () => {
+    const testSound = new Sound(
+      'TestSpeed',
+      defaultAudioBuffer,
+      defaultContext,
+      defaultAudioNode,
+    );
+
+    afterEach(() => {
+      testSound.speed = 1;
+    });
+
+    it('allows `set` and `get`', async () => {
+      const mockSpeed = 0.4;
+      testSound.speed = mockSpeed;
+
+      expect(testSound.speed).toBe(mockSpeed);
+    });
+
+    it('restricts value to a minimum of `0.25`', async () => {
+      testSound.speed = -10;
+      expect(testSound.speed).toBe(tokens.minSpeed);
+    });
+
+    it('restricts value to a maximum of `4`', async () => {
+      testSound.speed = 10;
+      expect(testSound.speed).toBe(tokens.maxSpeed);
+    });
+
+    it('sets value on `playbackRate`', async () => {
+      const oldValue = testSound.speed;
+      const newValue = 2.2;
+      const {currentTime} = defaultContext;
+
+      const spySourceCancel = vi.spyOn(
+        AudioParam.prototype,
+        'cancelScheduledValues',
+      );
+      const spySourceSet = vi.spyOn(AudioParam.prototype, 'setValueAtTime');
+      const spySourceRamp = vi.spyOn(
+        AudioParam.prototype,
+        'linearRampToValueAtTime',
+      );
+
+      // TODO: Spy on the `playbackRate.value` setter.
+      // const spyPlaybackRateSet = vi.spyOn(AudioParam.prototype, 'value', 'set');
+      testSound.speed = newValue;
+
+      expect(spySourceCancel).toBeCalledWith(currentTime);
+      expect(spySourceSet).toBeCalledWith(oldValue, currentTime);
+      expect(spySourceRamp).toBeCalledWith(newValue, currentTime);
+    });
+
+    it('does not set value on playbackRate if paused', async () => {
+      const {currentTime} = defaultContext;
+      const spyRamp = vi.spyOn(AudioParam.prototype, 'linearRampToValueAtTime');
+
+      testSound.play();
+      expect(spyRamp).not.toBeCalled();
+
+      testSound.speed = 1.23;
+      expect(spyRamp).toBeCalledTimes(1);
+      expect(spyRamp).toBeCalledWith(1.23, currentTime);
+
+      testSound.pause();
+      testSound.speed = 2.34;
+      expect(spyRamp).not.toBeCalledTimes(2);
+
+      testSound.play();
+      testSound.speed = 3.45;
+      expect(spyRamp).toBeCalledTimes(2);
+      expect(spyRamp).toBeCalledWith(3.45, currentTime);
+    });
+
+    // TODO: Author this test if/when we support "transitions".
+    it.todo('Transitions to new speed');
+
+    it('triggers speed event when set to a unique value', async () => {
+      const spySpeed: SoundEventMap['speed'] = vi.fn((_rate) => {});
+
+      testSound.on('speed', spySpeed);
+      expect(spySpeed).not.toBeCalled();
+
+      testSound.speed = 1;
+      expect(spySpeed).not.toBeCalled();
+
+      testSound.speed = 1.23;
+      expect(spySpeed).toBeCalledWith(1.23);
+
+      testSound.speed = 1.23;
+      expect(spySpeed).not.toBeCalledTimes(2);
+
+      testSound.off('speed', spySpeed);
+
+      testSound.speed = 2.34;
+      expect(spySpeed).not.toBeCalledWith(2.34);
+    });
+  });
+
   describe('loop', () => {
     const testSound = new Sound(
       'TestLoop',
@@ -48,7 +155,7 @@ describe('Sound component', () => {
       defaultAudioNode,
     );
 
-    it('allows `set` and `get`', () => {
+    it('allows `set` and `get`', async () => {
       // TODO: Should check `AudioBufferSourceNode` value.
       expect(testSound.loop).toBe(false);
       testSound.loop = true;
@@ -64,7 +171,7 @@ describe('Sound component', () => {
       defaultAudioNode,
     );
 
-    it('allows `get`', () => {
+    it('allows `get`', async () => {
       // TODO: We should provide a buffer that has a `duration`.
       expect(testSound.duration).toBe(0);
     });
@@ -81,7 +188,7 @@ describe('Sound component', () => {
       defaultAudioNode,
     ];
 
-    it('starts playing the source', () => {
+    it('starts playing the source', async () => {
       const testSound = new Sound(...mockConstructorArgs);
       const spySourceStart = vi.spyOn(AudioBufferSourceNode.prototype, 'start');
 
@@ -90,7 +197,7 @@ describe('Sound component', () => {
       expect(spySourceStart).toBeCalledTimes(1);
     });
 
-    it('does not call `start()` a 2nd time', () => {
+    it('does not call `start()` a 2nd time', async () => {
       const testSound = new Sound(...mockConstructorArgs);
       const spySourceStart = vi.spyOn(AudioBufferSourceNode.prototype, 'start');
 
@@ -98,27 +205,28 @@ describe('Sound component', () => {
       expect(spySourceStart).toBeCalledTimes(1);
     });
 
-    it('unpauses the source', () => {
+    // TODO: Figure out how to directly test against
+    // `AudioBufferSourceNode.playbackRate.value`.
+    it.skip('unpauses the source', async () => {
       const testSound = new Sound(...mockConstructorArgs);
 
-      // TODO: Figure out how to check `#source` for `playbackRate.value`.
-      expect(testSound.mute).toBe(false);
+      expect(testSound.speed).toBe(1);
       testSound.play();
-      expect(testSound.mute).toBe(false);
+      expect(testSound.speed).toBe(1);
       testSound.pause();
-      expect(testSound.mute).toBe(true);
+      expect(testSound.speed).toBe(tokens.pauseSpeed);
       testSound.play();
-      expect(testSound.mute).toBe(false);
+      expect(testSound.speed).toBe(1);
     });
 
-    it('updates state', () => {
+    it('updates state', async () => {
       const testSound = new Sound(...mockConstructorArgs);
 
       testSound.play();
       expect(testSound.state).toBe('playing');
     });
 
-    it('returns instance', () => {
+    it('returns instance', async () => {
       const testSound = new Sound(...mockConstructorArgs);
       const instance = testSound.play();
 
@@ -134,17 +242,18 @@ describe('Sound component', () => {
       defaultAudioNode,
     ];
 
-    it('pauses the source', () => {
+    // TODO: Figure out how to directly test against
+    // `AudioBufferSourceNode.playbackRate.value`.
+    it.skip('pauses the source', async () => {
       const testSound = new Sound(...mockConstructorArgs);
 
-      // TODO: Figure out how to check `#source` for `playbackRate.value`.
       testSound.play();
-      expect(testSound.mute).toBe(false);
+      expect(testSound.speed).toBe(1);
       testSound.pause();
-      expect(testSound.mute).toBe(true);
+      expect(testSound.speed).toBe(tokens.pauseSpeed);
     });
 
-    it('updates state', () => {
+    it('updates state', async () => {
       const testSound = new Sound(...mockConstructorArgs);
 
       testSound.play().pause();
@@ -154,7 +263,7 @@ describe('Sound component', () => {
     // This condition is already covered in `events`.
     // it('does not update state again if already paused');
 
-    it('returns instance', () => {
+    it('returns instance', async () => {
       const testSound = new Sound(...mockConstructorArgs);
       const instance = testSound.play().pause();
 
@@ -170,7 +279,7 @@ describe('Sound component', () => {
       defaultAudioNode,
     ];
 
-    it('stops and disconnects the source', () => {
+    it('stops and disconnects the source', async () => {
       const testSound = new Sound(...mockConstructorArgs);
       const spySourceStop = vi.spyOn(AudioBufferSourceNode.prototype, 'stop');
       const spySourceDisconnect = vi.spyOn(
@@ -187,14 +296,19 @@ describe('Sound component', () => {
       expect(spySourceDisconnect).toBeCalledTimes(1);
     });
 
-    it('updates state', () => {
+    it('emits the `stopping` state before `ending`', async () => {
       const testSound = new Sound(...mockConstructorArgs);
+      const activeStates: SoundState[] = [];
 
+      testSound.on('state', (current) => activeStates.push(current));
+
+      expect(testSound.state).toBe('created');
       testSound.play().stop();
-      expect(testSound.state).toBe('stopping');
+      expect(activeStates).toStrictEqual(['playing', 'stopping', 'ending']);
+      expect(testSound.state).toBe('ending');
     });
 
-    it('empties active events', () => {
+    it('empties active events', async () => {
       const testSound = new Sound(...mockConstructorArgs);
       testSound.on('ended', vi.fn());
 
@@ -205,7 +319,7 @@ describe('Sound component', () => {
       expect(testSound.activeEvents).toHaveLength(0);
     });
 
-    it('returns instance', () => {
+    it('returns instance', async () => {
       const testSound = new Sound(...mockConstructorArgs);
       const instance = testSound.play().stop();
 
@@ -214,7 +328,7 @@ describe('Sound component', () => {
   });
 
   // Some events are covered in other tests:
-  // `volume` and `mute`.
+  // `volume`, `mute`, and `speed`.
   describe('events', () => {
     const mockConstructorArgs: SoundConstructor = [
       'TestEvents',
@@ -223,73 +337,116 @@ describe('Sound component', () => {
       defaultAudioNode,
     ];
 
-    it('emits an event for every state', () => {
-      const testSound = new Sound(...mockConstructorArgs);
-      const spyState: SoundEventMap['state'] = vi.fn((_current) => {});
+    describe('state', () => {
+      it('emits for every change', async () => {
+        const testSound = new Sound(...mockConstructorArgs);
+        const spyState: SoundEventMap['state'] = vi.fn((_current) => {});
 
-      testSound.on('state', spyState);
-      expect(spyState).not.toBeCalled();
+        testSound.on('state', spyState);
+        expect(spyState).not.toBeCalled();
 
-      testSound.play();
-      expect(spyState).toBeCalledWith('playing');
+        testSound.play();
+        expect(spyState).toBeCalledWith('playing');
 
-      testSound.pause();
-      expect(spyState).toBeCalledWith('paused');
+        testSound.pause();
+        expect(spyState).toBeCalledWith('paused');
 
-      testSound.stop();
-      expect(spyState).toBeCalledWith('stopping');
-    });
+        testSound.stop();
+        expect(spyState).toBeCalledWith('stopping');
+      });
 
-    it('does not emit redundant state changes', () => {
-      const testSound = new Sound(...mockConstructorArgs);
-      const spyState: SoundEventMap['state'] = vi.fn((_current) => {});
+      it('does not emit redundant changes', async () => {
+        const testSound = new Sound(...mockConstructorArgs);
+        const spyState: SoundEventMap['state'] = vi.fn((_current) => {});
 
-      testSound.on('state', spyState);
+        testSound.on('state', spyState);
 
-      testSound.play();
-      expect(spyState).toBeCalledTimes(1);
-      expect(spyState).toBeCalledWith('playing');
+        testSound.play();
+        expect(spyState).toBeCalledTimes(1);
+        expect(spyState).toBeCalledWith('playing');
 
-      testSound.pause();
-      expect(spyState).toBeCalledTimes(2);
-      expect(spyState).toBeCalledWith('paused');
+        testSound.pause();
+        expect(spyState).toBeCalledTimes(2);
+        expect(spyState).toBeCalledWith('paused');
 
-      testSound.pause();
-      expect(spyState).not.toBeCalledTimes(3);
-    });
-
-    it('emits `ended` event once sound has finished', () => {
-      const testSound = new Sound(...mockConstructorArgs);
-      const spyEnded: SoundEventMap['ended'] = vi.fn((_event) => {});
-
-      testSound.on('ended', spyEnded);
-      testSound.play();
-
-      expect(spyEnded).not.toBeCalled();
-      vi.advanceTimersToNextTimer();
-
-      expect(spyEnded).toBeCalledWith({
-        id: testSound.id,
-        source: expect.any(AudioBufferSourceNode),
-        neverStarted: false,
+        testSound.pause();
+        expect(spyState).not.toBeCalledTimes(3);
       });
     });
 
-    it('emits `ended` event for a stopped sound that was never started', () => {
-      const testSound = new Sound(...mockConstructorArgs);
-      const spyEnded: SoundEventMap['ended'] = vi.fn((_event) => {});
+    describe('ended', () => {
+      it('emits once sound has finished', async () => {
+        const testSound = new Sound(...mockConstructorArgs);
+        const spyEnded: SoundEventMap['ended'] = vi.fn((_event) => {});
 
-      testSound.on('ended', spyEnded);
+        testSound.on('ended', spyEnded);
+        testSound.play();
 
-      expect(spyEnded).not.toBeCalled();
-      vi.advanceTimersToNextTimer();
+        expect(spyEnded).not.toBeCalled();
+        vi.advanceTimersToNextTimer();
 
-      testSound.stop();
+        expect(spyEnded).toBeCalledWith({
+          id: testSound.id,
+          source: expect.any(AudioBufferSourceNode),
+          neverStarted: false,
+        });
+      });
 
-      expect(spyEnded).toBeCalledWith({
-        id: testSound.id,
-        source: expect.any(AudioBufferSourceNode),
-        neverStarted: true,
+      it('emits for a stopped sound that was never started', async () => {
+        const testSound = new Sound(...mockConstructorArgs);
+        const spyEnded: SoundEventMap['ended'] = vi.fn((_event) => {});
+
+        testSound.on('ended', spyEnded);
+
+        expect(spyEnded).not.toBeCalled();
+        vi.advanceTimersToNextTimer();
+
+        testSound.stop();
+
+        expect(spyEnded).toBeCalledWith({
+          id: testSound.id,
+          source: expect.any(AudioBufferSourceNode),
+          neverStarted: true,
+        });
+      });
+    });
+
+    describe('progress', () => {
+      it('emits for every animation frame', async () => {
+        const testSound = new Sound(...mockConstructorArgs);
+        const spyProgressEvent: SoundEventMap['progress'] = vi.fn(
+          (_event) => {},
+        );
+        const spyGetProgress = vi.spyOn(Sound.prototype, 'progress', 'get');
+
+        testSound.on('progress', spyProgressEvent);
+        testSound.play();
+
+        expect(spyProgressEvent).not.toBeCalled();
+        expect(spyGetProgress).not.toBeCalled();
+        vi.advanceTimersToNextTimer();
+
+        // TODO: We will need to mock this test so that we can actually
+        // increment `currentTime` against a playing Sound.
+        expect(spyProgressEvent).toBeCalledTimes(1);
+        expect(spyGetProgress).toBeCalledTimes(1);
+
+        expect(spyProgressEvent).toBeCalledWith({
+          elapsed: 0,
+          remaining: 0,
+          percentage: 0,
+          iterations: 0,
+        });
+      });
+
+      it('does not perform unneccessary calculations when there are no subscriptions', async () => {
+        const testSound = new Sound(...mockConstructorArgs);
+        const spyGetProgress = vi.spyOn(Sound.prototype, 'progress', 'get');
+
+        testSound.play();
+        vi.advanceTimersToNextTimer();
+
+        expect(spyGetProgress).not.toBeCalled();
       });
     });
   });

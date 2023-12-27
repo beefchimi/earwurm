@@ -69,7 +69,12 @@ export interface StackConfig {
 export type SoundId = string;
 // TODO: Are there any errors that can occur on a `Sound`?
 // If so, we need to add an error `event` and/or `state`.
-export type SoundState = 'created' | 'playing' | 'paused' | 'stopping';
+export type SoundState =
+  | 'created'
+  | 'playing'
+  | 'paused'
+  | 'stopping'
+  | 'ending';
 
 export interface SoundEndedEvent {
   id: SoundId;
@@ -77,13 +82,22 @@ export interface SoundEndedEvent {
   neverStarted: boolean;
 }
 
+export interface SoundProgressEvent {
+  elapsed: number;
+  remaining: number;
+  percentage: number;
+  iterations: number;
+}
+
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type SoundEventMap = {
   state: (current: SoundState) => void;
   ended: (event: SoundEndedEvent) => void;
-  // loop(ended: boolean): void;
   volume: (level: number) => void;
   mute: (muted: boolean) => void;
+  speed: (rate: number) => void;
+  progress: (event: SoundProgressEvent) => void;
+  // loop(ended: boolean): void;
 };
 
 export interface SoundConfig {

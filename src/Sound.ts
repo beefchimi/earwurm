@@ -1,20 +1,41 @@
 import {EmittenCommon} from 'emitten';
 
-import {clamp, msToSec} from './utilities';
+import {linearRamp} from './helpers';
+import {clamp, msToSec, progressPercentage} from './utilities';
 import {tokens} from './tokens';
-import type {SoundId, SoundState, SoundEventMap, SoundConfig} from './types';
+import type {
+  SoundId,
+  SoundState,
+  SoundEventMap,
+  SoundProgressEvent,
+  SoundConfig,
+} from './types';
 
 export class Sound extends EmittenCommon<SoundEventMap> {
   // "Readonly accessor" properties
   private _volume = 1;
   private _mute = false;
+  private _speed = 1;
   private _state: SoundState = 'created';
 
   // "True private" properties
   readonly #source: AudioBufferSourceNode;
   readonly #gainNode: GainNode;
   readonly #fadeSec: number = 0;
-  #started = false;
+
+  readonly #time = {
+    start: 0,
+    offset: 0,
+  };
+
+  readonly #progress = {
+    elapsed: 0,
+    remaining: 0,
+    percentage: 0,
+    iterations: 0,
+  };
+
+  #intervalId = 0;
 
   constructor(
     readonly id: SoundId,
@@ -34,10 +55,15 @@ export class Sound extends EmittenCommon<SoundEventMap> {
 
     this.#source.connect(this.#gainNode).connect(this.destination);
     this.#gainNode.gain.setValueAtTime(this._volume, this.context.currentTime);
+    this.#progress.remaining = this.#source.buffer.duration;
 
     // The `ended` event is fired either when the sound has played its full duration,
     // or the `.stop()` method has been called.
     this.#source.addEventListener('ended', this.#handleEnded, {once: true});
+  }
+
+  private get hasProgressSub() {
+    return this.activeEvents.some((event) => event === 'progress');
   }
 
   get volume() {
@@ -46,7 +72,7 @@ export class Sound extends EmittenCommon<SoundEventMap> {
 
   set volume(value: number) {
     const oldVolume = this._volume;
-    const newVolume = clamp({preference: value, min: 0, max: 1});
+    const newVolume = clamp(0, value, 1);
 
     this._volume = newVolume;
 
@@ -56,13 +82,12 @@ export class Sound extends EmittenCommon<SoundEventMap> {
 
     if (this._mute) return;
 
-    this.#gainNode.gain
-      .cancelScheduledValues(this.context.currentTime)
-      .setValueAtTime(oldVolume, this.context.currentTime)
-      .linearRampToValueAtTime(
-        newVolume,
-        this.context.currentTime + this.#fadeSec,
-      );
+    const {currentTime} = this.context;
+    linearRamp(
+      this.#gainNode.gain,
+      {from: oldVolume, to: newVolume},
+      {from: currentTime, to: currentTime + this.#fadeSec},
+    );
   }
 
   get mute() {
@@ -79,13 +104,39 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     const fromValue = value ? this._volume : 0;
     const toValue = value ? 0 : this._volume;
 
-    this.#gainNode.gain
-      .cancelScheduledValues(this.context.currentTime)
-      .setValueAtTime(fromValue, this.context.currentTime)
-      .linearRampToValueAtTime(
-        toValue,
-        this.context.currentTime + this.#fadeSec,
-      );
+    const {currentTime} = this.context;
+    linearRamp(
+      this.#gainNode.gain,
+      {from: fromValue, to: toValue},
+      {from: currentTime, to: currentTime + this.#fadeSec},
+    );
+  }
+
+  get speed() {
+    return this._speed;
+  }
+
+  set speed(value: number) {
+    const oldSpeed = this._speed;
+    const newSpeed = clamp(tokens.minSpeed, value, tokens.maxSpeed);
+
+    this._speed = newSpeed;
+
+    if (oldSpeed !== newSpeed) {
+      this.emit('speed', newSpeed);
+    }
+
+    if (this._state === 'paused') return;
+
+    const {currentTime} = this.context;
+    linearRamp(
+      this.#source.playbackRate,
+      {from: oldSpeed, to: newSpeed},
+      {from: currentTime, to: currentTime},
+      // TODO: Not transitioning to new `speed` for now...
+      // this will be complicated given our `progress` calculations.
+      // {from: currentTime, to: currentTime + this.#fadeSec},
+    );
   }
 
   get loop() {
@@ -100,19 +151,42 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     return this.#source.buffer?.duration ?? 0;
   }
 
+  get progress(): SoundProgressEvent {
+    if (this.#time.start) {
+      // This Getter is also the Setter.
+      const adjustment = this.#time.offset || this.#time.start;
+
+      this.#progress.elapsed = clamp(
+        0,
+        this.context.currentTime - adjustment,
+        this.duration,
+      );
+      this.#progress.remaining = this.duration - this.#progress.elapsed;
+
+      this.#progress.percentage = clamp(
+        0,
+        progressPercentage(this.#progress.elapsed, this.duration),
+        100,
+      );
+    }
+
+    return {...this.#progress};
+  }
+
   get state() {
     return this._state;
   }
 
   play() {
-    if (!this.#started) {
+    if (!this.#time.start) {
       this.#source.start();
-      this.#started = true;
+      this.#time.start = this.context.currentTime + tokens.minStartTime;
     }
 
     if (this._state === 'paused') {
-      this.#source.playbackRate.value = 1;
-      this.mute = false;
+      // Restoring directly to `playbackRate` instead of `speed`.
+      this.#source.playbackRate.value = this._speed;
+      this.#time.offset = this.context.currentTime - this.#progress.elapsed;
     }
 
     this.#setState('playing');
@@ -121,24 +195,27 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   }
 
   pause() {
-    if (this._state === 'paused') return this;
-
     // There is no `pause/resume` API for a `AudioBufferSourceNode`.
-    // Lowering the `playbackRate` isn't ideal as technically the
-    // audio is still playing in the background and using resources.
+    // To solve this, we leverage `playbackRate`.
     // https://github.com/WebAudio/web-audio-api-v2/issues/105
-    this.#source.playbackRate.value = tokens.minPlaybackRate;
-    this.mute = true;
+    if (this._state !== 'playing') return this;
 
+    // Directly setting `playbackRate` instead of `speed`,
+    // as we do not want to trigger an `event` or `ramp`.
+    this.#source.playbackRate.value = tokens.pauseSpeed;
     this.#setState('paused');
 
+    // TODO: We will need to "fade to silent" if using
+    // `transitions`... but not `trigger` a volume event.
     return this;
   }
 
   stop() {
+    // This state is useful to distinguish between
+    // an explicit "stop" and a natural "end".
     this.#setState('stopping');
 
-    if (this.#started) {
+    if (this.#time.start) {
       this.#source.stop();
     } else {
       // Required to manually emit the `ended` event for "un-started" sounds.
@@ -153,15 +230,39 @@ export class Sound extends EmittenCommon<SoundEventMap> {
 
     this._state = value;
     this.emit('state', value);
+
+    if (value === 'playing') {
+      this.#intervalId = this.hasProgressSub
+        ? requestAnimationFrame(this.#handleInterval)
+        : 0;
+    } else {
+      cancelAnimationFrame(this.#intervalId);
+      this.#intervalId = 0;
+
+      // TODO: We may not get a final `100%` value, as
+      // `ended > empty()` might be clearing subscriptions
+      // before they get a chance to execute one last time.
+      if (this.hasProgressSub) this.#updateProgress();
+    }
   }
 
+  #updateProgress() {
+    this.emit('progress', this.progress);
+  }
+
+  readonly #handleInterval = (_timestamp = 0) => {
+    this.#updateProgress();
+    // Recursive call allows for a loop per-animation-frame.
+    this.#intervalId = requestAnimationFrame(this.#handleInterval);
+  };
+
   readonly #handleEnded = () => {
-    // Intentionally not setting `stopping` state here,
-    // but we may want to consider a "ending" state instead.
+    this.#setState('ending');
+
     this.emit('ended', {
       id: this.id,
       source: this.#source,
-      neverStarted: !this.#started,
+      neverStarted: !this.#time.start,
     });
 
     // This needs to happen AFTER our artifical `ended` event is emitted.

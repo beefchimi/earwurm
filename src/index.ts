@@ -14,5 +14,6 @@ export type {
   SoundId,
   SoundState,
   SoundEventMap,
+  SoundProgressEvent,
   SoundConfig,
 } from './types';
