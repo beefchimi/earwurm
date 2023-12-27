@@ -241,7 +241,7 @@ export class Stack extends EmittenCommon<StackEventMap> {
   readonly #handleSoundEnded: SoundEventMap['ended'] = (event) => {
     this.#setQueue(this.#queue.filter(({id}) => id !== event.id));
     // We only set `stopping` state when `.stop()` is called.
-    // There is no `state` change specifically for "ended".
+    // There is an `ending` value, but it is redundant with the `ended` event.
     this.#handleStateFromQueue();
   };
 }
