@@ -30,7 +30,7 @@ describe('Abstract implementation', () => {
       mockSound.mute = false;
     });
 
-    it('allows `set` and `get`', () => {
+    it('allows `set` and `get`', async () => {
       expect(mockSound.mute).toBe(false);
       mockSound.mute = true;
       expect(mockSound.mute).toBe(true);
@@ -40,7 +40,7 @@ describe('Abstract implementation', () => {
     it.todo('sets gain to 0 when muted');
     it.todo('sets gain to volume when un-muted');
 
-    it('fades to new value', () => {
+    it('fades to new value', async () => {
       const mockOptions: SoundConfig = {
         volume: 0.6,
         fadeMs: 100,
@@ -105,24 +105,24 @@ describe('Abstract implementation', () => {
       mockSound.mute = false;
     });
 
-    it('allows `set` and `get`', () => {
+    it('allows `set` and `get`', async () => {
       const mockVolume = 0.4;
       mockSound.volume = mockVolume;
 
       expect(mockSound.volume).toBe(mockVolume);
     });
 
-    it('restricts value to a minimum of `0`', () => {
+    it('restricts value to a minimum of `0`', async () => {
       mockSound.volume = -2;
       expect(mockSound.volume).toBe(0);
     });
 
-    it('restricts value to a maximum of `1`', () => {
+    it('restricts value to a maximum of `1`', async () => {
       mockSound.volume = 2;
       expect(mockSound.volume).toBe(1);
     });
 
-    it('sets value on `gain`', () => {
+    it('sets value on `gain`', async () => {
       const oldValue = mockSound.volume;
       const newValue = 0.6;
       const {currentTime} = defaultContext;
@@ -145,7 +145,7 @@ describe('Abstract implementation', () => {
       expect(spyGainRamp).toBeCalledWith(newValue, currentTime);
     });
 
-    it('does not set value on gain if muted', () => {
+    it('does not set value on gain if muted', async () => {
       const mockVolume = 0.2;
 
       const spyGainCancel = vi.spyOn(
@@ -179,7 +179,7 @@ describe('Abstract implementation', () => {
       expect(spyGainRamp).not.toBeCalledTimes(2);
     });
 
-    it('fades to new volume', () => {
+    it('fades to new volume', async () => {
       const mockOptions: SoundConfig = {
         volume: 0.6,
         fadeMs: 100,

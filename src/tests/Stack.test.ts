@@ -27,7 +27,7 @@ describe('Stack component', () => {
   });
 
   describe('initialization', () => {
-    it('is initialized with default values', () => {
+    it('is initialized with default values', async () => {
       expect(mockStack).toBeInstanceOf(Stack);
 
       // Class static properties

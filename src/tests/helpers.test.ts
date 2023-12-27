@@ -13,7 +13,7 @@ describe('Helpers', () => {
   const mockContext = new AudioContext();
 
   describe('getErrorMessage()', () => {
-    it('returns message from basic object', () => {
+    it('returns message from basic object', async () => {
       const mockError = {
         message: 'foo',
       };
@@ -23,7 +23,7 @@ describe('Helpers', () => {
       expect(result).toBe(mockError.message);
     });
 
-    it('returns message from Error', () => {
+    it('returns message from Error', async () => {
       const mockMessage = 'Foo';
       const mockError = new Error(mockMessage, {
         cause: 'bar',
@@ -34,7 +34,7 @@ describe('Helpers', () => {
       expect(result).toBe(mockMessage);
     });
 
-    it('returns stringified result when unknown', () => {
+    it('returns stringified result when unknown', async () => {
       const mockError = ['foo', true, {bar: false}, null];
       const result = getErrorMessage(mockError);
 
@@ -67,7 +67,7 @@ describe('Helpers', () => {
   });
 
   describe('linearRamp()', () => {
-    it('transitions to the specified value', () => {
+    it('transitions to the specified value', async () => {
       const mockAudioParam = new AudioParam();
 
       const spyCancel = vi.spyOn(mockAudioParam, 'cancelScheduledValues');
@@ -104,7 +104,7 @@ describe('Helpers', () => {
   });
 
   describe('scratchBuffer()', () => {
-    it('creates a short silent AudioBuffer', () => {
+    it('creates a short silent AudioBuffer', async () => {
       const result = scratchBuffer(mockContext);
 
       expect(result).toBeInstanceOf(AudioBuffer);
@@ -120,7 +120,7 @@ describe('Helpers', () => {
       vi.advanceTimersToNextTimer();
     });
 
-    it('resumes AudioContext state', () => {
+    it('resumes AudioContext state', async () => {
       const spyCreateBuffer = vi.spyOn(mockContext, 'createBuffer');
       const spyResume = vi.spyOn(mockContext, 'resume');
 
@@ -147,7 +147,7 @@ describe('Helpers', () => {
       expect(spySourceStart).toBeCalledTimes(1);
     });
 
-    it('calls onEnded after interaction event', () => {
+    it('calls onEnded after interaction event', async () => {
       vi.spyOn(
         AudioBufferSourceNode.prototype,
         'addEventListener',

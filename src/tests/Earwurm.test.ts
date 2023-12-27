@@ -28,7 +28,7 @@ describe('Earwurm component', () => {
   });
 
   describe('initialization', () => {
-    it('is initialized with default values', () => {
+    it('is initialized with default values', async () => {
       expect(mockManager).toBeInstanceOf(Earwurm);
 
       // Class static properties
