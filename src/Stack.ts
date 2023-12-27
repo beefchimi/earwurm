@@ -1,6 +1,11 @@
 import {EmittenCommon} from 'emitten';
 
-import {getErrorMessage, fetchAudioBuffer, scratchBuffer} from './helpers';
+import {
+  getErrorMessage,
+  fetchAudioBuffer,
+  linearRamp,
+  scratchBuffer,
+} from './helpers';
 import {arrayShallowEquals, clamp, msToSec, secToMs} from './utilities';
 import {tokens} from './tokens';
 
@@ -74,13 +79,12 @@ export class Stack extends EmittenCommon<StackEventMap> {
 
     if (this._mute) return;
 
-    this.#gainNode.gain
-      .cancelScheduledValues(this.context.currentTime)
-      .setValueAtTime(oldVolume, this.context.currentTime)
-      .linearRampToValueAtTime(
-        newVolume,
-        this.context.currentTime + this.#fadeSec,
-      );
+    const {currentTime} = this.context;
+    linearRamp(
+      this.#gainNode.gain,
+      {from: oldVolume, to: newVolume},
+      {from: currentTime, to: currentTime + this.#fadeSec},
+    );
   }
 
   get mute() {
@@ -97,13 +101,12 @@ export class Stack extends EmittenCommon<StackEventMap> {
     const fromValue = value ? this._volume : 0;
     const toValue = value ? 0 : this._volume;
 
-    this.#gainNode.gain
-      .cancelScheduledValues(this.context.currentTime)
-      .setValueAtTime(fromValue, this.context.currentTime)
-      .linearRampToValueAtTime(
-        toValue,
-        this.context.currentTime + this.#fadeSec,
-      );
+    const {currentTime} = this.context;
+    linearRamp(
+      this.#gainNode.gain,
+      {from: fromValue, to: toValue},
+      {from: currentTime, to: currentTime + this.#fadeSec},
+    );
   }
 
   get keys() {
