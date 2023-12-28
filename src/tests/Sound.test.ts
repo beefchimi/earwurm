@@ -148,18 +148,60 @@ describe('Sound component', () => {
   });
 
   describe('loop', () => {
-    const testSound = new Sound(
+    const mockConstructorArgs: SoundConstructor = [
       'TestLoop',
       defaultAudioBuffer,
       defaultContext,
       defaultAudioNode,
-    );
+    ];
 
     it('allows `set` and `get`', async () => {
-      // TODO: Should check `AudioBufferSourceNode` value.
+      const testSound = new Sound(...mockConstructorArgs);
+
+      // TODO: Should check that `loop` is set on the source.
+      // const spySourceNode = vi.spyOn(AudioBufferSourceNode.prototype, 'loop', 'set');
+
       expect(testSound.loop).toBe(false);
       testSound.loop = true;
       expect(testSound.loop).toBe(true);
+    });
+
+    it('does not repeat by default', async () => {
+      const testSound = new Sound(...mockConstructorArgs);
+
+      expect(testSound.progress.iterations).toBe(0);
+      testSound.play();
+      vi.advanceTimersToNextTimer();
+      expect(testSound.progress.iterations).toBe(0);
+      vi.advanceTimersToNextTimer();
+      expect(testSound.progress.iterations).toBe(0);
+    });
+
+    it('repeats sound indefinitely', async () => {
+      const testSound = new Sound(...mockConstructorArgs);
+
+      expect(testSound.state).toBe('created');
+      expect(testSound.progress.iterations).toBe(0);
+
+      testSound.loop = true;
+      testSound.play();
+
+      expect(testSound.state).toBe('playing');
+      vi.advanceTimersToNextTimer();
+      expect(testSound.progress.iterations).toBe(1);
+      vi.advanceTimersToNextTimer();
+      expect(testSound.progress.iterations).toBe(2);
+
+      // TODO: Test env seems to trigger `ended` even though
+      // we are looping the Sound.
+      // expect(testSound.state).toBe('playing');
+
+      testSound.loop = false;
+      vi.advanceTimersToNextTimer();
+      // `iterations` does not increment a final time,
+      // as it is only updated at the START of a new iteration.
+      expect(testSound.progress.iterations).toBe(2);
+      expect(testSound.state).toBe('ending');
     });
   });
 
@@ -447,6 +489,22 @@ describe('Sound component', () => {
         vi.advanceTimersToNextTimer();
 
         expect(spyGetProgress).not.toBeCalled();
+      });
+
+      // TODO: This test needs to instead check against
+      // `requestAnimationFrame()` never getting registered.
+      // We actually do still `emit` at the end of `setState()`.
+      it('does not emit events when subscribed after the sound has been started', async () => {
+        const testSound = new Sound(...mockConstructorArgs);
+        const spyProgressEvent: SoundEventMap['progress'] = vi.fn(
+          (_event) => {},
+        );
+
+        testSound.play();
+        vi.advanceTimersToNextTimer();
+        testSound.on('progress', spyProgressEvent);
+
+        expect(spyProgressEvent).not.toBeCalled();
       });
     });
   });

@@ -23,11 +23,6 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   readonly #gainNode: GainNode;
   readonly #fadeSec: number = 0;
 
-  readonly #time = {
-    start: 0,
-    offset: 0,
-  };
-
   readonly #progress = {
     elapsed: 0,
     remaining: 0,
@@ -36,6 +31,7 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   };
 
   #intervalId = 0;
+  #lastStartTime = 0;
 
   constructor(
     readonly id: SoundId,
@@ -152,23 +148,23 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   }
 
   get progress(): SoundProgressEvent {
-    if (this.#time.start) {
-      // This Getter is also the Setter.
-      const adjustment = this.#time.offset || this.#time.start;
+    if (!this.#lastStartTime) return {...this.#progress};
 
-      this.#progress.elapsed = clamp(
-        0,
-        this.context.currentTime - adjustment,
-        this.duration,
-      );
-      this.#progress.remaining = this.duration - this.#progress.elapsed;
+    this.#incrementLoop();
 
-      this.#progress.percentage = clamp(
-        0,
-        progressPercentage(this.#progress.elapsed, this.duration),
-        100,
-      );
-    }
+    this.#progress.elapsed = clamp(
+      0,
+      this.context.currentTime - this.#lastStartTime,
+      this.duration,
+    );
+
+    this.#progress.remaining = this.duration - this.#progress.elapsed;
+
+    this.#progress.percentage = clamp(
+      0,
+      progressPercentage(this.#progress.elapsed, this.duration),
+      100,
+    );
 
     return {...this.#progress};
   }
@@ -178,17 +174,14 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   }
 
   play() {
-    if (!this.#time.start) {
-      this.#source.start();
-      this.#time.start = this.context.currentTime + tokens.minStartTime;
-    }
+    if (!this.#lastStartTime) this.#source.start();
 
     if (this._state === 'paused') {
       // Restoring directly to `playbackRate` instead of `speed`.
       this.#source.playbackRate.value = this._speed;
-      this.#time.offset = this.context.currentTime - this.#progress.elapsed;
     }
 
+    this.#updateStartTime();
     this.#setState('playing');
 
     return this;
@@ -215,12 +208,9 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     // an explicit "stop" and a natural "end".
     this.#setState('stopping');
 
-    if (this.#time.start) {
-      this.#source.stop();
-    } else {
-      // Required to manually emit the `ended` event for "un-started" sounds.
-      this.#handleEnded();
-    }
+    if (this.#lastStartTime) this.#source.stop();
+    // Required to manually emit the `ended` event for "un-started" sounds.
+    else this.#handleEnded();
 
     return this;
   }
@@ -246,6 +236,30 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     }
   }
 
+  #incrementLoop() {
+    if (!this.loop) return;
+
+    const fullyElapsed = this.#progress.elapsed === this.duration;
+    const noTimeRemaining = this.#progress.remaining === 0;
+    const progressDone = this.#progress.percentage === 100;
+
+    if (fullyElapsed || noTimeRemaining || progressDone) {
+      this.#progress.elapsed = 0;
+      this.#progress.remaining = this.duration;
+      this.#progress.percentage = 0;
+
+      this.#progress.iterations++;
+      this.#updateStartTime();
+    }
+  }
+
+  #updateStartTime() {
+    this.#lastStartTime = Math.max(
+      this.context.currentTime - this.#progress.elapsed,
+      tokens.minStartTime,
+    );
+  }
+
   #updateProgress() {
     this.emit('progress', this.progress);
   }
@@ -262,7 +276,7 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     this.emit('ended', {
       id: this.id,
       source: this.#source,
-      neverStarted: !this.#time.start,
+      neverStarted: !this.#lastStartTime,
     });
 
     // This needs to happen AFTER our artifical `ended` event is emitted.
