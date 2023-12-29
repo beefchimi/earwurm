@@ -31,7 +31,9 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   };
 
   #intervalId = 0;
-  #lastStartTime = 0;
+  #timestamp = 0;
+  #elapsedSnapshot = 0;
+  #hasStarted = false;
 
   constructor(
     readonly id: SoundId,
@@ -116,15 +118,24 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     const oldSpeed = this._speed;
     const newSpeed = clamp(tokens.minSpeed, value, tokens.maxSpeed);
 
+    if (oldSpeed === newSpeed) return;
+
     this._speed = newSpeed;
+    this.emit('speed', newSpeed);
 
-    if (oldSpeed !== newSpeed) {
-      this.emit('speed', newSpeed);
-    }
-
+    // Must return if `paused`, because the way we currently
+    // "pause" is by slowing `playbackRate` to a halt.
     if (this._state === 'paused') return;
 
+    if (this._state !== 'playing') {
+      this.#source.playbackRate.value = newSpeed;
+      return;
+    }
+
     const {currentTime} = this.context;
+    this.#timestamp = Math.max(currentTime, tokens.minStartTime);
+    this.#elapsedSnapshot = this.#progress.elapsed;
+
     linearRamp(
       this.#source.playbackRate,
       {from: oldSpeed, to: newSpeed},
@@ -148,18 +159,23 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   }
 
   get progress(): SoundProgressEvent {
-    if (!this.#lastStartTime) return {...this.#progress};
+    if (!this.#hasStarted) return {...this.#progress};
 
+    // When combining `speed + pause + looping`, we can end up with
+    // an accumulative loss of precision. The `progress` calculations
+    // can end up behind the actual play position of the sound.
+    // Not yet sure how to resolve this.
     this.#incrementLoop();
+
+    const timeSince =
+      Math.max(this.context.currentTime - this.#timestamp, 0) * this.speed;
 
     this.#progress.elapsed = clamp(
       0,
-      this.context.currentTime - this.#lastStartTime,
+      this.#elapsedSnapshot + timeSince,
       this.duration,
     );
-
     this.#progress.remaining = this.duration - this.#progress.elapsed;
-
     this.#progress.percentage = clamp(
       0,
       progressPercentage(this.#progress.elapsed, this.duration),
@@ -174,14 +190,19 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   }
 
   play() {
-    if (!this.#lastStartTime) this.#source.start();
+    if (!this.#hasStarted) {
+      this.#source.start();
+      this.#hasStarted = true;
+    }
 
     if (this._state === 'paused') {
       // Restoring directly to `playbackRate` instead of `speed`.
       this.#source.playbackRate.value = this._speed;
     }
 
-    this.#updateStartTime();
+    this.#timestamp = Math.max(this.context.currentTime, tokens.minStartTime);
+    this.#elapsedSnapshot = this.#progress.elapsed;
+
     this.#setState('playing');
 
     return this;
@@ -208,7 +229,7 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     // an explicit "stop" and a natural "end".
     this.#setState('stopping');
 
-    if (this.#lastStartTime) this.#source.stop();
+    if (this.#hasStarted) this.#source.stop();
     // Required to manually emit the `ended` event for "un-started" sounds.
     else this.#handleEnded();
 
@@ -247,17 +268,11 @@ export class Sound extends EmittenCommon<SoundEventMap> {
       this.#progress.elapsed = 0;
       this.#progress.remaining = this.duration;
       this.#progress.percentage = 0;
-
       this.#progress.iterations++;
-      this.#updateStartTime();
-    }
-  }
 
-  #updateStartTime() {
-    this.#lastStartTime = Math.max(
-      this.context.currentTime - this.#progress.elapsed,
-      tokens.minStartTime,
-    );
+      this.#timestamp = this.context.currentTime;
+      this.#elapsedSnapshot = 0;
+    }
   }
 
   #updateProgress() {
@@ -276,7 +291,7 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     this.emit('ended', {
       id: this.id,
       source: this.#source,
-      neverStarted: !this.#lastStartTime,
+      neverStarted: !this.#hasStarted,
     });
 
     // This needs to happen AFTER our artifical `ended` event is emitted.

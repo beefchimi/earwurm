@@ -80,7 +80,6 @@ describe('Sound component', () => {
     it('sets value on `playbackRate`', async () => {
       const oldValue = testSound.speed;
       const newValue = 2.2;
-      const {currentTime} = defaultContext;
 
       const spySourceCancel = vi.spyOn(
         AudioParam.prototype,
@@ -91,6 +90,9 @@ describe('Sound component', () => {
         AudioParam.prototype,
         'linearRampToValueAtTime',
       );
+
+      const {currentTime} = defaultContext;
+      testSound.play();
 
       // TODO: Spy on the `playbackRate.value` setter.
       // const spyPlaybackRateSet = vi.spyOn(AudioParam.prototype, 'value', 'set');
@@ -103,6 +105,8 @@ describe('Sound component', () => {
 
     it('does not set value on playbackRate if paused', async () => {
       const {currentTime} = defaultContext;
+      // TODO: This test should be changed to directly check that
+      // the `AudioParam` has the expected `tokens` value.
       const spyRamp = vi.spyOn(AudioParam.prototype, 'linearRampToValueAtTime');
 
       testSound.play();
@@ -122,8 +126,11 @@ describe('Sound component', () => {
       expect(spyRamp).toBeCalledWith(3.45, currentTime);
     });
 
+    // TODO: Need to figure out how to spy on `playbackRate.value`.
+    it.todo('sets value directly on AudioParam when not `paused` or `playing`');
+
     // TODO: Author this test if/when we support "transitions".
-    it.todo('Transitions to new speed');
+    it.todo('transitions to new speed');
 
     it('triggers speed event when set to a unique value', async () => {
       const spySpeed: SoundEventMap['speed'] = vi.fn((_rate) => {});
@@ -506,6 +513,11 @@ describe('Sound component', () => {
 
         expect(spyProgressEvent).not.toBeCalled();
       });
+
+      // TODO: We need to correctly mock a sound's duration and playback.
+      // This test should cover a combination of:
+      // changing speeds during playback, looping, and pausing.
+      it.todo('calculates progress values at various points in playback');
     });
   });
 });
