@@ -136,14 +136,17 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     this.#timestamp = Math.max(currentTime, tokens.minStartTime);
     this.#elapsedSnapshot = this.#progress.elapsed;
 
+    // TODO: Not transitioning to new `speed` for now...
+    // this will be complicated given our `progress` calculations.
+    /*
     linearRamp(
       this.#source.playbackRate,
       {from: oldSpeed, to: newSpeed},
-      {from: currentTime, to: currentTime},
-      // TODO: Not transitioning to new `speed` for now...
-      // this will be complicated given our `progress` calculations.
-      // {from: currentTime, to: currentTime + this.#fadeSec},
+      {from: currentTime, to: currentTime + this.#fadeSec},
     );
+    */
+
+    this.#source.playbackRate.value = newSpeed;
   }
 
   get loop() {
