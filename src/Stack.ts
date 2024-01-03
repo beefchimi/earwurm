@@ -40,8 +40,9 @@ export class Stack extends EmittenCommon<StackEventMap> {
 
   readonly #gainNode: GainNode;
   readonly #fadeSec: number = 0;
-  #totalSoundsCreated = 0;
   readonly #request: StackConfig['request'];
+
+  #totalSoundsCreated = 0;
   #queue: Sound[] = [];
 
   constructor(

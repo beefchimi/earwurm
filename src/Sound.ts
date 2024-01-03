@@ -12,17 +12,14 @@ import type {
 } from './types';
 
 export class Sound extends EmittenCommon<SoundEventMap> {
-  // "Readonly accessor" properties
   private _volume = 1;
   private _mute = false;
   private _speed = 1;
   private _state: SoundState = 'created';
 
-  // "True private" properties
   readonly #source: AudioBufferSourceNode;
   readonly #gainNode: GainNode;
   readonly #fadeSec: number = 0;
-
   readonly #progress = {
     elapsed: 0,
     remaining: 0,
@@ -263,11 +260,11 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   #incrementLoop() {
     if (!this.loop) return;
 
-    const fullyElapsed = this.#progress.elapsed === this.duration;
-    const noTimeRemaining = this.#progress.remaining === 0;
-    const progressDone = this.#progress.percentage === 100;
-
-    if (fullyElapsed || noTimeRemaining || progressDone) {
+    if (
+      this.#progress.elapsed === this.duration ||
+      this.#progress.remaining === 0 ||
+      this.#progress.percentage === 100
+    ) {
       this.#progress.elapsed = 0;
       this.#progress.remaining = this.duration;
       this.#progress.percentage = 0;
