@@ -1,5 +1,31 @@
 # Earwurm Changelog
 
+## 0.6.0
+
+### Minor Changes
+
+- 51368fd: Fix issue "stopping" a `Sound` that was never "started".
+- 51368fd: Include a `neverStarted: boolean;` property in the `SoundEndedEvent`.
+- 51368fd: New `volume` change event for `Earwurm`, `Stack`, and `Sound`.
+- 51368fd: New `mute` change event for `Earwurm`, `Stack`, and `Sound`.
+- 51368fd: New `library` change event for `Earwurm`.
+- 51368fd: New `queue` change event for `Stack`.
+- 51368fd: New `speed` change event for `Sound`.
+- 51368fd: `speed` Setter now clamps the value between `0.25` and `4`.
+- 51368fd: New `progress` change event.
+- 51368fd: New `progress` Getter.
+- 51368fd: New `state > ending` value.
+- 51368fd: Renamed all `statechange` events to `state`.
+- 51368fd: No longer setting `mute = false` when "pausing".
+- 51368fd: Avoid re-initializing an existing `Stack` when `.add()` is passed an identical `id + path`.
+- 51368fd: Removed `LibraryKeys` type, instead using `StackIds[]` directly.
+- 51368fd: Now exporting `tokens` object with some usual values.
+- 51368fd: Updated `docs/api.md` to include details on all the newly added / changed code.
+
+### Patch Changes
+
+- 222eb16: Bumping project dependencies, including the emitten peerDependency.
+
 ## 0.5.2
 
 ### Patch Changes
