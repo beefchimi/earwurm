@@ -1,4 +1,4 @@
-# earwurm
+# Earwurm Changelog
 
 ## 0.5.2
 

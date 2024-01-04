@@ -1,4 +1,4 @@
-import {describe, it, expect, vi} from 'vitest';
+import {afterEach, describe, it, expect, vi} from 'vitest';
 
 import {Earwurm} from '../Earwurm';
 import {Stack} from '../Stack';
@@ -8,34 +8,40 @@ import type {
   ManagerEventMap,
   ManagerConfig,
   LibraryEntry,
-  LibraryKeys,
+  StackId,
 } from '../types';
 import {mockData} from './mock';
 
 describe('Earwurm component', () => {
+  let mockManager = new Earwurm();
+
   const mockEntries: LibraryEntry[] = [
     {id: 'Zero', path: mockData.audio},
     {id: 'One', path: 'to/no/file.mp3'},
     {id: 'Two', path: ''},
   ];
+  const mockInitialKeys: StackId[] = mockEntries.map(({id}) => id);
+
+  afterEach(() => {
+    mockManager.teardown();
+    mockManager = new Earwurm();
+  });
 
   describe('initialization', () => {
-    const testManager = new Earwurm();
-
-    it('is initialized with default values', () => {
-      expect(testManager).toBeInstanceOf(Earwurm);
+    it('is initialized with default values', async () => {
+      expect(mockManager).toBeInstanceOf(Earwurm);
 
       // Class static properties
       expect(Earwurm).toHaveProperty('maxStackSize', tokens.maxStackSize);
       expect(Earwurm).toHaveProperty('suspendAfterMs', tokens.suspendAfterMs);
 
       // Instance properties
-      expect(testManager).toHaveProperty('volume', 1);
-      expect(testManager).toHaveProperty('mute', false);
-      expect(testManager).toHaveProperty('unlocked', false);
-      expect(testManager).toHaveProperty('keys', []);
-      expect(testManager).toHaveProperty('state', 'suspended');
-      expect(testManager).toHaveProperty('playing', false);
+      expect(mockManager).toHaveProperty('volume', 1);
+      expect(mockManager).toHaveProperty('mute', false);
+      expect(mockManager).toHaveProperty('unlocked', false);
+      expect(mockManager).toHaveProperty('keys', []);
+      expect(mockManager).toHaveProperty('state', 'suspended');
+      expect(mockManager).toHaveProperty('playing', false);
     });
   });
 
@@ -50,30 +56,27 @@ describe('Earwurm component', () => {
 
   describe('keys', () => {
     it('contains ids of each active Stack', async () => {
-      const testManager = new Earwurm();
+      expect(mockManager.keys).toHaveLength(0);
+      mockManager.add(...mockEntries);
 
-      expect(testManager.keys).toHaveLength(0);
-      testManager.add(...mockEntries);
-
-      expect(testManager.keys).toStrictEqual(['Zero', 'One', 'Two']);
-      testManager.remove('Zero');
-      expect(testManager.keys).toStrictEqual(['One', 'Two']);
+      expect(mockManager.keys).toStrictEqual(['Zero', 'One', 'Two']);
+      mockManager.remove('Zero');
+      expect(mockManager.keys).toStrictEqual(['One', 'Two']);
     });
   });
 
   describe('state', () => {
     const clickEvent = new Event('click');
 
-    it('triggers `statechange` event for every state', async () => {
-      const testManager = new Earwurm();
-      const spyState: ManagerEventMap['statechange'] = vi.fn((_state) => {});
+    it('triggers `state` event for every state', async () => {
+      const spyState: ManagerEventMap['state'] = vi.fn((_current) => {});
 
-      testManager.on('statechange', spyState);
+      mockManager.on('state', spyState);
 
       expect(spyState).not.toBeCalled();
-      expect(testManager.state).toBe('suspended');
+      expect(mockManager.state).toBe('suspended');
 
-      testManager.unlock();
+      mockManager.unlock();
       document.dispatchEvent(clickEvent);
 
       // await vi.advanceTimersToNextTimerAsync();
@@ -81,14 +84,14 @@ describe('Earwurm component', () => {
       expect(spyState).toBeCalledTimes(1);
       expect(spyState).toBeCalledWith('running');
 
-      testManager.stop();
+      mockManager.stop();
 
       // `suspending/suspended` are called in rapid succession.
       expect(spyState).toBeCalledTimes(3);
       expect(spyState).toBeCalledWith('suspending');
       expect(spyState).toBeCalledWith('suspended');
 
-      testManager.teardown();
+      mockManager.teardown();
 
       expect(spyState).toBeCalledTimes(4);
       expect(spyState).toBeCalledWith('closed');
@@ -101,35 +104,32 @@ describe('Earwurm component', () => {
 
   describe('playing', () => {
     it('is `true` when any Sound is `playing`', async () => {
-      const testManager = new Earwurm();
       const mockEntry = mockEntries[0];
 
-      testManager.add(mockEntry);
+      mockManager.add(mockEntry);
 
-      const stack = testManager.get(mockEntry.id);
+      const stack = mockManager.get(mockEntry.id);
       const sound = await stack?.prepare();
 
-      expect(testManager.playing).toBe(false);
+      expect(mockManager.playing).toBe(false);
       sound?.play();
-      expect(testManager.playing).toBe(true);
+      expect(mockManager.playing).toBe(true);
       vi.advanceTimersByTime(mockData.playDurationMs);
-      expect(testManager.playing).toBe(false);
+      expect(mockManager.playing).toBe(false);
     });
   });
 
   describe('get()', () => {
-    const testManager = new Earwurm();
-
     it('returns `undefined` when there is no matching Stack', async () => {
-      const requestedStack = testManager.get('FakeId');
+      const requestedStack = mockManager.get('FakeId');
       expect(requestedStack).toBe(undefined);
     });
 
     it('returns the requested Stack when present', async () => {
       const mockEntry = mockEntries[0];
-      testManager.add(mockEntry);
+      mockManager.add(mockEntry);
 
-      const requestedStack = testManager.get(mockEntry.id);
+      const requestedStack = mockManager.get(mockEntry.id);
 
       expect(requestedStack).toBeInstanceOf(Stack);
       expect(requestedStack?.id).toBe(mockEntry.id);
@@ -137,18 +137,16 @@ describe('Earwurm component', () => {
   });
 
   describe('has()', () => {
-    const testManager = new Earwurm();
-
     it('returns `false` when there is no matching Stack', async () => {
-      const hasStack = testManager.has('FakeId');
+      const hasStack = mockManager.has('FakeId');
       expect(hasStack).toBe(false);
     });
 
     it('returns `true` when the requested Stack is present', async () => {
       const mockEntry = mockEntries[0];
-      testManager.add(mockEntry);
+      mockManager.add(mockEntry);
 
-      const hasStack = testManager.has(mockEntry.id);
+      const hasStack = mockManager.has(mockEntry.id);
       expect(hasStack).toBe(true);
     });
   });
@@ -157,60 +155,51 @@ describe('Earwurm component', () => {
     const clickEvent = new Event('click');
 
     it('unlocks AudioContext if not already unlocked', async () => {
-      const testManager = new Earwurm();
+      expect(mockManager.unlocked).toBe(false);
 
-      expect(testManager.unlocked).toBe(false);
-
-      testManager.unlock();
+      mockManager.unlock();
       document.dispatchEvent(clickEvent);
 
-      expect(testManager.unlocked).toBe(true);
+      expect(mockManager.unlocked).toBe(true);
     });
 
     it('does not unlock if already unlocked', async () => {
-      const testManager = new Earwurm();
-      const spyStateChange: ManagerEventMap['statechange'] = vi.fn(
-        (_state) => {},
-      );
+      const spyState: ManagerEventMap['state'] = vi.fn((_current) => {});
 
-      testManager.on('statechange', spyStateChange);
-      expect(spyStateChange).not.toBeCalled();
+      mockManager.on('state', spyState);
+      expect(spyState).not.toBeCalled();
 
-      testManager.unlock();
+      mockManager.unlock();
       document.dispatchEvent(clickEvent);
 
-      expect(spyStateChange).toBeCalledTimes(1);
-      expect(spyStateChange).toBeCalledWith('running');
+      expect(spyState).toBeCalledTimes(1);
+      expect(spyState).toBeCalledWith('running');
 
-      testManager.unlock();
+      mockManager.unlock();
       document.dispatchEvent(clickEvent);
 
-      expect(spyStateChange).not.toBeCalledTimes(2);
+      expect(spyState).not.toBeCalledTimes(2);
     });
 
     it('restores lock upon close', async () => {
-      const testManager = new Earwurm();
-
-      testManager.unlock();
+      mockManager.unlock();
       document.dispatchEvent(clickEvent);
 
-      expect(testManager.unlocked).toBe(true);
+      expect(mockManager.unlocked).toBe(true);
 
-      testManager.teardown();
+      mockManager.teardown();
       document.dispatchEvent(clickEvent);
 
-      expect(testManager.unlocked).toBe(false);
+      expect(mockManager.unlocked).toBe(false);
     });
 
     it('returns instance', async () => {
-      const testManager = new Earwurm();
-
-      const beforeUnlock = testManager.unlock();
+      const beforeUnlock = mockManager.unlock();
       document.dispatchEvent(clickEvent);
 
       expect(beforeUnlock).toBeInstanceOf(Earwurm);
 
-      const afterUnlock = testManager.unlock();
+      const afterUnlock = mockManager.unlock();
       document.dispatchEvent(clickEvent);
 
       expect(afterUnlock).toBeInstanceOf(Earwurm);
@@ -219,16 +208,13 @@ describe('Earwurm component', () => {
 
   describe('add()', () => {
     it('creates a new Stack for each entry', async () => {
-      const testManager = new Earwurm();
-      const capturedKeys = testManager.add(...mockEntries);
+      const capturedKeys = mockManager.add(...mockEntries);
 
-      expect(testManager.keys).toHaveLength(mockEntries.length);
+      expect(mockManager.keys).toHaveLength(mockEntries.length);
       expect(capturedKeys).toStrictEqual(mockEntries.map(({id}) => id));
     });
 
     it('replaces any existing Stacks', async () => {
-      const testManager = new Earwurm();
-
       const mockChangedEntries: LibraryEntry[] = [
         {
           id: 'Unique',
@@ -244,23 +230,67 @@ describe('Earwurm component', () => {
         },
       ];
 
-      testManager.add(...mockEntries);
+      mockManager.add(...mockEntries);
 
-      const stack1 = testManager.get(mockEntries[1].id);
-      const stack2 = testManager.get(mockEntries[2].id);
+      const stack1 = mockManager.get(mockEntries[1].id);
+      const stack2 = mockManager.get(mockEntries[2].id);
 
       expect(stack1?.path).toBe(mockEntries[1].path);
       expect(stack2?.path).toBe(mockEntries[2].path);
-      expect(testManager.keys).toHaveLength(3);
+      expect(mockManager.keys).toHaveLength(3);
 
-      testManager.add(...mockChangedEntries);
+      mockManager.add(...mockChangedEntries);
 
-      const updatedStack1 = testManager.get(mockEntries[1].id);
-      const updatedStack2 = testManager.get(mockEntries[2].id);
+      const updatedStack1 = mockManager.get(mockEntries[1].id);
+      const updatedStack2 = mockManager.get(mockEntries[2].id);
 
       expect(updatedStack1?.path).toBe(mockChangedEntries[1].path);
       expect(updatedStack2?.path).toBe(mockChangedEntries[2].path);
-      expect(testManager.keys).toHaveLength(4);
+      expect(mockManager.keys).toHaveLength(4);
+    });
+
+    it('emits `library` event with new and old `keys`', async () => {
+      const spyLibrary: ManagerEventMap['library'] = vi.fn((_new, _old) => {});
+
+      mockManager.on('library', spyLibrary);
+      expect(spyLibrary).not.toBeCalled();
+
+      mockManager.add(...mockEntries);
+      expect(spyLibrary).toBeCalledWith(mockInitialKeys, []);
+      expect(spyLibrary).toBeCalledTimes(1);
+
+      // Does not add/remove when both `id + path` are identical.
+      mockManager.add(mockEntries[0]);
+      expect(spyLibrary).not.toBeCalledTimes(2);
+
+      const mockUniqueEntry: LibraryEntry = {
+        id: 'Unique',
+        path: 'does/not/overwrite/anything.wav',
+      };
+      const mockChangedEntries: LibraryEntry[] = [
+        mockUniqueEntry,
+        mockEntries[1],
+      ];
+
+      mockManager.add(...mockChangedEntries);
+      expect(spyLibrary).toBeCalledTimes(2);
+      expect(spyLibrary).toBeCalledWith(
+        [...mockInitialKeys, mockUniqueEntry.id],
+        mockInitialKeys,
+      );
+
+      const keysSnapshot = mockManager.keys;
+
+      // Emits twice as an existing key is removed then re-added
+      // as a result of the `path` value changing.
+      mockManager.add({...mockUniqueEntry, path: 'changed'});
+      expect(spyLibrary).toBeCalledTimes(4);
+
+      expect(spyLibrary).toBeCalledWith(mockInitialKeys, keysSnapshot);
+      expect(spyLibrary).toHaveBeenLastCalledWith(
+        keysSnapshot,
+        mockInitialKeys,
+      );
     });
 
     // TODO: Figure out how best to read `fadeMs` and `request` from Stack.
@@ -275,42 +305,49 @@ describe('Earwurm component', () => {
         },
       };
 
-      const testManager = new Earwurm(mockConfig);
-      testManager.add(...mockEntries);
+      const configManager = new Earwurm(mockConfig);
+      configManager.add(...mockEntries);
 
-      const stack = testManager.get(mockEntries[0].id);
+      const stack = configManager.get(mockEntries[0].id);
       expect(stack).toBeInstanceOf(Stack);
     });
   });
 
   describe('remove()', () => {
     it('removes any present Stacks', async () => {
-      const testManager = new Earwurm();
+      mockManager.add(...mockEntries);
 
-      testManager.add(...mockEntries);
+      const mockRemovedKeys: StackId[] = [mockEntries[0].id, mockEntries[1].id];
+      const capturedKeys = mockManager.remove(...mockRemovedKeys);
 
-      const mockRemovedKeys: LibraryKeys = [
-        mockEntries[0].id,
-        mockEntries[1].id,
-      ];
-      const capturedKeys = testManager.remove(...mockRemovedKeys);
-
-      expect(testManager.keys).toStrictEqual([mockEntries[2].id]);
+      expect(mockManager.keys).toStrictEqual([mockEntries[2].id]);
       expect(capturedKeys).toStrictEqual(mockRemovedKeys);
     });
 
     it('returns empty array when no Stacks match', async () => {
-      const testManager = new Earwurm();
+      mockManager.add(...mockEntries);
 
-      testManager.add(...mockEntries);
-
-      const capturedKeys = testManager.remove('Foo', 'Bar');
+      const capturedKeys = mockManager.remove('Foo', 'Bar');
       expect(capturedKeys).toStrictEqual([]);
     });
 
-    it('tears down Stacks before removing from library', async () => {
-      const testManager = new Earwurm();
+    it('emits `library` event with new and old `keys`', async () => {
+      const spyLibrary: ManagerEventMap['library'] = vi.fn((_new, _old) => {});
 
+      mockManager.add(...mockEntries);
+      mockManager.on('library', spyLibrary);
+
+      mockManager.remove('Foo', 'Bar');
+      expect(spyLibrary).not.toBeCalled();
+
+      mockManager.remove(mockEntries[1].id);
+      expect(spyLibrary).toBeCalledWith(
+        [mockEntries[0].id, mockEntries[2].id],
+        mockInitialKeys,
+      );
+    });
+
+    it('tears down Stacks before removing from library', async () => {
       const mockChangedEntries: LibraryEntry[] = [
         {
           id: mockEntries[1].id,
@@ -322,49 +359,47 @@ describe('Earwurm component', () => {
         },
       ];
 
-      const spyStack1StateChange = vi.fn();
-      const spyStack2StateChange = vi.fn();
+      const spyStack1State = vi.fn();
+      const spyStack2State = vi.fn();
 
-      testManager.add(...mockEntries);
+      mockManager.add(...mockEntries);
 
-      const stack1 = testManager.get(mockEntries[1].id);
-      stack1?.on('statechange', spyStack1StateChange);
+      const stack1 = mockManager.get(mockEntries[1].id);
+      stack1?.on('state', spyStack1State);
       await stack1?.prepare().then((sound) => sound.play());
 
-      expect(spyStack1StateChange).toBeCalledTimes(3);
+      expect(spyStack1State).toBeCalledTimes(3);
       expect(stack1?.state).toBe('playing');
 
-      const stack2 = testManager.get(mockEntries[2].id);
-      stack2?.on('statechange', spyStack2StateChange);
+      const stack2 = mockManager.get(mockEntries[2].id);
+      stack2?.on('state', spyStack2State);
       await stack2?.prepare().then((sound) => sound.play());
 
-      expect(spyStack2StateChange).toBeCalledTimes(3);
+      expect(spyStack2State).toBeCalledTimes(3);
       expect(stack2?.state).toBe('playing');
 
-      testManager.add(...mockChangedEntries);
+      mockManager.add(...mockChangedEntries);
 
-      expect(spyStack1StateChange).toBeCalledTimes(4);
+      expect(spyStack1State).toBeCalledTimes(4);
       expect(stack1?.state).toBe('idle');
 
-      expect(spyStack2StateChange).toBeCalledTimes(4);
+      expect(spyStack2State).toBeCalledTimes(4);
       expect(stack2?.state).toBe('idle');
     });
   });
 
   describe('stop()', () => {
     it('stops all playing sounds with each Stack', async () => {
-      const testManager = new Earwurm();
-
       const stacks: Stack[] = [];
       const stackCount = mockEntries.length;
 
       const sounds: Array<Promise<Sound>> = [];
       const soundsPerStack = 4;
 
-      testManager.add(...mockEntries);
+      mockManager.add(...mockEntries);
 
       for (let i = 0; i < stackCount; i++) {
-        const matchedStack = testManager.get(mockEntries[i].id);
+        const matchedStack = mockManager.get(mockEntries[i].id);
         if (matchedStack) stacks.push(matchedStack);
       }
 
@@ -378,21 +413,19 @@ describe('Earwurm component', () => {
         sound.play();
       }
 
-      expect(testManager.playing).toBe(true);
-      expect(testManager.keys).toHaveLength(3);
+      expect(mockManager.playing).toBe(true);
+      expect(mockManager.keys).toHaveLength(3);
 
-      testManager.stop();
+      mockManager.stop();
 
-      expect(testManager.playing).toBe(false);
-      expect(testManager.keys).toHaveLength(3);
+      expect(mockManager.playing).toBe(false);
+      expect(mockManager.keys).toHaveLength(3);
     });
 
     it('returns instance', async () => {
-      const testManager = new Earwurm();
+      mockManager.add(...mockEntries);
 
-      testManager.add(...mockEntries);
-
-      const result = testManager.stop();
+      const result = mockManager.stop();
       expect(result).toBeInstanceOf(Earwurm);
     });
   });
@@ -401,124 +434,125 @@ describe('Earwurm component', () => {
     const clickEvent = new Event('click');
 
     it('calls `teardown` on every Stack', async () => {
-      const testManager = new Earwurm();
       const spyStackTeardown = vi.spyOn(Stack.prototype, 'teardown');
 
-      testManager.add(...mockEntries);
-      testManager.teardown();
+      mockManager.add(...mockEntries);
+      mockManager.teardown();
 
       expect(spyStackTeardown).toBeCalledTimes(mockEntries.length);
     });
 
     it('empties the `library`', async () => {
-      const testManager = new Earwurm();
+      mockManager.add(...mockEntries);
+      expect(mockManager.keys).toHaveLength(mockEntries.length);
 
-      testManager.add(...mockEntries);
-      expect(testManager.keys).toHaveLength(mockEntries.length);
+      mockManager.teardown();
+      expect(mockManager.keys).toStrictEqual([]);
+    });
 
-      testManager.teardown();
-      expect(testManager.keys).toStrictEqual([]);
+    it('emits `library` event with empty array', async () => {
+      const spyLibrary: ManagerEventMap['library'] = vi.fn((_new, _old) => {});
+
+      mockManager.add(...mockEntries);
+
+      mockManager.on('library', spyLibrary);
+      expect(spyLibrary).not.toBeCalled();
+
+      mockManager.teardown();
+      expect(spyLibrary).toBeCalledWith([], mockInitialKeys);
     });
 
     it('does not resume the AudioContext', async () => {
-      const testManager = new Earwurm();
-
-      testManager.unlock();
+      mockManager.unlock();
       document.dispatchEvent(clickEvent);
 
       vi.advanceTimersByTime(tokens.suspendAfterMs - 1);
-      expect(testManager.state).toBe('running');
+      expect(mockManager.state).toBe('running');
 
-      testManager.teardown();
-      expect(testManager.state).toBe('closed');
+      mockManager.teardown();
+      expect(mockManager.state).toBe('closed');
 
       // You shouldn't really be able to add entries once closed...
-      testManager.add(...mockEntries);
+      mockManager.add(...mockEntries);
 
-      const stack0 = testManager.get(mockEntries[0].id);
+      const stack0 = mockManager.get(mockEntries[0].id);
       const stack0Sound = await stack0?.prepare();
 
-      expect(testManager.state).toBe('closed');
+      expect(mockManager.state).toBe('closed');
       stack0Sound?.play();
-      expect(testManager.state).toBe('closed');
+      expect(mockManager.state).toBe('closed');
 
       vi.advanceTimersByTime(tokens.suspendAfterMs);
-      expect(testManager.state).toBe('closed');
+      expect(mockManager.state).toBe('closed');
     });
 
     it('closes the AudioContext', async () => {
-      const testManager = new Earwurm();
       const spyClose = vi.spyOn(AudioContext.prototype, 'close');
 
-      testManager.teardown();
+      mockManager.teardown();
 
       expect(spyClose).toBeCalled();
     });
 
     it('removes state change listener, preventing further state changes', async () => {
-      const testManager = new Earwurm();
-      expect(testManager.state).toBe('suspended');
+      expect(mockManager.state).toBe('suspended');
 
-      testManager.unlock();
+      mockManager.unlock();
       document.dispatchEvent(clickEvent);
 
-      expect(testManager.state).toBe('running');
+      expect(mockManager.state).toBe('running');
 
-      testManager.teardown();
-      expect(testManager.state).toBe('closed');
+      mockManager.teardown();
+      expect(mockManager.state).toBe('closed');
 
-      testManager.add(...mockEntries);
+      mockManager.add(...mockEntries);
 
-      const stack = testManager.get(mockEntries[0].id);
+      const stack = mockManager.get(mockEntries[0].id);
       const sound = await stack?.prepare();
 
       sound?.play();
 
       // Not sure how to check active events on the `AudioContext`.
-      expect(testManager.state).toBe('closed');
+      expect(mockManager.state).toBe('closed');
     });
 
     // TODO: Figure out how to test the emitted error.
     it('throws error if AudioContext cannot be closed', async () => {
-      const testManager = new Earwurm();
       const mockErrorMessage = 'Mock error message';
 
-      const spyError: ManagerEventMap['error'] = vi.fn((_error) => {});
-      testManager.on('error', spyError);
+      const spyError: ManagerEventMap['error'] = vi.fn((_messages) => {});
+      mockManager.on('error', spyError);
 
       vi.spyOn(AudioContext.prototype, 'close').mockImplementationOnce(() => {
         throw new Error(mockErrorMessage);
       });
 
-      expect(() => testManager.teardown()).toThrowError(mockErrorMessage);
+      expect(() => mockManager.teardown()).toThrowError(mockErrorMessage);
 
       /*
       expect(spyError).toBeCalledWith([
-        'Failed to close the Earwurm AudioContext.',
+        Earwurm.errorMessage.close,
         mockErrorMessage,
       ]);
       */
     });
 
     it('removes any event listeners', async () => {
-      const testManager = new Earwurm();
+      const spyState = vi.fn();
       const spyError = vi.fn();
-      const spyStateChange = vi.fn();
 
-      testManager.on('error', spyError);
-      testManager.on('statechange', spyStateChange);
+      mockManager.on('state', spyState);
+      mockManager.on('error', spyError);
 
-      expect(testManager.activeEvents).toHaveLength(2);
-      testManager.teardown();
-      expect(testManager.activeEvents).toHaveLength(0);
+      expect(mockManager.activeEvents).toHaveLength(2);
+      mockManager.teardown();
+      expect(mockManager.activeEvents).toHaveLength(0);
     });
 
     it('returns instance', async () => {
-      const testManager = new Earwurm();
+      mockManager.add(...mockEntries);
 
-      testManager.add(...mockEntries);
-
-      const result = testManager.teardown();
+      const result = mockManager.teardown();
       expect(result).toBeInstanceOf(Earwurm);
     });
   });
@@ -527,18 +561,17 @@ describe('Earwurm component', () => {
     const clickEvent = new Event('click');
 
     it('registers once `state` is `running`', async () => {
-      const testManager = new Earwurm();
-      expect(testManager.state).toBe('suspended');
+      expect(mockManager.state).toBe('suspended');
 
-      testManager.unlock();
+      mockManager.unlock();
       document.dispatchEvent(clickEvent);
 
-      expect(testManager.state).toBe('running');
+      expect(mockManager.state).toBe('running');
       vi.advanceTimersByTime(tokens.suspendAfterMs - 1);
-      expect(testManager.state).toBe('running');
+      expect(mockManager.state).toBe('running');
 
       vi.advanceTimersByTime(1);
-      expect(testManager.state).toBe('suspended');
+      expect(mockManager.state).toBe('suspended');
     });
 
     // TODO: Figure out a way to force `AudioContext.state`
@@ -546,27 +579,26 @@ describe('Earwurm component', () => {
     it.todo('can register upon initialization');
 
     it('resets countdown when Stack states change', async () => {
-      const testManager = new Earwurm();
-      testManager.add(...mockEntries);
+      mockManager.add(...mockEntries);
 
-      const stack0 = testManager.get(mockEntries[0].id);
+      const stack0 = mockManager.get(mockEntries[0].id);
 
       // Beginning of suspension timer.
-      testManager.unlock();
+      mockManager.unlock();
       document.dispatchEvent(clickEvent);
 
-      expect(testManager.state).toBe('running');
+      expect(mockManager.state).toBe('running');
       vi.advanceTimersByTime(tokens.suspendAfterMs - 1);
-      expect(testManager.state).toBe('running');
+      expect(mockManager.state).toBe('running');
 
       // `Sound` preparation triggers `Stack` state changes,
       // resulting in a suspension timer reset.
       const stack0Sound = await stack0?.prepare();
 
       vi.advanceTimersByTime(1);
-      expect(testManager.state).toBe('running');
+      expect(mockManager.state).toBe('running');
       vi.advanceTimersByTime(tokens.suspendAfterMs - 2);
-      expect(testManager.state).toBe('running');
+      expect(mockManager.state).toBe('running');
 
       expect(stack0?.playing).toBe(false);
       // Another suspension timer reset.
@@ -574,36 +606,33 @@ describe('Earwurm component', () => {
       expect(stack0?.playing).toBe(true);
 
       vi.advanceTimersByTime(1);
-      expect(testManager.state).toBe('running');
+      expect(mockManager.state).toBe('running');
 
       // End of `Sound` + Reset of suspension timer.
       vi.advanceTimersByTime(mockData.playDurationMs - 1);
       expect(stack0?.playing).toBe(false);
 
       vi.advanceTimersByTime(tokens.suspendAfterMs - 1);
-      expect(testManager.state).toBe('running');
+      expect(mockManager.state).toBe('running');
 
       vi.advanceTimersByTime(1);
-      expect(testManager.state).toBe('suspended');
+      expect(mockManager.state).toBe('suspended');
     });
 
     it('triggers state changes', async () => {
-      const testManager = new Earwurm();
-      const spyStateChange: ManagerEventMap['statechange'] = vi.fn(
-        (_state) => {},
-      );
+      const spyState: ManagerEventMap['state'] = vi.fn((_current) => {});
 
-      testManager.on('statechange', spyStateChange);
+      mockManager.on('state', spyState);
 
-      expect(spyStateChange).not.toBeCalled();
+      expect(spyState).not.toBeCalled();
 
-      testManager.unlock();
+      mockManager.unlock();
       document.dispatchEvent(clickEvent);
 
-      expect(spyStateChange).toBeCalledWith('running');
+      expect(spyState).toBeCalledWith('running');
       vi.advanceTimersByTime(tokens.suspendAfterMs);
-      expect(spyStateChange).toBeCalledWith('suspending');
-      expect(spyStateChange).toBeCalledWith('suspended');
+      expect(spyState).toBeCalledWith('suspending');
+      expect(spyState).toBeCalledWith('suspended');
     });
 
     // TODO: Is there any good way / value in testing these conditions?
@@ -611,19 +640,17 @@ describe('Earwurm component', () => {
     it.todo('does not re-register if already `suspended`');
 
     it('does not allow suspension if `closed`', async () => {
-      const testManager = new Earwurm();
-
-      testManager.unlock();
+      mockManager.unlock();
       document.dispatchEvent(clickEvent);
 
       vi.advanceTimersByTime(tokens.suspendAfterMs);
-      expect(testManager.state).toBe('suspended');
+      expect(mockManager.state).toBe('suspended');
 
-      testManager.teardown();
-      expect(testManager.state).toBe('closed');
+      mockManager.teardown();
+      expect(mockManager.state).toBe('closed');
 
       vi.advanceTimersByTime(tokens.suspendAfterMs);
-      expect(testManager.state).toBe('closed');
+      expect(mockManager.state).toBe('closed');
     });
   });
 
@@ -631,27 +658,26 @@ describe('Earwurm component', () => {
     const clickEvent = new Event('click');
 
     it('resumes once a `Sound` plays', async () => {
-      const testManager = new Earwurm();
-      testManager.add(...mockEntries);
+      mockManager.add(...mockEntries);
 
-      testManager.unlock();
+      mockManager.unlock();
       document.dispatchEvent(clickEvent);
 
-      const stack0 = testManager.get(mockEntries[0].id);
+      const stack0 = mockManager.get(mockEntries[0].id);
       const stack0Sound = await stack0?.prepare();
 
-      expect(testManager.state).toBe('running');
+      expect(mockManager.state).toBe('running');
       vi.advanceTimersByTime(tokens.suspendAfterMs);
-      expect(testManager.state).toBe('suspended');
+      expect(mockManager.state).toBe('suspended');
 
       stack0Sound?.play();
-      expect(testManager.state).toBe('running');
+      expect(mockManager.state).toBe('running');
 
       vi.advanceTimersByTime(mockData.playDurationMs);
-      expect(testManager.state).toBe('running');
+      expect(mockManager.state).toBe('running');
 
       vi.advanceTimersByTime(tokens.suspendAfterMs);
-      expect(testManager.state).toBe('suspended');
+      expect(mockManager.state).toBe('suspended');
     });
 
     // TODO: Cannot test this until we can "interrupt" the suspension.
@@ -661,6 +687,7 @@ describe('Earwurm component', () => {
     it('throws error if the resume fails');
   });
 
-  // Both `statechange` and `error` are covered in other tests.
+  // All events are covered in other tests:
+  // `state`, `library`, `volume`, `mute`, and `error`.
   // describe('events', () => {});
 });

@@ -1,7 +1,7 @@
 import {EmittenCommon} from 'emitten';
 
-import {getErrorMessage, unlockAudioContext} from './helpers';
-import {clamp, msToSec, secToMs} from './utilities';
+import {getErrorMessage, linearRamp, unlockAudioContext} from './helpers';
+import {arrayShallowEquals, clamp, msToSec, secToMs} from './utilities';
 import {tokens} from './tokens';
 
 import type {
@@ -10,7 +10,7 @@ import type {
   ManagerEventMap,
   ManagerConfig,
   LibraryEntry,
-  LibraryKeys,
+  StackId,
   StackEventMap,
 } from './types';
 
@@ -20,9 +20,14 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
   static readonly maxStackSize = tokens.maxStackSize;
   static readonly suspendAfterMs = tokens.suspendAfterMs;
 
+  static readonly errorMessage = {
+    close: 'Failed to close the Earwurm AudioContext.',
+    resume: 'Failed to resume the Earwurm AudioContext.',
+  };
+
   private _volume = 1;
   private _mute = false;
-  private _keys: LibraryKeys = [];
+  private _keys: StackId[] = [];
   private _state: ManagerState = 'suspended';
 
   readonly #context = new AudioContext();
@@ -59,19 +64,22 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
 
   set volume(value: number) {
     const oldVolume = this._volume;
-    const newVolume = clamp({preference: value, min: 0, max: 1});
+    const newVolume = clamp(0, value, 1);
 
     this._volume = newVolume;
 
+    if (oldVolume !== newVolume) {
+      this.emit('volume', newVolume);
+    }
+
     if (this._mute) return;
 
-    this.#gainNode.gain
-      .cancelScheduledValues(this.#context.currentTime)
-      .setValueAtTime(oldVolume, this.#context.currentTime)
-      .linearRampToValueAtTime(
-        newVolume,
-        this.#context.currentTime + this.#fadeSec,
-      );
+    const {currentTime} = this.#context;
+    linearRamp(
+      this.#gainNode.gain,
+      {from: oldVolume, to: newVolume},
+      {from: currentTime, to: currentTime + this.#fadeSec},
+    );
   }
 
   get mute() {
@@ -79,18 +87,21 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
   }
 
   set mute(value: boolean) {
+    if (this._mute !== value) {
+      this.emit('mute', value);
+    }
+
     this._mute = value;
 
     const fromValue = value ? this._volume : 0;
     const toValue = value ? 0 : this._volume;
 
-    this.#gainNode.gain
-      .cancelScheduledValues(this.#context.currentTime)
-      .setValueAtTime(fromValue, this.#context.currentTime)
-      .linearRampToValueAtTime(
-        toValue,
-        this.#context.currentTime + this.#fadeSec,
-      );
+    const {currentTime} = this.#context;
+    linearRamp(
+      this.#gainNode.gain,
+      {from: fromValue, to: toValue},
+      {from: currentTime, to: currentTime + this.#fadeSec},
+    );
   }
 
   get unlocked() {
@@ -123,9 +134,14 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
   }
 
   add(...entries: LibraryEntry[]) {
-    const newKeys: LibraryKeys = [];
+    const newKeys: StackId[] = [];
 
-    const newStacks = entries.map(({id, path}) => {
+    const newStacks = entries.reduce<Stack[]>((collection, {id, path}) => {
+      const existingStack = this.get(id);
+      const identicalStack = existingStack?.path === path;
+
+      if (identicalStack) return collection;
+
       newKeys.push(id);
 
       const newStack = new Stack(id, path, this.#context, this.#gainNode, {
@@ -133,25 +149,25 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
         request: this.#request,
       });
 
-      newStack.on('statechange', this.#handleStackStateChange);
+      newStack.on('state', this.#handleStackState);
 
-      return newStack;
-    });
+      return [...collection, newStack];
+    }, []);
 
-    const replacedKeys = this.#library.reduce<LibraryKeys>(
+    const replacedKeys = this.#library.reduce<StackId[]>(
       (collection, {id}) =>
         newKeys.includes(id) ? [...collection, id] : collection,
       [],
     );
 
-    this.remove(...replacedKeys);
+    if (replacedKeys.length) this.remove(...replacedKeys);
     this.#setLibrary([...this.#library, ...newStacks]);
 
     return newKeys;
   }
 
-  remove(...ids: LibraryKeys) {
-    const removedKeys: LibraryKeys = [];
+  remove(...ids: StackId[]) {
+    const removedKeys: StackId[] = [];
 
     const filteredLibrary = this.#library.filter((stack) => {
       const match = ids.includes(stack.id);
@@ -190,7 +206,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
       })
       .catch((error) => {
         this.emit('error', [
-          'Failed to close the Earwurm AudioContext.',
+          Earwurm.errorMessage.close,
           getErrorMessage(error),
         ]);
       });
@@ -223,7 +239,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     if (this._state === 'suspended' || this._state === 'interrupted') {
       this.#context.resume().catch((error) => {
         this.emit('error', [
-          'Failed to resume the Earwurm AudioContext.',
+          Earwurm.errorMessage.resume,
           getErrorMessage(error),
         ]);
       });
@@ -242,15 +258,23 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
   }
 
   #setLibrary(library: Stack[]) {
+    const oldKeys = [...this._keys];
+    const newKeys = library.map(({id}) => id);
+    const identicalKeys = arrayShallowEquals(oldKeys, newKeys);
+
     this.#library = library;
-    this._keys = this.#library.map(({id}) => id);
+    this._keys = newKeys;
+
+    if (!identicalKeys) {
+      this.emit('library', newKeys, oldKeys);
+    }
   }
 
   #setState(value: ManagerState) {
     if (this._state === value) return;
 
     this._state = value;
-    this.emit('statechange', value);
+    this.emit('state', value);
 
     if (value === 'running') {
       this._unlocked = true;
@@ -290,11 +314,11 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     this.#setState(this.#context.state);
   };
 
-  readonly #handleStackStateChange: StackEventMap['statechange'] = (state) => {
+  readonly #handleStackState: StackEventMap['state'] = (current) => {
     // We don't care about re-setting the auto-suspension each time
     // a new `Sound` is prepared... but it will do that anyways
     // since `Stack` returns to `idle` once loaded.
-    if (state === 'loading') return;
+    if (current === 'loading') return;
 
     if (this.playing) {
       this.#autoResume();

@@ -106,11 +106,21 @@ manager.activeEvents;
 // Returns the current `AudioContext > state`. This may trigger
 // immediately upon `new Earwurm()` if the `AudioContext` is
 // “unlocked” right away.
-(event: 'statechange', listener: (state: ManagerState) => void)
+(event: 'state', listener: (current: ManagerState) => void)
+
+// Event called whenever the `keys` property changes. This is useful
+// to subscribe to changes in the internal “stack library”.
+(event: 'library', listener: (newKeys: StackId[], oldKeys: StackId[]) => void)
+
+// Event called whenever the `volume` property changes.
+(event: 'volume', listener: (level: number) => void)
+
+// Event called whenever the `mute` property changes.
+(event: 'mute', listener: (muted: boolean) => void)
 
 // Event called whenever an error is occured on the `AudioContext`.
 // This could be a result of: failed to resume, failed to close.
-(event: 'error', listener: (error: CombinedErrorMessage) => void)
+(event: 'error', listener: (messages: CombinedErrorMessage) => void)
 ```
 
 **Static members:**
@@ -228,7 +238,17 @@ soundStack.activeEvents;
 // the `Stack`. As sounds cycle through their various states, the
 // `Stack` will determine if any `Sound` is currently `playing`.
 // Possible `StackState` values are: `idle`, `loading`, `playing`.
-(event: 'statechange', listener: (state: StackState) => void)
+(event: 'state', listener: (current: StackState) => void)
+
+// Event called whenever the `keys` property changes. This is useful
+// to subscribe to changes in the internal “sound queue”.
+(event: 'queue', listener: (newKeys: SoundId[], oldKeys: SoundId[]) => void)
+
+// Event called whenever the `volume` property changes.
+(event: 'volume', listener: (level: number) => void)
+
+// Event called whenever the `mute` property changes.
+(event: 'mute', listener: (muted: boolean) => void)
 
 // Event called whenever an error is occured on the `Stack`.
 // This could be a result of: failed to load the `path`.
@@ -288,6 +308,11 @@ sound.volume = 1;
 // Mute / unmute this `Sound`.
 sound.mute = true || false;
 
+// Set the `playbackRate` for this `Sound.
+// This value is a number used to multiply the speed of playback.
+// Default is `1`. Min is `0.25`. Max is `4`.
+sound.speed;
+
 // Toggle the “repetition” of the `Sound`. Will
 // repeat indefinitely if `true`, preventing the
 // `ended` event from firing.
@@ -303,6 +328,9 @@ sound.volume;
 // Get a `boolean` for whether or not this `Sound` is “mute”.
 sound.mute;
 
+// Get the current `playbackRate` for this `Sound.
+sound.speed;
+
 // Get a `boolean` for whether or not this `Sound` is
 // to repeat indefinitely.
 sound.loop;
@@ -310,9 +338,16 @@ sound.loop;
 // Get the “total play time” for this `Sound`.
 sound.duration;
 
+// Get the current `SoundProgressEvent` for this `Sound.
+sound.progress;
+
 // Get the current `state` for this `Sound`. Can be:
-// `created`, `playing`, `paused`, or `stopping`.
-sound.duration;
+// `created`, `playing`, `paused`, `stopping`, or `ending`.
+sound.state;
+
+// Get an array of all the events for this instance
+// that currently have listeners attached.
+sound.activeEvents;
 ```
 
 **Events:**
@@ -320,14 +355,28 @@ sound.duration;
 ```ts
 // Event called whenever `Sound > state` is changed.
 // Possible `SoundState` values are:
-// `created`, `playing`, `paused`, and `stopping`.
-(event: 'statechange', listener: (state: SoundState) => void)
+// `created`, `playing`, `paused`, `stopping`, and `ending`.
+(event: 'state', listener: (current: SoundState) => void)
 
 // Event called on the audio `source` node whenenver
 // a `Sound` reaches either it’s “end duration”,
 // or has been stopped / removed from the `Stack`.
 // This will NOT get called each time a “loop” repeats.
 (event: 'ended', listener: ({id, source}: SoundEndedEvent) => void)
+
+// Event called whenever the `volume` property changes.
+(event: 'volume', listener: (level: number) => void)
+
+// Event called whenever the `mute` property changes.
+(event: 'mute', listener: (muted: boolean) => void)
+
+// Event called for every animation frame while `playing`.
+// Returns data representing:
+// elapsed: “seconds” into the current iteration of this `Sound`.
+// remaining: “seconds” until the end of the current iteration of this `Sound`.
+// percentage: “percentage progressed” into the current iteration of this `Sound`.
+// iterations: number of times this `Sound` has looped.
+(event: 'progress', listener: ({elapsed, remaining, percentage, iterations}: SoundProgressEvent) => void)
 ```
 
 ## Events API

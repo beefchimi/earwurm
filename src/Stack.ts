@@ -1,7 +1,12 @@
 import {EmittenCommon} from 'emitten';
 
-import {getErrorMessage, fetchAudioBuffer, scratchBuffer} from './helpers';
-import {clamp, msToSec, secToMs} from './utilities';
+import {
+  getErrorMessage,
+  fetchAudioBuffer,
+  linearRamp,
+  scratchBuffer,
+} from './helpers';
+import {arrayShallowEquals, clamp, msToSec, secToMs} from './utilities';
 import {tokens} from './tokens';
 
 import type {
@@ -35,8 +40,9 @@ export class Stack extends EmittenCommon<StackEventMap> {
 
   readonly #gainNode: GainNode;
   readonly #fadeSec: number = 0;
-  #totalSoundsCreated = 0;
   readonly #request: StackConfig['request'];
+
+  #totalSoundsCreated = 0;
   #queue: Sound[] = [];
 
   constructor(
@@ -64,19 +70,22 @@ export class Stack extends EmittenCommon<StackEventMap> {
 
   set volume(value: number) {
     const oldVolume = this._volume;
-    const newVolume = clamp({preference: value, min: 0, max: 1});
+    const newVolume = clamp(0, value, 1);
 
     this._volume = newVolume;
 
+    if (oldVolume !== newVolume) {
+      this.emit('volume', newVolume);
+    }
+
     if (this._mute) return;
 
-    this.#gainNode.gain
-      .cancelScheduledValues(this.context.currentTime)
-      .setValueAtTime(oldVolume, this.context.currentTime)
-      .linearRampToValueAtTime(
-        newVolume,
-        this.context.currentTime + this.#fadeSec,
-      );
+    const {currentTime} = this.context;
+    linearRamp(
+      this.#gainNode.gain,
+      {from: oldVolume, to: newVolume},
+      {from: currentTime, to: currentTime + this.#fadeSec},
+    );
   }
 
   get mute() {
@@ -84,18 +93,21 @@ export class Stack extends EmittenCommon<StackEventMap> {
   }
 
   set mute(value: boolean) {
+    if (this._mute !== value) {
+      this.emit('mute', value);
+    }
+
     this._mute = value;
 
     const fromValue = value ? this._volume : 0;
     const toValue = value ? 0 : this._volume;
 
-    this.#gainNode.gain
-      .cancelScheduledValues(this.context.currentTime)
-      .setValueAtTime(fromValue, this.context.currentTime)
-      .linearRampToValueAtTime(
-        toValue,
-        this.context.currentTime + this.#fadeSec,
-      );
+    const {currentTime} = this.context;
+    linearRamp(
+      this.#gainNode.gain,
+      {from: fromValue, to: toValue},
+      {from: currentTime, to: currentTime + this.#fadeSec},
+    );
   }
 
   get keys() {
@@ -176,7 +188,7 @@ export class Stack extends EmittenCommon<StackEventMap> {
       fadeMs: secToMs(this.#fadeSec),
     });
 
-    newSound.on('statechange', this.#handleSoundState);
+    newSound.on('state', this.#handleSoundState);
     newSound.once('ended', this.#handleSoundEnded);
 
     // We do not filter out identical `id` values,
@@ -193,40 +205,44 @@ export class Stack extends EmittenCommon<StackEventMap> {
       ({id}) => !outOfBoundsIds.includes(id),
     );
 
-    outOfBounds.forEach((expiredSound) => {
-      expiredSound.stop();
-    });
-
+    outOfBounds.forEach((expiredSound) => expiredSound.stop());
     this.#setQueue(filteredQueue);
 
     return newSound;
   }
 
   #setQueue(value: Sound[]) {
+    const oldKeys = [...this._keys];
+    const newKeys = value.map(({id}) => id);
+    const identicalKeys = arrayShallowEquals(oldKeys, newKeys);
+
     this.#queue = value;
-    this._keys = value.map(({id}) => id);
+    this._keys = newKeys;
+
+    if (!identicalKeys) {
+      this.emit('queue', newKeys, oldKeys);
+    }
   }
 
   #setState(value: StackState) {
     if (this._state === value) return;
 
     this._state = value;
-    this.emit('statechange', value);
+    this.emit('state', value);
   }
 
   readonly #handleStateFromQueue = () => {
     this.#setState(this.playing ? 'playing' : 'idle');
   };
 
-  readonly #handleSoundState: SoundEventMap['statechange'] = (_state) => {
+  readonly #handleSoundState: SoundEventMap['state'] = (_current) => {
     this.#handleStateFromQueue();
   };
 
   readonly #handleSoundEnded: SoundEventMap['ended'] = (event) => {
     this.#setQueue(this.#queue.filter(({id}) => id !== event.id));
-
     // We only set `stopping` state when `.stop()` is called.
-    // There is no `statechange` specifically for "ended".
+    // There is an `ending` value, but it is redundant with the `ended` event.
     this.#handleStateFromQueue();
   };
 }

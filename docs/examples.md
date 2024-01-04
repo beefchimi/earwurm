@@ -119,14 +119,14 @@ setTimeout(() => appleSound?.play(), appleSoundDuration + durationBuffer);
 
 **Determining state values:**
 
-While there is a dedicated `playing` property, you can obtain a more granular `state` by listening for the `statechange` event and checking the `state` property directly.
+While there is a dedicated `playing` property, you can obtain a more granular `state` by listening for the `state` event and checking the `state` property directly.
 
 ```ts
 let capturedState = sound.state;
 let isPaused = capturedState === 'paused';
 
-sound.on('statechange', (state) => {
-  capturedState = sound.state;
+sound.on('state', (state) => {
+  capturedState = state;
   isPaused = capturedState === 'paused';
 });
 ```
