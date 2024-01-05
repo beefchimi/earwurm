@@ -32,6 +32,7 @@ describe('Earwurm component', () => {
       expect(mockManager).toBeInstanceOf(Earwurm);
 
       // Instance properties
+      expect(mockManager).toHaveProperty('transitions', false);
       expect(mockManager).toHaveProperty('volume', 1);
       expect(mockManager).toHaveProperty('mute', false);
       expect(mockManager).toHaveProperty('unlocked', false);
@@ -49,6 +50,35 @@ describe('Earwurm component', () => {
 
   // `unlocked` getter is covered in `unlock()` test.
   // describe('unlocked', () => {});
+
+  describe('transitions', () => {
+    it('allows `set` and `get`', async () => {
+      expect(mockManager.transitions).toBe(false);
+      mockManager.transitions = true;
+      expect(mockManager.transitions).toBe(true);
+    });
+
+    it('updates equivalent prop on all contained Stacks', async () => {
+      const stackIds = mockEntries.map(({id}) => id);
+      mockManager.add(...mockEntries);
+
+      stackIds.forEach((id) => {
+        expect(mockManager.get(id)?.transitions).toBe(false);
+      });
+
+      mockManager.transitions = true;
+
+      stackIds.forEach((id) => {
+        expect(mockManager.get(id)?.transitions).toBe(true);
+      });
+
+      mockManager.transitions = false;
+
+      stackIds.forEach((id) => {
+        expect(mockManager.get(id)?.transitions).toBe(false);
+      });
+    });
+  });
 
   describe('keys', () => {
     it('contains ids of each active Stack', async () => {
@@ -289,10 +319,10 @@ describe('Earwurm component', () => {
       );
     });
 
-    // TODO: Figure out how best to read `fadeMs` and `request` from Stack.
-    it.skip('passes `fadeMs` and `request` to Stack', async () => {
+    // TODO: Figure out how best to read `transitions` and `request` from Stack.
+    it.skip('passes `transitions` and `request` to Stack', async () => {
       const mockConfig: ManagerConfig = {
-        fadeMs: 100,
+        transitions: true,
         request: {
           integrity: 'foo',
           method: 'bar',
