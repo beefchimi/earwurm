@@ -22,8 +22,6 @@ import type {
 import {Sound} from './Sound';
 
 export class Stack extends EmittenCommon<StackEventMap> {
-  static readonly maxStackSize = tokens.maxStackSize;
-
   static readonly #loadError = (
     id: StackId,
     path: string,
@@ -197,7 +195,7 @@ export class Stack extends EmittenCommon<StackEventMap> {
     // `queue/key` filtering.
     const newQueue = [...this.#queue, newSound];
 
-    const upperBound = newQueue.length - Stack.maxStackSize;
+    const upperBound = newQueue.length - tokens.maxStackSize;
     const outOfBounds = upperBound > 0 ? newQueue.slice(0, upperBound) : [];
     const outOfBoundsIds = outOfBounds.map(({id}) => id);
 

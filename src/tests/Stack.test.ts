@@ -30,9 +30,6 @@ describe('Stack component', () => {
     it('is initialized with default values', async () => {
       expect(mockStack).toBeInstanceOf(Stack);
 
-      // Class static properties
-      expect(Stack).toHaveProperty('maxStackSize', tokens.maxStackSize);
-
       // Instance properties
       expect(mockStack).toHaveProperty('volume', 1);
       expect(mockStack).toHaveProperty('mute', false);
@@ -474,12 +471,12 @@ describe('Stack component', () => {
       const spyEnded: SoundEventMap['ended'] = vi.fn((_ended) => {});
 
       // Fill the `queue` up with the exact max number of Sounds.
-      const pendingSounds = arrayOfLength(Stack.maxStackSize).map(
+      const pendingSounds = arrayOfLength(tokens.maxStackSize).map(
         async (_index) => await testStack.prepare(),
       );
 
       const sounds = await Promise.all(pendingSounds);
-      const additionalSoundsCount = Math.floor(Stack.maxStackSize / 2);
+      const additionalSoundsCount = Math.floor(tokens.maxStackSize / 2);
 
       sounds.forEach((sound) => {
         // We won't know what the exactly order of Sounds will be,
@@ -509,7 +506,7 @@ describe('Stack component', () => {
 
       await Promise.all(additionalSounds);
 
-      expect(testStack.keys).toHaveLength(Stack.maxStackSize);
+      expect(testStack.keys).toHaveLength(tokens.maxStackSize);
       expect(spyEnded).toBeCalledTimes(additionalSoundsCount);
     });
   });
