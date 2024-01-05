@@ -31,10 +31,6 @@ describe('Earwurm component', () => {
     it('is initialized with default values', async () => {
       expect(mockManager).toBeInstanceOf(Earwurm);
 
-      // Class static properties
-      expect(Earwurm).toHaveProperty('maxStackSize', tokens.maxStackSize);
-      expect(Earwurm).toHaveProperty('suspendAfterMs', tokens.suspendAfterMs);
-
       // Instance properties
       expect(mockManager).toHaveProperty('volume', 1);
       expect(mockManager).toHaveProperty('mute', false);
@@ -528,13 +524,7 @@ describe('Earwurm component', () => {
       });
 
       expect(() => mockManager.teardown()).toThrowError(mockErrorMessage);
-
-      /*
-      expect(spyError).toBeCalledWith([
-        Earwurm.errorMessage.close,
-        mockErrorMessage,
-      ]);
-      */
+      // expect(spyError).toBeCalledWith([tokens.error.close, mockErrorMessage]);
     });
 
     it('removes any event listeners', async () => {

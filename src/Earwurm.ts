@@ -17,14 +17,6 @@ import type {
 import {Stack} from './Stack';
 
 export class Earwurm extends EmittenCommon<ManagerEventMap> {
-  static readonly maxStackSize = tokens.maxStackSize;
-  static readonly suspendAfterMs = tokens.suspendAfterMs;
-
-  static readonly errorMessage = {
-    close: 'Failed to close the Earwurm AudioContext.',
-    resume: 'Failed to resume the Earwurm AudioContext.',
-  };
-
   private _volume = 1;
   private _mute = false;
   private _keys: StackId[] = [];
@@ -205,10 +197,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
         );
       })
       .catch((error) => {
-        this.emit('error', [
-          Earwurm.errorMessage.close,
-          getErrorMessage(error),
-        ]);
+        this.emit('error', [tokens.error.close, getErrorMessage(error)]);
       });
 
     this.empty();
@@ -227,7 +216,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
 
     if (this.#suspendId) clearTimeout(this.#suspendId);
 
-    this.#suspendId = setTimeout(this.#handleSuspend, Earwurm.suspendAfterMs);
+    this.#suspendId = setTimeout(this.#handleSuspend, tokens.suspendAfterMs);
   }
 
   #autoResume() {
@@ -238,10 +227,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
 
     if (this._state === 'suspended' || this._state === 'interrupted') {
       this.#context.resume().catch((error) => {
-        this.emit('error', [
-          Earwurm.errorMessage.resume,
-          getErrorMessage(error),
-        ]);
+        this.emit('error', [tokens.error.resume, getErrorMessage(error)]);
       });
     }
 
