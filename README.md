@@ -91,7 +91,7 @@ import type {ManagerConfig} from 'earwurm';
 
 // Optionally configure some global settings.
 const customConfig: ManagerConfig = {
-  fadeMs: 200,
+  transitions: true,
   request: {},
 };
 
