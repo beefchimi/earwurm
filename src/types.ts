@@ -28,7 +28,7 @@ export type ManagerEventMap = {
 
 export interface ManagerConfig {
   volume?: number;
-  fadeMs?: number;
+  transitions?: boolean;
   request?: RequestInit;
 }
 
@@ -59,7 +59,7 @@ export type StackEventMap = {
 
 export interface StackConfig {
   volume?: number;
-  fadeMs?: number;
+  transitions?: boolean;
   request?: RequestInit;
 }
 
@@ -97,10 +97,9 @@ export type SoundEventMap = {
   mute: (muted: boolean) => void;
   speed: (rate: number) => void;
   progress: (event: SoundProgressEvent) => void;
-  // loop(ended: boolean): void;
 };
 
 export interface SoundConfig {
   volume?: number;
-  fadeMs?: number;
+  transitions?: boolean;
 }
