@@ -125,14 +125,12 @@ manager.activeEvents;
 
 **Static members:**
 
-```ts
-// Retrieve the maximum `number` of sounds allowed to
-// be contained within a `Stack` at once.
-Earwurm.maxStackSize;
+There are no static members. However, there are some relevant static values that can be retrieved from the exported `tokens` object:
 
+```ts
 // Retrieve the total time (in milliseconds) that needs
 // to pass before the auto-suspension kicks in.
-Earwurm.suspendAfterMs;
+tokens.suspendAfterMs;
 ```
 
 ## Stack API
@@ -257,11 +255,12 @@ soundStack.activeEvents;
 
 **Static members:**
 
+There are no static members. However, there are some relevant static values that can be retrieved from the exported `tokens` object:
+
 ```ts
 // Retrieve the maximum `number` of sounds allowed to
-// be contained within a `Stack` at once. This is
-// identical to what can also be read from `Earwurm`.
-Stack.maxStackSize;
+// be contained within a `Stack` at once.
+tokens.maxStackSize;
 ```
 
 ## Sound API
