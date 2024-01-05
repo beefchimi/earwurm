@@ -31,6 +31,7 @@ describe('Stack component', () => {
       expect(mockStack).toBeInstanceOf(Stack);
 
       // Instance properties
+      expect(mockStack).toHaveProperty('transitions', false);
       expect(mockStack).toHaveProperty('volume', 1);
       expect(mockStack).toHaveProperty('mute', false);
       expect(mockStack).toHaveProperty('keys', []);
@@ -44,6 +45,38 @@ describe('Stack component', () => {
 
   // `volume` accessor is covered in `Abstract.test.ts`.
   // describe('volume', () => {});
+
+  describe('transitions', () => {
+    it('allows `set` and `get`', async () => {
+      expect(mockStack.transitions).toBe(false);
+      mockStack.transitions = true;
+      expect(mockStack.transitions).toBe(true);
+    });
+
+    it('updates equivalent prop on all contained Sounds', async () => {
+      const soundIds = ['One', 'Two', 'Three'];
+
+      for (const id of soundIds) {
+        await mockStack.prepare(id);
+      }
+
+      soundIds.forEach((id) => {
+        expect(mockStack.get(id)?.transitions).toBe(false);
+      });
+
+      mockStack.transitions = true;
+
+      soundIds.forEach((id) => {
+        expect(mockStack.get(id)?.transitions).toBe(true);
+      });
+
+      mockStack.transitions = false;
+
+      soundIds.forEach((id) => {
+        expect(mockStack.get(id)?.transitions).toBe(false);
+      });
+    });
+  });
 
   describe('keys', () => {
     it('contains ids of each unexpired Sound', async () => {
@@ -411,14 +444,13 @@ describe('Stack component', () => {
 
   describe('#create()', () => {
     const mockStackId = 'TestCreate';
-    const mockFadeMs = 8;
 
     const mockConstructorArgs: StackConstructor = [
       mockStackId,
       mockData.audio,
       defaultContext,
       defaultAudioNode,
-      {fadeMs: mockFadeMs},
+      {transitions: true},
     ];
 
     it('constructs Sound', async () => {
@@ -447,7 +479,7 @@ describe('Stack component', () => {
       // assert that it has been called with the expected parameters.
 
       // We still need to test for `options`.
-      // expect(sound).toHaveProperty('options.fadeMs', mockFadeMs);
+      // expect(sound).toHaveProperty('options.transitions', true);
     });
 
     it('registers `state` multi-listener on Sound', async () => {

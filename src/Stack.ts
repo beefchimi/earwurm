@@ -6,7 +6,7 @@ import {
   linearRamp,
   scratchBuffer,
 } from './helpers';
-import {arrayShallowEquals, clamp, msToSec, secToMs} from './utilities';
+import {arrayShallowEquals, clamp} from './utilities';
 import {tokens} from './tokens';
 
 import type {
@@ -31,13 +31,13 @@ export class Stack extends EmittenCommon<StackEventMap> {
     message: [`Failed to load: ${path}`, getErrorMessage(error)],
   });
 
-  private _volume = 1;
+  private _vol = 1;
   private _mute = false;
+  private _trans = false;
   private _keys: SoundId[] = [];
   private _state: StackState = 'idle';
 
   readonly #gainNode: GainNode;
-  readonly #fadeSec: number = 0;
   readonly #request: StackConfig['request'];
 
   #totalSoundsCreated = 0;
@@ -52,37 +52,50 @@ export class Stack extends EmittenCommon<StackEventMap> {
   ) {
     super();
 
-    this._volume = config?.volume ?? this._volume;
-    this.#fadeSec = config?.fadeMs ? msToSec(config.fadeMs) : this.#fadeSec;
+    this._vol = config?.volume ?? this._vol;
+    this._trans = Boolean(config?.transitions);
     this.#request = config?.request ?? undefined;
 
     this.#gainNode = this.context.createGain();
 
     this.#gainNode.connect(this.destination);
-    this.#gainNode.gain.setValueAtTime(this._volume, this.context.currentTime);
+    this.#gainNode.gain.setValueAtTime(this._vol, this.context.currentTime);
+  }
+
+  private get transDuration() {
+    return this._trans ? tokens.transitionSec : 0;
+  }
+
+  get transitions() {
+    return this._trans;
+  }
+
+  set transitions(value: boolean) {
+    this._trans = value;
+
+    this.#queue.forEach((sound) => {
+      sound.transitions = value;
+    });
   }
 
   get volume() {
-    return this._volume;
+    return this._vol;
   }
 
   set volume(value: number) {
-    const oldVolume = this._volume;
+    const oldVolume = this._vol;
     const newVolume = clamp(0, value, 1);
 
-    this._volume = newVolume;
+    this._vol = newVolume;
 
-    if (oldVolume !== newVolume) {
-      this.emit('volume', newVolume);
-    }
-
+    if (oldVolume !== newVolume) this.emit('volume', newVolume);
     if (this._mute) return;
 
     const {currentTime} = this.context;
     linearRamp(
       this.#gainNode.gain,
       {from: oldVolume, to: newVolume},
-      {from: currentTime, to: currentTime + this.#fadeSec},
+      {from: currentTime, to: currentTime + this.transDuration},
     );
   }
 
@@ -91,20 +104,18 @@ export class Stack extends EmittenCommon<StackEventMap> {
   }
 
   set mute(value: boolean) {
-    if (this._mute !== value) {
-      this.emit('mute', value);
-    }
+    if (this._mute !== value) this.emit('mute', value);
 
     this._mute = value;
 
-    const fromValue = value ? this._volume : 0;
-    const toValue = value ? 0 : this._volume;
+    const fromValue = value ? this._vol : 0;
+    const toValue = value ? 0 : this._vol;
 
     const {currentTime} = this.context;
     linearRamp(
       this.#gainNode.gain,
       {from: fromValue, to: toValue},
-      {from: currentTime, to: currentTime + this.#fadeSec},
+      {from: currentTime, to: currentTime + this.transDuration},
     );
   }
 
@@ -129,25 +140,18 @@ export class Stack extends EmittenCommon<StackEventMap> {
   }
 
   pause() {
-    this.#queue.forEach((sound) => {
-      sound.pause();
-    });
-
+    this.#queue.forEach((sound) => sound.pause());
     return this;
   }
 
   stop() {
-    this.#queue.forEach((sound) => {
-      sound.stop();
-    });
-
+    this.#queue.forEach((sound) => sound.stop());
     return this;
   }
 
   teardown() {
     this.stop();
     this.empty();
-
     return this;
   }
 
@@ -183,13 +187,13 @@ export class Stack extends EmittenCommon<StackEventMap> {
 
   #create(id: SoundId, buffer: AudioBuffer) {
     const newSound = new Sound(id, buffer, this.context, this.#gainNode, {
-      fadeMs: secToMs(this.#fadeSec),
+      transitions: this._trans,
     });
 
     newSound.on('state', this.#handleSoundState);
     newSound.once('ended', this.#handleSoundEnded);
 
-    // We do not filter out identical `id` values,
+    // TODO: We do not filter out identical `id` values,
     // so duplicate custom ids are possible... which means
     // identical ids could get wrongfully captured by any
     // `queue/key` filtering.
@@ -217,9 +221,7 @@ export class Stack extends EmittenCommon<StackEventMap> {
     this.#queue = value;
     this._keys = newKeys;
 
-    if (!identicalKeys) {
-      this.emit('queue', newKeys, oldKeys);
-    }
+    if (!identicalKeys) this.emit('queue', newKeys, oldKeys);
   }
 
   #setState(value: StackState) {
