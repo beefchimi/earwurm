@@ -86,9 +86,11 @@ export class Stack extends EmittenCommon<StackEventMap> {
     const oldVolume = this._vol;
     const newVolume = clamp(0, value, 1);
 
-    this._vol = newVolume;
+    if (oldVolume === newVolume) return;
 
-    if (oldVolume !== newVolume) this.emit('volume', newVolume);
+    this._vol = newVolume;
+    this.emit('volume', newVolume);
+
     if (this._mute) return;
 
     const {currentTime} = this.context;
@@ -104,9 +106,10 @@ export class Stack extends EmittenCommon<StackEventMap> {
   }
 
   set mute(value: boolean) {
-    if (this._mute !== value) this.emit('mute', value);
+    if (this._mute === value) return;
 
     this._mute = value;
+    this.emit('mute', value);
 
     const fromValue = value ? this._vol : 0;
     const toValue = value ? 0 : this._vol;
