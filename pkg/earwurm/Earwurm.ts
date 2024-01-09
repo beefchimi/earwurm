@@ -1,11 +1,13 @@
 import {EmittenCommon} from 'emitten';
 
-import {getErrorMessage, linearRamp, unlockAudioContext} from './helpers';
-import {arrayShallowEquals, clamp} from './utilities';
-import {tokens} from './tokens';
+import {getErrorMessage, linearRamp, unlockAudioContext} from '../helpers';
+import {arrayShallowEquals, clamp} from '../utilities';
+import type {TimeoutId} from '../types';
 
+import {Stack} from './Stack';
+
+import {tokens} from './tokens';
 import type {
-  TimeoutId,
   ManagerState,
   ManagerEventMap,
   ManagerConfig,
@@ -13,8 +15,6 @@ import type {
   StackId,
   StackEventMap,
 } from './types';
-
-import {Stack} from './Stack';
 
 export class Earwurm extends EmittenCommon<ManagerEventMap> {
   private _vol = 1;

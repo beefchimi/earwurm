@@ -1,11 +1,13 @@
 import {afterEach, describe, it, expect, vi} from 'vitest';
 
+import {mockData} from '../../mocks';
+import {arrayOfLength} from '../../utilities';
+
 import {Stack} from '../Stack';
 import {Sound} from '../Sound';
+
 import {tokens} from '../tokens';
-import {arrayOfLength} from '../utilities';
 import type {StackEventMap, SoundEventMap} from '../types';
-import {mockData} from './mock';
 
 type StackConstructor = ConstructorParameters<typeof Stack>;
 

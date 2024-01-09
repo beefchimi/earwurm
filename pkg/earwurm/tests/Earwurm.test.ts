@@ -1,8 +1,11 @@
 import {afterEach, describe, it, expect, vi} from 'vitest';
 
+import {mockData} from '../../mocks';
+
 import {Earwurm} from '../Earwurm';
 import {Stack} from '../Stack';
 import type {Sound} from '../Sound';
+
 import {tokens} from '../tokens';
 import type {
   ManagerEventMap,
@@ -10,7 +13,6 @@ import type {
   LibraryEntry,
   StackId,
 } from '../types';
-import {mockData} from './mock';
 
 describe('Earwurm component', () => {
   let mockManager = new Earwurm();

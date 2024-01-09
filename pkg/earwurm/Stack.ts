@@ -5,10 +5,12 @@ import {
   fetchAudioBuffer,
   linearRamp,
   scratchBuffer,
-} from './helpers';
-import {arrayShallowEquals, clamp} from './utilities';
-import {tokens} from './tokens';
+} from '../helpers';
+import {arrayShallowEquals, clamp} from '../utilities';
 
+import {Sound} from './Sound';
+
+import {tokens} from './tokens';
 import type {
   StackId,
   StackState,
@@ -18,8 +20,6 @@ import type {
   SoundId,
   SoundEventMap,
 } from './types';
-
-import {Sound} from './Sound';
 
 export class Stack extends EmittenCommon<StackEventMap> {
   static readonly #loadError = (
