@@ -1,5 +1,12 @@
 # Earwurm Changelog
 
+## 0.7.0
+
+### Minor Changes
+
+- 5f7e2b1: Remove all `static` members in favour of exported `tokens` object.
+- 5f7e2b1: Replace `fadeMs` option with `transitions` boolean.
+
 ## 0.6.0
 
 ### Minor Changes
