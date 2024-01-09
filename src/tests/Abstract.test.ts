@@ -1,7 +1,7 @@
 import {afterEach, describe, it, expect, vi} from 'vitest';
 
-import {msToSec} from '../utilities';
 import {Sound} from '../Sound';
+import {tokens} from '../tokens';
 import type {SoundConfig, SoundEventMap} from '../types';
 
 // This test covers any shared implementation between
@@ -40,29 +40,28 @@ describe('Abstract implementation', () => {
     it.todo('sets gain to 0 when muted');
     it.todo('sets gain to volume when un-muted');
 
-    it('fades to new value', async () => {
+    it('transitions to new value', async () => {
       const mockOptions: SoundConfig = {
         volume: 0.6,
-        fadeMs: 100,
+        transitions: true,
       };
 
-      const soundWithFade = new Sound(
-        'TestMuteFade',
+      const soundWithTrans = new Sound(
+        'TestMuteTrans',
         defaultAudioBuffer,
         defaultContext,
         defaultAudioNode,
         {...mockOptions},
       );
 
-      const fadeSec = msToSec(mockOptions.fadeMs ?? 0);
-      const endTime = defaultContext.currentTime + fadeSec;
+      const endTime = defaultContext.currentTime + tokens.transitionSec;
 
       const spyGainRamp = vi.spyOn(
         AudioParam.prototype,
         'linearRampToValueAtTime',
       );
 
-      soundWithFade.mute = true;
+      soundWithTrans.mute = true;
 
       // TODO: Check that `gain.value` is `mockOptions.volume`.
       // Then, `advanceTimersToNextTimer()` and check that
@@ -179,14 +178,14 @@ describe('Abstract implementation', () => {
       expect(spyGainRamp).not.toBeCalledTimes(2);
     });
 
-    it('fades to new volume', async () => {
+    it('transitions to new volume', async () => {
       const mockOptions: SoundConfig = {
         volume: 0.6,
-        fadeMs: 100,
+        transitions: true,
       };
 
-      const soundWithFade = new Sound(
-        'TestVolumeFade',
+      const soundWithTrans = new Sound(
+        'TestVolumeTrans',
         defaultAudioBuffer,
         defaultContext,
         defaultAudioNode,
@@ -194,15 +193,14 @@ describe('Abstract implementation', () => {
       );
 
       const newValue = 0.8;
-      const fadeSec = msToSec(mockOptions.fadeMs ?? 0);
-      const endTime = defaultContext.currentTime + fadeSec;
+      const endTime = defaultContext.currentTime + tokens.transitionSec;
 
       const spyGainRamp = vi.spyOn(
         AudioParam.prototype,
         'linearRampToValueAtTime',
       );
 
-      soundWithFade.volume = newValue;
+      soundWithTrans.volume = newValue;
 
       // TODO: Check that `gain.value` is `mockOptions.volume`.
       // Then, `advanceTimersToNextTimer()` and check that

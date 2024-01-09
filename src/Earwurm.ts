@@ -1,7 +1,7 @@
 import {EmittenCommon} from 'emitten';
 
 import {getErrorMessage, linearRamp, unlockAudioContext} from './helpers';
-import {arrayShallowEquals, clamp, msToSec, secToMs} from './utilities';
+import {arrayShallowEquals, clamp} from './utilities';
 import {tokens} from './tokens';
 
 import type {
@@ -17,24 +17,16 @@ import type {
 import {Stack} from './Stack';
 
 export class Earwurm extends EmittenCommon<ManagerEventMap> {
-  static readonly maxStackSize = tokens.maxStackSize;
-  static readonly suspendAfterMs = tokens.suspendAfterMs;
-
-  static readonly errorMessage = {
-    close: 'Failed to close the Earwurm AudioContext.',
-    resume: 'Failed to resume the Earwurm AudioContext.',
-  };
-
-  private _volume = 1;
+  private _vol = 1;
   private _mute = false;
+  private _trans = false;
   private _keys: StackId[] = [];
   private _state: ManagerState = 'suspended';
 
   readonly #context = new AudioContext();
   readonly #gainNode = this.#context.createGain();
-
-  readonly #fadeSec: number = 0;
   readonly #request: ManagerConfig['request'];
+
   #library: Stack[] = [];
   #suspendId: TimeoutId = 0;
   #queuedResume = false;
@@ -46,31 +38,46 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
   constructor(config?: ManagerConfig) {
     super();
 
-    this._volume = config?.volume ?? this._volume;
-    this.#fadeSec = config?.fadeMs ? msToSec(config.fadeMs) : this.#fadeSec;
+    this._vol = config?.volume ?? this._vol;
+    this._trans = Boolean(config?.transitions);
     this.#request = config?.request ?? undefined;
 
     this.#gainNode.connect(this.#context.destination);
-    this.#gainNode.gain.setValueAtTime(this._volume, this.#context.currentTime);
+    this.#gainNode.gain.setValueAtTime(this._vol, this.#context.currentTime);
 
     if (this._unlocked) this.#autoSuspend();
 
     this.#context.addEventListener('statechange', this.#handleStateChange);
   }
 
+  private get transDuration() {
+    return this._trans ? tokens.transitionSec : 0;
+  }
+
+  get transitions() {
+    return this._trans;
+  }
+
+  set transitions(value: boolean) {
+    this._trans = value;
+
+    this.#library.forEach((stack) => {
+      stack.transitions = value;
+    });
+  }
+
   get volume() {
-    return this._volume;
+    return this._vol;
   }
 
   set volume(value: number) {
-    const oldVolume = this._volume;
+    const oldVolume = this._vol;
     const newVolume = clamp(0, value, 1);
 
-    this._volume = newVolume;
+    if (oldVolume === newVolume) return;
 
-    if (oldVolume !== newVolume) {
-      this.emit('volume', newVolume);
-    }
+    this._vol = newVolume;
+    this.emit('volume', newVolume);
 
     if (this._mute) return;
 
@@ -78,7 +85,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     linearRamp(
       this.#gainNode.gain,
       {from: oldVolume, to: newVolume},
-      {from: currentTime, to: currentTime + this.#fadeSec},
+      {from: currentTime, to: currentTime + this.transDuration},
     );
   }
 
@@ -87,20 +94,19 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
   }
 
   set mute(value: boolean) {
-    if (this._mute !== value) {
-      this.emit('mute', value);
-    }
+    if (this._mute === value) return;
 
     this._mute = value;
+    this.emit('mute', value);
 
-    const fromValue = value ? this._volume : 0;
-    const toValue = value ? 0 : this._volume;
+    const fromValue = value ? this._vol : 0;
+    const toValue = value ? 0 : this._vol;
 
     const {currentTime} = this.#context;
     linearRamp(
       this.#gainNode.gain,
       {from: fromValue, to: toValue},
-      {from: currentTime, to: currentTime + this.#fadeSec},
+      {from: currentTime, to: currentTime + this.transDuration},
     );
   }
 
@@ -145,7 +151,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
       newKeys.push(id);
 
       const newStack = new Stack(id, path, this.#context, this.#gainNode, {
-        fadeMs: secToMs(this.#fadeSec),
+        transitions: this._trans,
         request: this.#request,
       });
 
@@ -205,10 +211,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
         );
       })
       .catch((error) => {
-        this.emit('error', [
-          Earwurm.errorMessage.close,
-          getErrorMessage(error),
-        ]);
+        this.emit('error', [tokens.error.close, getErrorMessage(error)]);
       });
 
     this.empty();
@@ -227,7 +230,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
 
     if (this.#suspendId) clearTimeout(this.#suspendId);
 
-    this.#suspendId = setTimeout(this.#handleSuspend, Earwurm.suspendAfterMs);
+    this.#suspendId = setTimeout(this.#handleSuspend, tokens.suspendAfterMs);
   }
 
   #autoResume() {
@@ -238,10 +241,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
 
     if (this._state === 'suspended' || this._state === 'interrupted') {
       this.#context.resume().catch((error) => {
-        this.emit('error', [
-          Earwurm.errorMessage.resume,
-          getErrorMessage(error),
-        ]);
+        this.emit('error', [tokens.error.resume, getErrorMessage(error)]);
       });
     }
 
@@ -265,9 +265,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     this.#library = library;
     this._keys = newKeys;
 
-    if (!identicalKeys) {
-      this.emit('library', newKeys, oldKeys);
-    }
+    if (!identicalKeys) this.emit('library', newKeys, oldKeys);
   }
 
   #setState(value: ManagerState) {

@@ -1,7 +1,7 @@
 import {EmittenCommon} from 'emitten';
 
 import {linearRamp} from './helpers';
-import {clamp, msToSec, progressPercentage} from './utilities';
+import {clamp, progressPercentage} from './utilities';
 import {tokens} from './tokens';
 import type {
   SoundId,
@@ -12,14 +12,14 @@ import type {
 } from './types';
 
 export class Sound extends EmittenCommon<SoundEventMap> {
-  private _volume = 1;
+  private _vol = 1;
   private _mute = false;
+  private _trans = false;
   private _speed = 1;
   private _state: SoundState = 'created';
 
   readonly #source: AudioBufferSourceNode;
   readonly #gainNode: GainNode;
-  readonly #fadeSec: number = 0;
   readonly #progress = {
     elapsed: 0,
     remaining: 0,
@@ -41,15 +41,15 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   ) {
     super();
 
-    this._volume = config?.volume ?? this._volume;
-    this.#fadeSec = config?.fadeMs ? msToSec(config.fadeMs) : this.#fadeSec;
+    this._vol = config?.volume ?? this._vol;
+    this._trans = Boolean(config?.transitions);
 
     this.#gainNode = this.context.createGain();
     this.#source = this.context.createBufferSource();
     this.#source.buffer = buffer;
 
     this.#source.connect(this.#gainNode).connect(this.destination);
-    this.#gainNode.gain.setValueAtTime(this._volume, this.context.currentTime);
+    this.#gainNode.gain.setValueAtTime(this._vol, this.context.currentTime);
     this.#progress.remaining = this.#source.buffer.duration;
 
     // The `ended` event is fired either when the sound has played its full duration,
@@ -61,19 +61,30 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     return this.activeEvents.some((event) => event === 'progress');
   }
 
+  private get transDuration() {
+    return this._trans ? tokens.transitionSec : 0;
+  }
+
+  get transitions() {
+    return this._trans;
+  }
+
+  set transitions(value: boolean) {
+    this._trans = value;
+  }
+
   get volume() {
-    return this._volume;
+    return this._vol;
   }
 
   set volume(value: number) {
-    const oldVolume = this._volume;
+    const oldVolume = this._vol;
     const newVolume = clamp(0, value, 1);
 
-    this._volume = newVolume;
+    if (oldVolume === newVolume) return;
 
-    if (oldVolume !== newVolume) {
-      this.emit('volume', newVolume);
-    }
+    this._vol = newVolume;
+    this.emit('volume', newVolume);
 
     if (this._mute) return;
 
@@ -81,7 +92,7 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     linearRamp(
       this.#gainNode.gain,
       {from: oldVolume, to: newVolume},
-      {from: currentTime, to: currentTime + this.#fadeSec},
+      {from: currentTime, to: currentTime + this.transDuration},
     );
   }
 
@@ -90,20 +101,19 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   }
 
   set mute(value: boolean) {
-    if (this._mute !== value) {
-      this.emit('mute', value);
-    }
+    if (this._mute === value) return;
 
     this._mute = value;
+    this.emit('mute', value);
 
-    const fromValue = value ? this._volume : 0;
-    const toValue = value ? 0 : this._volume;
+    const fromValue = value ? this._vol : 0;
+    const toValue = value ? 0 : this._vol;
 
     const {currentTime} = this.context;
     linearRamp(
       this.#gainNode.gain,
       {from: fromValue, to: toValue},
-      {from: currentTime, to: currentTime + this.#fadeSec},
+      {from: currentTime, to: currentTime + this.transDuration},
     );
   }
 
@@ -139,7 +149,7 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     linearRamp(
       this.#source.playbackRate,
       {from: oldSpeed, to: newSpeed},
-      {from: currentTime, to: currentTime + this.#fadeSec},
+      {from: currentTime, to: currentTime + this.transDuration},
     );
     */
 

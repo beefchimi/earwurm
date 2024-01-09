@@ -112,7 +112,7 @@ function handleQueueChange(keys: SoundId[]) {
 stack?.on('queuechange', (keys) => handleQueueChange(keys));
 
 async function handleQueuedPlay() {
-  if (!stack || stack.keys.length >= Stack.maxStackSize) return;
+  if (!stack || stack.keys.length >= tokens.maxStackSize) return;
 
   const sound = await stack.prepare();
   return sound;

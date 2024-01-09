@@ -27,6 +27,7 @@ describe('Sound component', () => {
     it('is initialized with default values', async () => {
       expect(testSound).toBeInstanceOf(Sound);
 
+      expect(testSound).toHaveProperty('transitions', false);
       expect(testSound).toHaveProperty('volume', 1);
       expect(testSound).toHaveProperty('mute', false);
       expect(testSound).toHaveProperty('speed', 1);
@@ -47,6 +48,21 @@ describe('Sound component', () => {
 
   // `volume` accessor is covered in `Abstract.test.ts`.
   // describe('volume', () => {});
+
+  describe('transitions', () => {
+    it('allows `set` and `get`', async () => {
+      const testSound = new Sound(
+        'TestTransitions',
+        defaultAudioBuffer,
+        defaultContext,
+        defaultAudioNode,
+      );
+
+      expect(testSound.transitions).toBe(false);
+      testSound.transitions = true;
+      expect(testSound.transitions).toBe(true);
+    });
+  });
 
   describe('speed', () => {
     const testSound = new Sound(
