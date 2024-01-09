@@ -5,8 +5,8 @@ import {
   fetchAudioBuffer,
   linearRamp,
   scratchBuffer,
-} from '../helpers';
-import {arrayShallowEquals, clamp} from '../utilities';
+} from '../../helpers';
+import {arrayShallowEquals, clamp} from '../../utilities';
 
 import {Sound} from './Sound';
 

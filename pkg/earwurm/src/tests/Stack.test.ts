@@ -1,7 +1,7 @@
 import {afterEach, describe, it, expect, vi} from 'vitest';
 
-import {mockData} from '../../mocks';
-import {arrayOfLength} from '../../utilities';
+import {mockData} from '../../../mocks';
+import {arrayOfLength} from '../../../utilities';
 
 import {Stack} from '../Stack';
 import {Sound} from '../Sound';

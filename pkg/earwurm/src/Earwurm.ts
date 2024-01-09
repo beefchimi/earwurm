@@ -1,8 +1,8 @@
 import {EmittenCommon} from 'emitten';
 
-import {getErrorMessage, linearRamp, unlockAudioContext} from '../helpers';
-import {arrayShallowEquals, clamp} from '../utilities';
-import type {TimeoutId} from '../types';
+import {getErrorMessage, linearRamp, unlockAudioContext} from '../../helpers';
+import {arrayShallowEquals, clamp} from '../../utilities';
+import type {TimeoutId} from '../../types';
 
 import {Stack} from './Stack';
 

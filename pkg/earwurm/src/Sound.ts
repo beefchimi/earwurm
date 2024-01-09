@@ -1,7 +1,7 @@
 import {EmittenCommon} from 'emitten';
 
-import {linearRamp} from '../helpers';
-import {clamp, progressPercentage} from '../utilities';
+import {linearRamp} from '../../helpers';
+import {clamp, progressPercentage} from '../../utilities';
 
 import {tokens} from './tokens';
 import type {
