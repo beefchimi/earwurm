@@ -6,7 +6,7 @@ import {
   MockAudioContext,
   MockAudioNode,
   MockAudioParam,
-} from '../src/tests/mock';
+} from '../pkg/mocks';
 
 // We may need to stub more globals as we encounter
 // errors during testing.
