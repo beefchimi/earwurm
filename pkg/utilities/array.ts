@@ -1,4 +1,4 @@
-import type {PrimitiveType} from '../types';
+import type {PrimitiveType} from '@earwurm/types';
 
 export function arrayOfLength(length = 0): number[] {
   return Array.from(Array(length)).map((_item, index) => index);
