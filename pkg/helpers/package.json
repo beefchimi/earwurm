@@ -1,0 +1,10 @@
+{
+  "name": "@earwurm/helpers",
+  "private": "true",
+  "version": "0.0.0",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "@earwurm/mocks": "workspace:*"
+  }
+}

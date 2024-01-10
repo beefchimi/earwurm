@@ -1,16 +1,10 @@
 {
-  "name": "earwurm",
-  "version": "0.7.0",
-  "description": "Browser audio for the modern age",
+  "name": "earwurm-monorepo",
+  "version": "0.0.0",
+  "description": "Monorepo for the Earwurm TypeScript project",
   "author": "Curtis Dulmage",
   "license": "ISC",
-  "keywords": [
-    "browser",
-    "web",
-    "audio",
-    "sound",
-    "webm"
-  ],
+  "keywords": [],
   "homepage": "https://github.com/beefchimi/earwurm#readme",
   "bugs": {
     "url": "https://github.com/beefchimi/earwurm/issues"
@@ -19,44 +13,24 @@
     "type": "git",
     "url": "git+https://github.com/beefchimi/earwurm.git"
   },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org"
-  },
-  "type": "module",
-  "main": "./dist/earwurm.umd.js",
-  "module": "./dist/earwurm.es.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
-  "exports": {
-    ".": {
-      "import": "./dist/earwurm.es.js",
-      "require": "./dist/earwurm.umd.js",
-      "types": "./dist/index.d.ts"
-    }
-  },
   "engines": {
     "node": ">=20.10.0",
     "npm": ">=10.2.0"
   },
   "scripts": {
-    "clean": "rm -rf coverage && rm -rf dist",
-    "nuke": "npm run clean && rm -rf node_modules && rm -rf package-lock.json && npm cache clean --force",
-    "build": "npm run clean && tsc && vite build",
+    "clean": "pnpm -r clean",
+    "nuke": "pnpm clean && ./scripts/nuke.sh",
+    "start": "pnpm -r --parallel --stream start",
+    "build": "pnpm -r build",
     "lint": "eslint . --ext .ts",
-    "lint:fix": "npm run lint -- --fix",
-    "format": "prettier --check src/",
-    "format:fix": "prettier --write src/",
+    "lint:fix": "pnpm lint -- --fix",
+    "format": "prettier --check app/ config/ docs/ pkg/ scripts/",
+    "format:fix": "prettier --write app/ config/ docs/ pkg/ scripts/",
     "test": "vitest --pool forks",
     "test:ui": "vitest --ui",
     "coverage": "vitest --run --coverage",
     "report": "changeset",
-    "release": "npm run build && changeset publish"
-  },
-  "dependencies": {
-    "emitten": "^0.6.2"
+    "release": "pnpm build && changeset publish"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.0",
@@ -76,10 +50,6 @@
     "prettier": "^3.1.1",
     "typescript": "^5.3.3",
     "vite": "^5.0.10",
-    "vite-plugin-dts": "^3.7.0",
     "vitest": "^1.1.2"
-  },
-  "peerDependencies": {
-    "emitten": "^0.6.2"
   }
 }
