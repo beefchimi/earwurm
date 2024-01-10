@@ -1,4 +1,4 @@
-import {secToMs} from '../utilities';
+import {secToMs} from '@earwurm/utilities';
 import {createErrorMessage} from './mock-utils';
 
 function internalMessage(methodName: string, ...args: unknown[]) {
