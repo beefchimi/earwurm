@@ -1,6 +1,6 @@
 import {afterEach, describe, it, expect, vi} from 'vitest';
+import {audioBufferSourceNodeEndedEvent} from '@earwurm/mocks';
 
-import {audioBufferSourceNodeEndedEvent} from '../../mocks';
 import {unlockAudioContext} from '../unlock-audio-context';
 
 describe('unlockAudioContext()', () => {

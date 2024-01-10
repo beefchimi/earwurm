@@ -1,6 +1,6 @@
 import {describe, it, expect} from 'vitest';
+import {mockData} from '@earwurm/mocks';
 
-import {mockData} from '../../mocks';
 import {fetchAudioBuffer} from '../fetch-audio-buffer';
 
 describe('fetchAudioBuffer()', () => {
