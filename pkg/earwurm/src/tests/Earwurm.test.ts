@@ -1,6 +1,5 @@
 import {afterEach, describe, it, expect, vi} from 'vitest';
-
-import {mockData} from '../../../mocks';
+import {mockData} from '@earwurm/mocks';
 
 import {Earwurm} from '../Earwurm';
 import {Stack} from '../Stack';

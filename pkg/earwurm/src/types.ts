@@ -1,4 +1,4 @@
-import type {CombinedErrorMessage} from '../../types';
+import type {CombinedErrorMessage} from '@earwurm/types';
 
 export type ManagerState = AudioContextState | 'suspending' | 'interrupted';
 

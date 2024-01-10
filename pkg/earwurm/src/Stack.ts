@@ -1,15 +1,13 @@
 import {EmittenCommon} from 'emitten';
-
 import {
   getErrorMessage,
   fetchAudioBuffer,
   linearRamp,
   scratchBuffer,
-} from '../../helpers';
-import {arrayShallowEquals, clamp} from '../../utilities';
+} from '@earwurm/helpers';
+import {arrayShallowEquals, clamp} from '@earwurm/utilities';
 
 import {Sound} from './Sound';
-
 import {tokens} from './tokens';
 import type {
   StackId,
