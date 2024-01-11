@@ -16,13 +16,9 @@ soundStack.cached;
 /// Events
 
 // Capture the moment the audio asset fetch request changes
-// from `false` to `true`. Will noever fire if an `error`
+// from `false` to `true`. Will never fire if an `error`
 // occurs, or if the asset is already cached on initialization.
-soundStack.onCache((cached: true) => void);
-
-// Capture the `error` thrown from the audio asset request,
-// or the subsequent decoding of that response data.
-soundStack.onError((error: unknown) => void);
+soundStack.on('cache', () => void);
 ```
 
 ## Sound
@@ -58,9 +54,6 @@ sound.reverse = true || false;
 // by the browser as a way to free-up memory.
 sound.loaded;
 
-// Get the “current play time” for this `Sound`.
-sound.elapsed;
-
 // Get a `boolean` for whether or not this `Sound` is
 // to be played in the “reverse” direction.
 sound.reverse;
@@ -73,25 +66,9 @@ sound.sprite;
 ///
 /// Events
 
-// Event called whenever `.play()` is triggered.
-sound.onPlay(() => void);
-
-// Event called whenever `.pause()` is triggered.
-sound.onPause(() => void);
-
-// Event called whenever `.stop()` is triggered.
-sound.onStop(() => void);
-
-// Event called each time a “loop” restarts.
-sound.onLoop(() => void);
-
-// Event called whenever `elapsed` changes while
-// the `Sound` is `playing`.
-sound.onProgress(({elapsed, progress}) => void);
-
 // Event called whenever there is an `Error` thrown
 // from the `Sound`.
-sound.onError((error) => void);
+soundStack.on('error', (message: CombinedErrorMessage) => void);
 ```
 
 ## Concerns
@@ -100,6 +77,3 @@ sound.onError((error) => void);
   - If we find that the `Sound` is not getting removed from the `Stack`, perhaps it is because `.empty()` is called before the `listener` has run.
 - Is having `context` and `destination` set to `readonly` allowing consumer's to hijack the inidivual properties attached to the `AudioContext` and `AudioNode`?
   - If so, we will need to switch these to being private.
-- What happens when I try to call `.play()` on an already destroyed `Sound`?
-  - Is that variable now `undefined`?
-  - Do I need to add a early return within the `.play()` method?

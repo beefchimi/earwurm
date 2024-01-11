@@ -6,9 +6,7 @@ While we are intentionally keeping the scope of `Earwurm` to an absolute minimum
 
 ## Tasks
 
-1. Calculate `elapsed` time per-sound.
-   - If this can be achieved _(taking into consideration how `speed` will influence the calculation of `elapsed`)_, then we can add a `progress` event.
-2. Finish docs.
+1. Finish docs.
    - We need to elaborate on returning a `scratchBuffer` if the `fetch` fails.
    - If we failed to load the sound, return a “scratch buffer” so that we can still register an `ended` listener and call `.stop()` on the `source`. Since `Stack` will `emit` an `error` event with the `Sound > id`, consumer’s can listen for that event and perform their own handling.
 
@@ -16,8 +14,8 @@ While we are intentionally keeping the scope of `Earwurm` to an absolute minimum
 
 1. Should we make `context` available to the consumer so that they can re-use it for other things?
    - Can cause many complications within `Earwurm`.
-2. Should we have some “SSR detection” to know if we can actually use the `Web Audio API`?
-   - Can the `Web Audio API` work on a server?
+2. Should we have some “SSR/node detection” to know if we can actually use the `Web Audio API`?
+   - Can the `Web Audio API` work on a server / in node?
 3. Should we offer a utility to help detect:
    - `AudioContext` support.
    - `webm` format support.
@@ -42,17 +40,15 @@ While we are intentionally keeping the scope of `Earwurm` to an absolute minimum
     - We could introduce this private property: `#audioBuffer: AudioBuffer | null;`
     - And then add an option to the `config` for `cacheAudioBuffer?: boolean;`
     - This would have to be flagged as potentially "dangerous", as I imagine caching too many buffers creates considerable overhead.
-11. Considering adding a `queuechange` event on `Stack`.
-    - We could simply `.emit()` from `#setQueue` and pass `keys` as the argument.
-12. Do we need to re-check the `#queue` state when a sound has `ended`?
+11. Do we need to re-check the `#queue` state when a sound has `ended`?
     - This would be done within `Stack > #handleSoundEnded`.
     - A sound goes into a `stopping` state first, which will trigger `#setStateFromQueue`. There shouldn't be any reason for the `ended` event to fail… but if so, then we will need to re-check.
-13. Find out if `statechange` event listeners automatically get removed upon calling `.close()` / state change to `closed` on a `AudioContext`.
+12. Find out if `statechange` event listeners automatically get removed upon calling `.close()` / state change to `closed` on a `AudioContext`.
     - If so, then I can remove the `.close().then()` chain.
-14. Consider adding a `readonly parent` to both `Stack` and `Sound`.
+13. Consider adding a `readonly parent` to both `Stack` and `Sound`.
     - The value of each would be `this` from either the `Manager` or the `Stack`.
     - Example: This would allow me to know what `Stack` manages a particular `Sound`.
-15. Consider setting `Stack > state` to `closed` on `teardown`.
+14. Consider setting `Stack > state` to `closed` on `teardown`.
     - This way, there is a better mechanism to removing a `Stack` after listening to a `statechange`.
 
 ### Additional

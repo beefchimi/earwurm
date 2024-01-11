@@ -8,34 +8,39 @@ The following examples should help demonstrate _most of the_ common use cases fo
 
 **Initialization:**
 
-In order to start making noise, we need to have a `Earwurm` instance to work with.
+In order to start making noise, we will need to have an `Earwurm` instance to work with.
 
 ```ts
+// Initialize the “manager”.
 const manager = new Earwurm();
 manager.add({id: 'MyStack', path: 'path/to/my/sound.webm'});
 
+// Now play some sounds!
 const stack = manager.get('MyStack');
+const sound = await stack?.prepare();
+
+sound?.play();
 ```
 
 **Enabling autoplay:**
 
 Most browsers will intentionally block audio from playing automatically. The user should not be caught off guard with unwanted noise… annoying advertisements be damned! Any media should be explicitly initialized by the user.
 
-With that said, sometimes you just _need to autoplay audio_. In that case, you likely need to “unlock” the ability to play audio.
+With that said, sometimes we just _need to autoplay audio_. In that case, we likely need to “unlock” the ability to play audio.
 
 ```ts
 // It is safe to call `unlock()` even if the browser
 // has already “unlocked” the `AudioContext`.
 manager.unlock();
 
-// You can always check `unlocked` status before
+// We can always check `unlocked` status before
 // performing an audio action.
-if (manager.unlocked) stack.play();
+if (manager.unlocked) sound?.play();
 ```
 
 **Adding entries:**
 
-You can add as few as `1` new `Stack` at a time.
+We can add as few as `1` new `Stack` at a time.
 
 ```ts
 // Add one new `Stack` entry.
@@ -70,14 +75,14 @@ manager.add(
 
 **Removing entries:**
 
-Similarly, we can remove entries that we have already added:
+Similarly, we can remove any entries that have already been added:
 
 ```ts
 // Remove one entry at a time, referencing the `id`
 // that was used when added.
 manager.remove('SomeStack');
 
-// If you call `.remove()` on an `id` that does not exist,
+// If we call `.remove()` on an `id` that does not exist,
 // the result will simply be an empty array.
 // > []
 
@@ -101,10 +106,10 @@ const appleSound = await appleStack?.prepare();
 // It is possible that we have asked for an `id` that
 // does not exist, so we will guard against `undefined`.
 if (appleSound) {
-  appleSound.volume(0.8);
+  appleSound.volume = 0.8;
   appleSound.play();
-  // We only wanted this sound to play once,
-  // so go ahead and remove it after it has ended.
+  // We only wanted this `Stack > Sound` to play once,
+  // so we remove the entire `Stack` once it has ended.
   appleSound.on('ended', () => manager.remove('Apple'));
 }
 
@@ -117,9 +122,37 @@ const durationBuffer = 100;
 setTimeout(() => appleSound?.play(), appleSoundDuration + durationBuffer);
 ```
 
+The creation of a sound is asynchronous, which means we need to wait for it to be “ready” before we can perform actions on it. There are two patterns for this:
+
+```ts
+// Await the sound assignment as it is being prepared.
+const sound1 = await stack?.prepare();
+if (sound1) sound1.play();
+
+// Or, perform our action as a `.then()` callback.
+const sound2 = stack?.prepare();
+if (sound2) sound2.then((soundInstance) => soundInstance.play());
+```
+
 **Determining state values:**
 
-While there is a dedicated `playing` property, you can obtain a more granular `state` by listening for the `state` event and checking the `state` property directly.
+A `Stack` instance will have a dedicated `playing` property to help identify if _atleast one contained `Sound`_ is actively “playing”.
+
+Additionally, the `state` property is exposed which can give us a better idea of what the current state is.
+
+If we want real time updates, we can subscribe to the `state` change event instead.
+
+```ts
+// Get a `true` or `false` value.
+const isPlaying = stack.playing;
+
+// Or get a string value for the current state.
+const currentState = stack.state;
+
+stack.on('state', (currentState) => console.log(currentState));
+```
+
+Many of the same rules apply to a `Sound` instance.
 
 ```ts
 let capturedState = sound.state;
@@ -135,13 +168,13 @@ sound.on('state', (state) => {
 
 As discussed in the `Design` document, sounds within the `AudioContext` are “one-and-done”. A `Sound` is “destroyed” upon completion.
 
-Depending on your needs, you can tailor the behaviour in several ways.
+Depending on our needs, we can tailor the behaviour in several ways.
 
 **Allowing sounds to overlap:**
 
-Every time you make a call to `.prepare()`, you “create a new instance” of that `Sound` within the `Stack`. After calling `.play()`, that `Sound` then “expires” and is removed from the `Stack` upon completion _(or call to `.stop()`)_.
+Every time we make a call to `.prepare()`, we “create a new instance” of that `Sound` within the `Stack`. After calling `.play()`, that `Sound` then “expires” and is removed from the `Stack` upon completion _(or call to `.stop()`)_.
 
-Depending on the `duration` of the `Sound`, rapid consecutive calls to `.prepare()` followed by `.play()` will create a “stack of sounds” that overlap. If this is your intention, then implemention is very simple.
+Depending on the `duration` of the `Sound`, rapid consecutive calls to `.prepare()` followed by `.play()` will create a “stack of sounds” that overlap. If this is our intention, then implemention is very simple.
 
 This is referred to as the “Overlapping pattern”:
 
@@ -151,8 +184,8 @@ const overlapStack = manager.get('MyStack');
 async function handleOverlappingPlay() {
   if (!overlapStack) return;
 
-  const sound = overlapStack.prepare();
-  const playedSound = await sound.play();
+  const sound = await overlapStack.prepare();
+  const playedSound = sound.play();
 
   return playedSound;
 }
@@ -162,9 +195,9 @@ return <Button onClick={handleOverlappingPlay}>Overlap</Button>;
 
 **Restricting a `Sound` to a single instance:**
 
-If you do not want consecutive plays of a `Sound` to overlap, you can restrict the `Stack` to allow only a single `Sound` in the `queue` at once. Simply checking for `stack.keys.length` will let you know how many sounds have been queued up.
+If we do not want consecutive plays of a `Sound` to overlap, we can restrict the `Stack` to allow only a single `Sound` in the `queue` at once. Simply checking for `stack.keys.length` will let us know how many sounds have been queued up.
 
-In this example, we will avoid additional calls to `.prepare()` if the `queue` exceeds `1`. This is refferd to as the “One-at-a-time pattern”:
+In this example, we will avoid additional calls to `.prepare()` if the `queue` exceeds `1`. This is referred to as the “One-at-a-time pattern”:
 
 ```tsx
 const singleStack = manager.get('MyStack');
@@ -174,8 +207,8 @@ const singleStack = manager.get('MyStack');
 async function handleSinglePlay() {
   if (!singleStack || singleStack.keys.length >= 1) return;
 
-  const sound = singleStack.prepare();
-  const playedSound = await sound.play();
+  const sound = await singleStack.prepare();
+  const playedSound = sound.play();
 
   return playedSound;
 }
@@ -183,7 +216,7 @@ async function handleSinglePlay() {
 return <Button onClick={handleSinglePlay}>Single</Button>;
 ```
 
-It could be that there are sounds in the `queue` that were paused. You might decide to clear out any non-playing sounds whenever a new call to `.play()` is requested.
+It could be that there are sounds in the `queue` that were paused. We might decide to clear out any non-playing sounds whenever a new call to `.play()` is requested.
 
 ```tsx
 async function handleSinglePlay() {
@@ -197,8 +230,8 @@ async function handleSinglePlay() {
     singleStack.stop();
   }
 
-  const sound = singleStack.prepare();
-  const playedSound = await sound.play();
+  const sound = await singleStack.prepare();
+  const playedSound = sound.play();
 
   return playedSound;
 }
@@ -215,12 +248,12 @@ const restartStack = manager.get('MyStack');
 // will stop then restart the `Sound`.
 function handleRestartPlay() {
   if (!restartStack) return;
-  // If you are treating this as a “single instance sound”,
+  // If we are treating this as a “single instance sound”,
   // then it is fine to call `.stop()` on an already "stopped" `Stack`.
   restartStack.stop();
 
-  const sound = restartStack.prepare();
-  const playedSound = await sound.play();
+  const sound = await restartStack.prepare();
+  const playedSound = sound.play();
 
   return playedSound;
 }
@@ -230,7 +263,7 @@ return <Button onClick={handleRestartPlay}>Restart</Button>;
 
 **Restricting a specific `Sound` in the `Stack`:**
 
-If you are re-using the same `Sound` in multiple places throughout the app, it could be beneficial to re-use the same variable reference.
+If we are re-using the same `Sound` in multiple places throughout the app, it could be beneficial to re-use the same variable reference.
 
 Here is another example of the “One-at-a-time pattern”, but referrencing a specific variable:
 
@@ -246,8 +279,136 @@ sound?.on('ended', () => {
 });
 
 function handleSoundPlay() {
-  if (!sound?.playing) single.play();
+  sound?.play();
 }
 
 return <Button onClick={handleSinglePlay}>Single</Button>;
 ```
+
+**Managing a `Sound` queue:**
+
+The problem with the “One-at-a-time” pattern is that it prevents adding a `Sound` to the `stack.queue` if `state` is `playing`. If the behaviour we _really want_ is to queue up a sound to play as soon as `state` is no longer `playing`, we can utilize the “Wait-your-turn pattern”:
+
+The pattern works like so:
+
+1. Listen for `queue` change event on the `Stack`.
+2. Prepare a sound.
+   - Remember, there is a limit to the number of sounds that can be queued within a `Stack`!
+3. When the `queue` has changed:
+   - Get the first sound in the `queue` and call `.play()`
+
+```tsx
+const stack = manager.get('MyStack');
+
+const handleQueueChange: StackEventMap['queue'] = (newKeys, _oldKeys) => {
+  if (!stack || !stack.keys.length) return;
+
+  const firstId = stack.keys[0];
+  const firstSound = stack.get(firstId ?? '');
+
+  // It is harmless to call `.play()` on a `Sound` that is already playing.
+  firstSound?.play();
+};
+
+stack?.on('queue', handleQueueChange);
+
+async function handleQueuedPlay() {
+  if (!stack || stack.keys.length >= tokens.maxStackSize) return;
+
+  const sound = await stack.prepare();
+
+  // No real reason to return anything from this function...
+  return sound;
+}
+
+return <Button onClick={handleQueuedPlay}>Queue and play</Button>;
+```
+
+This same pattern could be achieved using the `Sound > ended` event instead:
+
+```tsx
+const stack = manager.get('MyStack');
+
+const handleSoundEnded: SoundEventMap['ended'] = (event) => {
+  if (!stack) return;
+
+  // By the time this Sound has "ended", it should be
+  // removed from it’s Stack queue.
+  const firstId = stack.keys[0];
+  const firstSound = stack.get(firstId ?? '');
+
+  firstSound?.play();
+};
+
+async function handleQueuedPlay() {
+  if (!stack || stack.keys.length >= tokens.maxStackSize) return;
+
+  const sound = await stack.prepare();
+  sound?.once('ended', handleSoundEnded);
+}
+
+return <Button onClick={handleQueuedPlay}>Queue and play</Button>;
+```
+
+**Stopping after an elapsed play time:**
+
+```ts
+const stack = manager.get('MyStack');
+const sound = await stack?.prepare();
+
+// We will store the result of calling `.play()` and `.stop()`,
+// but we can also access the `sound?.state` property
+// to know when a sound is actively `playing`.
+let isPlaying = false;
+let completion = '0%';
+
+if (sound) {
+  sound.play();
+
+  isPlaying = sound.playing;
+
+  sound.on('progress', ({elapsed, progress}) => {
+    if (progress === 50) sound.stop();
+
+    // This is a silly example of using `elapsed`. Realistically,
+    // we would simply check if `progress >= 50`.
+    const isHalfway = elapsed === Math.min(0, sound.duration / 2);
+
+    // `progress` is returning a value between `0` and `100`.
+    // Example: `elapsed / duration * 100`.
+    completion = `${progress}%`;
+  });
+
+  sound.on('ended', ({id}) => {
+    console.log(`Sound ${id} has been stopped at ${completion} completion`);
+  });
+}
+```
+
+**Looping audio:**
+
+We can easily toggle a `Sound` to “loop indefinitely” by the `sound.loop` accessor.
+
+```tsx
+const stack = manager.get('MyStack');
+const sound = await stack?.prepare();
+
+let playCount = 0;
+
+if (sound) {
+  sound.loop = true;
+  sound.play();
+
+  // Retrieve the `iterations` count by listening to the `progress` event.
+  sound?.on('progress', ({iterations}) => {
+    playCount = iterations;
+
+    // Keep in mind, `iterations` is only incremented at the start of a loop.
+    if (iterations = 10) sound.stop();
+  });
+}
+```
+
+## Summary
+
+Hopefully this document has provided enough examples to help you identify the capabilities of `earwurm`. If you are anxious to start experimenting, please check out the included demo app within this repo!
