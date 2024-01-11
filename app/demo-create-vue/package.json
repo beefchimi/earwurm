@@ -14,7 +14,7 @@
     "preview": "vite preview --host",
     "build": "pnpm --parallel type-check && vite build",
     "lint": "eslint . --ext .vue,.ts",
-    "lint:fix": "pnpm lint -- --fix",
+    "lint:fix": "eslint . --fix --ext .vue,.ts",
     "format": "prettier --check src/ index.html",
     "format:fix": "prettier --write src/ index.html",
     "type-check": "vue-tsc --build --force"
