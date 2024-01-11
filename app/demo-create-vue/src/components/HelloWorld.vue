@@ -8,6 +8,7 @@ interface HelloWorldProps {
 
 defineProps<HelloWorldProps>();
 
+// eslint-disable-next-line no-console
 console.log('666ms converted to seconds:', msToSec(666));
 </script>
 
