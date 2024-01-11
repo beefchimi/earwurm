@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@earwurm/utilities": "workspace:*",
+    "earwurm": "workspace:*",
     "vue": "^3.4.8"
   },
   "devDependencies": {

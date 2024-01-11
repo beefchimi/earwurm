@@ -65,6 +65,9 @@ importers:
       '@earwurm/utilities':
         specifier: workspace:*
         version: link:../../pkg/utilities
+      earwurm:
+        specifier: workspace:*
+        version: link:../../pkg/earwurm
       vue:
         specifier: ^3.4.8
         version: 3.4.10(typescript@5.3.3)
