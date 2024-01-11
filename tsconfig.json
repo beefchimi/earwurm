@@ -1,23 +1,17 @@
 {
-  "compileOnSave": false,
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
     "lib": ["esnext", "dom"],
     "moduleResolution": "bundler",
     "strict": true,
-    "allowJs": false,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": false,
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "noEmit": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "skipLibCheck": true
   },
-  "include": ["./vite.config.ts", "./config/**/*", "./pkg/**/*"],
-  "exclude": ["./node_modules/**/*"]
+  "include": ["vite.config.ts", "config/**/*", "pkg/**/*"]
 }
