@@ -8,6 +8,10 @@
     "aaron-bond.better-comments",
     "DavidAnson.vscode-markdownlint",
     "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "Vue.volar",
+    "Vue.vscode-typescript-vue-plugin",
+    "csstools.postcss",
+    "stylelint.vscode-stylelint"
   ]
 }
