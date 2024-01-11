@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type {PrimitiveType} from '@earwurm/types';
 import {msToSec} from '@earwurm/utilities';
+import {Earwurm, tokens} from 'earwurm';
 
 interface HelloWorldProps {
   msg?: PrimitiveType;
@@ -10,6 +11,14 @@ defineProps<HelloWorldProps>();
 
 // eslint-disable-next-line no-console
 console.log('666ms converted to seconds:', msToSec(666));
+
+// eslint-disable-next-line no-console
+console.log('tokens.maxSpeed', tokens.maxSpeed);
+
+const manager = new Earwurm();
+
+// eslint-disable-next-line no-console
+console.log('manager', manager);
 </script>
 
 <template>
