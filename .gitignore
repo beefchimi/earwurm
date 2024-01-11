@@ -26,6 +26,18 @@ Temporary Items
 .sass-cache
 *.tsbuildinfo
 
+# Code editor
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
 # Build
 build
 dist
@@ -34,8 +46,7 @@ storybook-static
 
 # Environment
 .env
-.env.test
-.env.production
+.env.*
 
 # Vite
 *.local
@@ -77,7 +88,7 @@ pids
 .npm
 .yarn-integrity
 node_modules
-web_modules/
+web_modules
 
 # Output of 'npm pack'
 *.tgz
