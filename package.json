@@ -23,7 +23,7 @@
     "start": "pnpm -r --parallel --stream start",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint && eslint . --ext .ts",
-    "lint:fix": "pnpm -r lint:fix && eslint --fix --ext .ts .",
+    "lint:fix": "pnpm -r lint:fix && eslint . --fix --ext .ts",
     "format": "prettier --check app/ config/ docs/ pkg/ scripts/",
     "format:fix": "prettier --write app/ config/ docs/ pkg/ scripts/",
     "type-check": "pnpm -r type-check",
