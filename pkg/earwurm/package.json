@@ -48,17 +48,22 @@
   },
   "dependencies": {
     "@earwurm/helpers": "workspace:*",
-    "@earwurm/types": "workspace:*",
     "@earwurm/utilities": "workspace:*",
     "emitten": "^0.6.2"
   },
   "devDependencies": {
     "@earwurm/mocks": "workspace:*",
+    "@earwurm/types": "workspace:*",
     "typescript": "^5.3.3",
     "vite": "^5.0.10",
     "vite-plugin-dts": "^3.7.0"
   },
   "peerDependencies": {
     "emitten": "^0.6.2"
-  }
+  },
+  "bundledDependencies": [
+    "@earwurm/helpers",
+    "@earwurm/types",
+    "@earwurm/utilities"
+  ]
 }

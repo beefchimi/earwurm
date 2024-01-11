@@ -22,6 +22,9 @@ export default defineConfig({
   },
   plugins: [
     dts({
+      // Nessesary so that our `index.d.ts` file does not `import`
+      // monorepo packages that are not actually published.
+      bundledPackages: ['@earwurm/types'],
       // Will capture only the types that are exposed to consumers
       // and condense them all into a single file. If we also want
       // unexported types, as well as their folder structure, then
