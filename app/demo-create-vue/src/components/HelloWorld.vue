@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { PrimitiveType } from '@earwurm/types'
-import { msToSec } from '@earwurm/utilities'
+import type {PrimitiveType} from '@earwurm/types';
+import {msToSec} from '@earwurm/utilities';
 
 interface HelloWorldProps {
-  msg?: PrimitiveType
+  msg?: PrimitiveType;
 }
 
-defineProps<HelloWorldProps>()
+defineProps<HelloWorldProps>();
 
-console.log('666ms converted to seconds:', msToSec(666))
+console.log('666ms converted to seconds:', msToSec(666));
 </script>
 
 <template>
