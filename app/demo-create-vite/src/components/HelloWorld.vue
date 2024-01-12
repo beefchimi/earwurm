@@ -1,9 +1,23 @@
 <script setup lang="ts">
 import {ref} from 'vue';
+import type {PrimitiveType} from '@earwurm/types';
+import {msToSec} from '@earwurm/utilities';
+import {Earwurm, tokens} from 'earwurm';
 
-defineProps<{msg: string}>();
+interface HelloWorldProps {
+  msg?: PrimitiveType;
+}
+
+defineProps<HelloWorldProps>();
 
 const count = ref(0);
+const manager = new Earwurm();
+
+/* eslint-disable no-console */
+console.log('VITE > msToSec', msToSec(123));
+console.log('VITE > tokens.minSpeed', tokens.minSpeed);
+console.log('VITE > Earwurm', manager);
+/* eslint-enable no-console */
 </script>
 
 <template>

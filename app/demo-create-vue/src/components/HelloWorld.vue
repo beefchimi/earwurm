@@ -9,16 +9,13 @@ interface HelloWorldProps {
 
 defineProps<HelloWorldProps>();
 
-// eslint-disable-next-line no-console
-console.log('666ms converted to seconds:', msToSec(666));
-
-// eslint-disable-next-line no-console
-console.log('tokens.maxSpeed', tokens.maxSpeed);
-
 const manager = new Earwurm();
 
-// eslint-disable-next-line no-console
-console.log('manager', manager);
+/* eslint-disable no-console */
+console.log('VUE > msToSec', msToSec(666));
+console.log('VUE > tokens.maxSpeed', tokens.maxSpeed);
+console.log('VUE > Earwurm', manager);
+/* eslint-enable no-console */
 </script>
 
 <template>
