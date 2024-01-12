@@ -200,6 +200,8 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   }
 
   play() {
+    if (this._state === 'playing') return this;
+
     if (!this.#hasStarted) {
       this.#source.start();
       this.#hasStarted = true;
@@ -298,6 +300,12 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   readonly #handleEnded = () => {
     this.#setState('ending');
 
+    // TODO: Include a boolean property to indicate if this
+    // was "stopped" or came to a natural "end".
+    // We should also include the `iterations` value here so
+    // that we can distinguish from a `loop > stop` having
+    // played to completion at least one. Lastly, we might
+    // also need to indicate if this was a "scratch buffer".
     this.emit('ended', {
       id: this.id,
       source: this.#source,
