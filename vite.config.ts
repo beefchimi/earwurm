@@ -8,7 +8,7 @@ export default defineConfig({
     setupFiles: 'config/tests-setup',
     // exclude: [...configDefaults.exclude, './app/**/*'],
     coverage: {
-      exclude: ['app/**'],
+      exclude: ['app/**', 'config/**', 'scrap/**'],
     },
   },
 });
