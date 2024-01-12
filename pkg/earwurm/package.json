@@ -43,8 +43,10 @@
   },
   "scripts": {
     "clean": "rm -rf coverage && rm -rf dist",
-    "start": "pnpm build --watch",
-    "build": "pnpm clean && tsc && vite build"
+    "prebuild": "tsc && vite build",
+    "build": "pnpm clean && pnpm prebuild",
+    "oldstart": "pnpm build --watch",
+    "start": "nx watch --projects=earwurm -- nx run $NX_PROJECT_NAME:build"
   },
   "dependencies": {
     "@earwurm/helpers": "workspace:*",
