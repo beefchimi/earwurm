@@ -1,10 +1,10 @@
 # App directory
 
-Add context...
+All marketing and demo apps are located in this folder.
 
 ## Eslint
 
-At the moment, we are allowing each `app` to manager their own `eslint` config. We may later decide to move this to the root level `.eslintrc`. If so, we should be able to clearly specify `Vue` config like so:
+At the moment, we are allowing each `app` to manage their own `eslint` config. We may later decide to move this to the root level `.eslintrc`. If so, we should be able to clearly specify `Vue` config like so:
 
 ```json
 "overrides": [

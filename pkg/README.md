@@ -1,6 +1,6 @@
 # Package directory
 
-Add context...
+All of the monorepo’s shared packages are located here. Most of these packages are “local only”, which means that we do not actually publish that folder’s code.
 
 ## TypeScript
 
