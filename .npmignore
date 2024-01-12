@@ -29,6 +29,7 @@ Temporary Items
 .eslintcache
 .sass-cache
 *.tsbuildinfo
+.nx/cache
 
 # Code editor
 # .vscode/*
