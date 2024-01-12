@@ -1,0 +1,31 @@
+{
+  "name": "demo-create-vite",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20.10.0",
+    "pnpm": ">=8.14.0"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "start": "vite",
+    "start:fresh": "vite --force",
+    "preview": "vite preview --host",
+    "build": "vue-tsc && vite build",
+    "lint": "eslint . --ext .vue,.ts",
+    "lint:fix": "eslint . --fix --ext .vue,.ts",
+    "type-check": "vue-tsc"
+  },
+  "dependencies": {
+    "@earwurm/utilities": "workspace:*",
+    "earwurm": "workspace:*",
+    "vue": "^3.4.11"
+  },
+  "devDependencies": {
+    "@earwurm/types": "workspace:*",
+    "@rushstack/eslint-patch": "^1.6.1",
+    "@vitejs/plugin-vue": "^5.0.3",
+    "vue-tsc": "^1.8.27"
+  }
+}
