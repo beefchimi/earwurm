@@ -94,7 +94,7 @@ describe('Sound component', () => {
     });
 
     // TODO: Not using `linearRamp` at the moment because:
-    // 1. We are not usign "transitions" yet on `speed` change.
+    // 1. We are not using "transitions" yet on `speed` change.
     // 2. FireFox seems to have a problem pausing after a
     //    `speed` change when using `linearRamp`. Likely due to
     //    either the same `to/from > currentTime` or no call to
