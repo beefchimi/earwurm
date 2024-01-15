@@ -20,7 +20,7 @@
   "dependencies": {
     "@earwurm/utilities": "workspace:*",
     "earwurm": "workspace:*",
-    "vue": "^3.4.11"
+    "vue": "^3.4.14"
   },
   "devDependencies": {
     "@earwurm/types": "workspace:*",
