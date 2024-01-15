@@ -4,12 +4,6 @@
 
 While we are intentionally keeping the scope of `Earwurm` to an absolute minimum, there are still some features / tasks that remain to be completed.
 
-## Tasks
-
-1. Finish docs.
-   - We need to elaborate on returning a `scratchBuffer` if the `fetch` fails.
-   - If we failed to load the sound, return a “scratch buffer” so that we can still register an `ended` listener and call `.stop()` on the `source`. Since `Stack` will `emit` an `error` event with the `Sound > id`, consumer’s can listen for that event and perform their own handling.
-
 ## Considerations
 
 1. Should we make `context` available to the consumer so that they can re-use it for other things?
