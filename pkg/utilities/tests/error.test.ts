@@ -1,6 +1,6 @@
 import {describe, it, expect} from 'vitest';
 
-import {getErrorMessage} from '../error-message';
+import {getErrorMessage} from '../error';
 
 describe('getErrorMessage()', () => {
   it('returns message from basic object', async () => {
