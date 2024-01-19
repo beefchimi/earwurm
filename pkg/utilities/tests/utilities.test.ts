@@ -1,7 +1,7 @@
 import {describe, it, expect} from 'vitest';
 
 import {arrayOfLength, arrayShallowEquals} from '../array';
-import {assertNumber, clamp, progressPercentage} from '../numbers';
+import {assertNumber, clamp, progressPercentage} from '../number';
 import {msToSec, secToMs} from '../time';
 
 describe('Utilities', () => {
