@@ -1,10 +1,6 @@
 import {EmittenCommon} from 'emitten';
-import {
-  getErrorMessage,
-  linearRamp,
-  unlockAudioContext,
-} from '@earwurm/helpers';
-import {arrayShallowEquals, clamp} from '@earwurm/utilities';
+import {linearRamp, unlockAudioContext} from '@earwurm/helpers';
+import {arrayShallowEquals, clamp, getErrorMessage} from '@earwurm/utilities';
 import type {TimeoutId} from '@earwurm/types';
 
 import {Stack} from './Stack';

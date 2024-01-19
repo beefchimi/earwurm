@@ -1,11 +1,6 @@
 import {EmittenCommon} from 'emitten';
-import {
-  getErrorMessage,
-  fetchAudioBuffer,
-  linearRamp,
-  scratchBuffer,
-} from '@earwurm/helpers';
-import {arrayShallowEquals, clamp} from '@earwurm/utilities';
+import {fetchAudioBuffer, linearRamp, scratchBuffer} from '@earwurm/helpers';
+import {arrayShallowEquals, clamp, getErrorMessage} from '@earwurm/utilities';
 
 import {Sound} from './Sound';
 import {tokens} from './tokens';
