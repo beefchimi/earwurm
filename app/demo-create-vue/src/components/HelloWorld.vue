@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type {PrimitiveType} from '@earwurm/types';
+import type {Primitive} from '@earwurm/types';
 import {msToSec} from '@earwurm/utilities';
 import {Earwurm, tokens} from 'earwurm';
 
 interface HelloWorldProps {
-  msg?: PrimitiveType;
+  msg?: Primitive;
 }
 
 defineProps<HelloWorldProps>();
