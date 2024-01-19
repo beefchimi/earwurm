@@ -1,6 +1,6 @@
 import {EmittenCommon} from 'emitten';
 import {linearRamp} from '@earwurm/helpers';
-import {clamp, progressPercentage} from '@earwurm/utilities';
+import {clamp, calcProgress} from '@earwurm/utilities';
 
 import {tokens} from './tokens';
 import type {
@@ -188,7 +188,7 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     this.#progress.remaining = this.duration - this.#progress.elapsed;
     this.#progress.percentage = clamp(
       0,
-      progressPercentage(this.#progress.elapsed, this.duration),
+      calcProgress(this.#progress.elapsed, {max: this.duration}),
       100,
     );
 
