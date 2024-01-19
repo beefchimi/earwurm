@@ -404,7 +404,7 @@ if (sound) {
     playCount = iterations;
 
     // Keep in mind, `iterations` is only incremented at the start of a loop.
-    if (iterations = 10) sound.stop();
+    if (iterations === 10) sound.stop();
   });
 }
 ```
