@@ -31,6 +31,9 @@ jobs:
       - name: 🗳️ Checkout Repo
         uses: actions/checkout@v4
 
+      - name: 🧰 Configure PNPM
+        uses: pnpm/action-setup@v2
+
       - name: 🔧 Setup Node 20.x
         uses: actions/setup-node@v4
         with:
