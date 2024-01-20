@@ -23,7 +23,7 @@
     "build": "pnpm --parallel type-check && vite build",
     "lint": "eslint . --ext .vue,.ts",
     "lint:fix": "eslint . --fix --ext .vue,.ts",
-    "type-check": "vue-tsc --build --force"
+    "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
   },
   "dependencies": {
     "@earwurm/utilities": "workspace:*",
