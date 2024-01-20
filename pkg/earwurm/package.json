@@ -42,7 +42,7 @@
     "pnpm": ">=8.14.0"
   },
   "scripts": {
-    "clean": "rm -rf coverage && rm -rf dist",
+    "clean": "rm -rf dist",
     "build:only": "tsc && vite build",
     "build": "pnpm clean && pnpm build:only",
     "start": "pnpm build:only --watch"
@@ -51,14 +51,14 @@
     "@earwurm/helpers": "workspace:*",
     "@earwurm/types": "workspace:*",
     "@earwurm/utilities": "workspace:*",
-    "emitten": "^0.6.2"
+    "emitten": "^0.6.3"
   },
   "devDependencies": {
     "@earwurm/mocks": "workspace:*",
-    "vite": "^5.0.11",
+    "vite": "^5.0.12",
     "vite-plugin-dts": "^3.7.1"
   },
   "peerDependencies": {
-    "emitten": "^0.6.2"
+    "emitten": "^0.6.3"
   }
 }
