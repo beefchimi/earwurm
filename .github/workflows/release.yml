@@ -7,7 +7,7 @@ on:
 
 jobs:
   release:
-    name: 🚀 Release
+    name: Version and release monorepo packages
     runs-on: ubuntu-latest
     steps:
       - name: 🗳️ Checkout Repo

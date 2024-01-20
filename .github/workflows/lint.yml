@@ -3,7 +3,7 @@ on: [push]
 
 jobs:
   lint:
-    name: 🤖 Lint the codebase
+    name: Lint the codebase
     runs-on: ubuntu-latest
 
     steps:

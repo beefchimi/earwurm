@@ -3,7 +3,7 @@ on: [push]
 
 jobs:
   test:
-    name: 🧪 Run test suites
+    name: Run test suites
     runs-on: ubuntu-latest
 
     steps:

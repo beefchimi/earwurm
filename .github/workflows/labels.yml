@@ -1,4 +1,4 @@
-name: 🏷️ PR Labels
+name: 🗃️ PR Labels
 on: [pull_request_target]
 
 jobs:
