@@ -7,6 +7,7 @@ import createSvgSpritePlugin from 'vite-plugin-svg-sprite';
 import {mixinAtRules, mixinVisitor} from './lightningcss-plugins';
 
 export default defineConfig({
+  base: '/earwurm/',
   build: {
     cssMinify: 'lightningcss',
     // minify: false,
