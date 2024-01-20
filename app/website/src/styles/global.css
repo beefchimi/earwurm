@@ -1,0 +1,116 @@
+@import './reset.css';
+@import './design-system.css';
+@import './keyframes.css';
+@import './mixin.css';
+@import './utility.css';
+
+html {
+  background-color: var(--color-secondary);
+  transition: font-size var(--duration-normal) var(--easing-cubic);
+
+  @media (min-width: 960px) {
+    font-size: 15px;
+  }
+
+  @media (min-width: 1440px) and (min-height: 1280px) {
+    font-size: 20px;
+  }
+}
+
+body {
+  font-family: var(--font-stack);
+  text-transform: uppercase;
+  /* border: 0.4rem solid var(--color-primary); */
+}
+
+::selection {
+  color: var(--color-secondary);
+  background-color: var(--color-primary);
+}
+
+#VueApp {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: var(--app-spacing);
+  margin-left: auto;
+  margin-right: auto;
+  padding: var(--app-spacing) var(--app-padding);
+  max-width: var(--app-max-width);
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* --- Components --- */
+
+.collapsed-border-grid {
+  > *:nth-child(1n + 2) {
+    margin-top: calc(var(--app-border-width) * -1);
+  }
+}
+
+.collapsed-border-row {
+  display: flex;
+
+  > *:nth-child(1n + 2) {
+    margin-left: calc(var(--app-border-width) * -1);
+  }
+}
+
+/* --- Patterns --- */
+
+.pattern-arrows {
+  @apply pattern-arrows;
+}
+
+.pattern-checkers {
+  @apply pattern-checkers;
+}
+
+.pattern-diagonal {
+  @apply pattern-diagonal;
+}
+
+.pattern-diagonal--animated {
+  animation: anim-svg-diagonal 1s infinite linear;
+}
+
+.pattern-halftone {
+  @apply pattern-halftone;
+}
+
+.pattern-halftone--animated {
+  animation: anim-svg-halftone 1s infinite linear;
+}
+
+.pattern-halftone-dense {
+  @apply pattern-halftone-dense;
+}
+
+/* --- Theme --- */
+
+html {
+  transition: background-color var(--duration-slow) var(--easing-cubic);
+
+  /*
+      Need to target the `body` because `html` cannot transition `filter`.
+  */
+  > body {
+    filter: invert(0);
+    transition: filter var(--duration-slow) var(--easing-cubic);
+  }
+
+  &[data-theme='dark'] {
+    background-color: #000;
+
+    > body {
+      filter: invert(1);
+    }
+  }
+}
+
+/*
+html {
+  --color-primary: #f8f8f8;
+  --color-secondary: #181818;
+}
+*/

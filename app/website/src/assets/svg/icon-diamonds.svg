@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+  <path d="M0,10 L8,2 L10,4 L12,2 L20,10 L12,18 L10,16 L8,18 Z M3,10 L8,5 L13,10 L8,15 Z"
+    clip-rule="evenodd" fill-rule="evenodd" />
+</svg>
+
+<!-- Simple version without need for clip/fill rules -->
+<!--
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+  <path d="m0 10 8 8 2-2 2 2 7.998-8L12 2l-2 2-2-2-8 8Zm8-5 5 5-5 5-5-5 5-5Z" />
+</svg>
+-->

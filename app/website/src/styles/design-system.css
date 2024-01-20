@@ -1,0 +1,73 @@
+:root {
+  /* --- Colors --- */
+
+  --color-primary: #000;
+  --color-secondary: #ebebeb;
+  --color-interact: #2400ff;
+  --color-interact-light: #3d1fff;
+  --color-interact-dark: #1e00e0;
+
+  /* --- Motion --- */
+
+  --duration-fast: 60ms;
+  --duration-normal: 120ms;
+  --duration-slow: 240ms;
+  --easing-cubic: cubic-bezier(0.6, 0, 0.2, 1);
+
+  /* --- Typography --- */
+
+  --font-stack: 'Lexend Zetta', sans-serif;
+
+  /* --- Breakpoints --- */
+
+  /*
+   * Media queries cannot use CSS variables,
+   * so most of these declarations are for reference only.
+  */
+  --breakpoint-mobile-begin: 32rem;
+  --breakpoint-phablet-begin: 64rem;
+  --breakpoint-tablet-begin: 76.8rem;
+  --breakpoint-desktop-begin: 128rem;
+  --breakpoint-widescreen-begin: 144rem;
+
+  /* --- Layout --- */
+
+  --app-spacing: 2.8rem;
+
+  /*
+    --app-spacing-tight: 1.6rem;
+    --app-spacing-loose: 3.6rem;
+  */
+
+  --app-padding: 1.6rem;
+  --app-border-width: 0.2rem;
+
+  --app-max-width: 84rem;
+  --app-full-width-mobile: calc(
+    var(--breakpoint-mobile-begin) - var(--app-padding) * 2
+  );
+
+  /* Paired with inset border gives the appearance of 4px padding. */
+  --action-padding: 0.6rem;
+  --icon-size: 2rem;
+  --row-height: 3.6rem;
+
+  /* --- Patterns --- */
+  /* Converter: https://www.svgbackgrounds.com/tools/svg-to-css/ */
+
+  --pattern-arrows-size-x: 1.6rem;
+  --pattern-arrows-size-y: 0.8rem;
+  --pattern-arrows-url: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3E%3Cpath d='M8 6 L12 4 L16 6V8 L12 6 L8 8 V6 Z'/%3E%3Cpath d='M0 2 L4 0 L8 2V4 L4 2 L0 4 V2 Z'/%3E%3C/svg%3E");
+
+  --pattern-checkers-size: 0.4rem;
+  --pattern-checkers-url: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 4'%3E%3Cpath d='M0 0 H2 V2 H0 Z'/%3E%3Cpath d='M2 2 H4 V4 H2 Z'/%3E%3C/svg%3E");
+
+  --pattern-diagonal-size: 1rem;
+  --pattern-diagonal-url: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0h3L0 8V5Zm5 5v3l-2 2H5Z'/%3E%3C/svg%3E");
+
+  --pattern-halftone-size: 0.6rem;
+  --pattern-halftone-url: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6'%3E%3Cpath d='M0 1.5 1.5 0 3 1.5 1.5 3Zm3 3L4.5 3 6 4.5 4.5 6Z'/%3E%3C/svg%3E");
+
+  --pattern-halftone-dense-size: 0.6rem;
+  --pattern-halftone-dense-url: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6'%3E%3Cpath d='M0 1.5 L1.5 0 L3 1.5 L1.5 3 L0 1.5 Z'/%3E%3Cpath d='M3 4.5 L4.5 3 L6 4.5 L4.5 6 L3 4.5 Z'/%3E%3Cpath d='M3 1.5 L4.5 0 L6 1.5 L4.5 3 L3 1.5 Z'/%3E%3Cpath d='M0 4.5 L1.5 3 L3 4.5 L1.5 6 L0 4.5 Z'/%3E%3C/svg%3E");
+}
