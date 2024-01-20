@@ -1,4 +1,4 @@
-name: PR Labels
+name: 🗃️ PR Labels
 on: [pull_request_target]
 
 jobs:
@@ -10,10 +10,10 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Checkout repo
+      - name: 🗳️ Checkout repo
         uses: actions/checkout@v4
 
-      - name: Apply PR labels
+      - name: 🍭 Apply PR labels
         uses: actions/labeler@v5
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}

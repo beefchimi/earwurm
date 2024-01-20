@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#ebebeb" />
+
+    <title>Earwurm App</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend+Zetta:wght@900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <div id="VueApp"></div>
+
+    <script type="module" src="/src/main.ts"></script>
+
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-4CCVV95VKM"
+    ></script>
+    <script>
+      const validAddressTerms = ['beefchimi', 'earwurm'];
+      const address = window.location.href.toLowerCase();
+      const validAddress = validAddressTerms.some((term) =>
+        address.includes(term),
+      );
+
+      // Do not proceed if in local development.
+      if (!validAddress) return;
+
+      window.dataLayer = window.dataLayer || [];
+
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+
+      gtag('js', new Date());
+      gtag('config', 'G-4CCVV95VKM');
+
+      console.log('Google Analytics initialized for:', address);
+    </script>
+  </body>
+</html>

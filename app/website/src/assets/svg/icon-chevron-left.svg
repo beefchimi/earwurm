@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+  <!--
+    TODO: This should probably be apart of `icon-close.svg`,
+    and all directions can be hidden/revealed via selectors.
+  -->
+  <path d="M12,1 L15,4 L9,10 L15,16 L12,19 L3,10 Z" />
+</svg>

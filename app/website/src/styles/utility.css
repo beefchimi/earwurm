@@ -1,0 +1,90 @@
+/* --- Resets --- */
+
+.reset-input-number {
+  @apply reset-input-number;
+}
+
+.reset-input-range {
+  @apply reset-input-range;
+}
+
+.reset-input-search {
+  @apply reset-input-search;
+}
+
+/* --- Interaction --- */
+
+.interaction-disable {
+  @apply interaction-disable;
+}
+
+.interaction-enable {
+  @apply interaction-enable;
+}
+
+/* --- Layout --- */
+
+.flex-fix-width {
+  @apply flex-fix-width;
+}
+
+.flex-fix-height {
+  @apply flex-fix-height;
+}
+
+/* --- Media --- */
+
+.media-cover {
+  @apply media-cover;
+}
+
+.icon-wrapper {
+  /* It is expected to pass `.svg-base` to the direct child. */
+  @apply icon-wrapper;
+}
+
+.svg-base {
+  @apply svg-base;
+}
+
+/* --- Typography --- */
+
+.line-clamp {
+  @apply line-clamp;
+}
+
+.truncate {
+  @apply truncate;
+}
+
+.truncate-height-fix {
+  @apply truncate-height-fix;
+}
+
+.truncate-height-fix-nudge {
+  @apply truncate-height-fix-nudge;
+}
+
+.text-box-trim {
+  @apply text-box-trim;
+}
+
+/* --- Position --- */
+
+.position-cover {
+  @apply position-cover;
+}
+
+/* --- Visibility --- */
+
+.visible-show {
+  @apply visible-show;
+}
+
+.visible-hide {
+  @apply visible-hide;
+}
+
+.visually-hidden {
+  @apply visually-hidden;
+}

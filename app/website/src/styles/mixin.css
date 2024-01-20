@@ -1,0 +1,188 @@
+/* --- Resets --- */
+
+@mixin reset-input-number {
+  -moz-appearance: textfield !important;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+@mixin reset-input-range {
+  cursor: pointer;
+  width: 100%;
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    box-shadow: none;
+  }
+
+  &::-moz-range-thumb {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+@mixin reset-input-search {
+  &::-webkit-search-cancel-button,
+  &::-webkit-search-decoration,
+  &::-webkit-search-results-button,
+  &::-webkit-search-results-decoration {
+    display: none;
+  }
+}
+
+/* --- Interaction --- */
+
+@mixin interaction-disable {
+  pointer-events: none;
+  touch-action: none;
+  user-select: none;
+}
+
+@mixin interaction-enable {
+  pointer-events: unset;
+  touch-action: unset;
+  user-select: unset;
+}
+
+/* --- Layout --- */
+
+@mixin flex-fix-width {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@mixin flex-fix-height {
+  min-height: 0;
+  max-height: 100%;
+}
+
+/* --- Media --- */
+
+@mixin media-cover {
+  margin: auto;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@mixin icon-wrapper {
+  display: grid;
+  place-items: center;
+  place-content: center;
+  flex: 0 0 auto;
+}
+
+@mixin svg-base {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+/* --- Typography --- */
+
+@mixin line-clamp {
+  @supports (-webkit-line-clamp: 2) {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+}
+
+@mixin truncate {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@mixin truncate-height-fix {
+  margin-bottom: 0;
+  padding-bottom: 0.14em;
+}
+
+@mixin truncate-height-fix-nudge {
+  margin-bottom: -0.14em;
+  padding-bottom: 0.14em;
+}
+
+@mixin text-box-trim {
+  /* A rough approximation of the future `text-box-trim` property. */
+  &::before {
+    content: '';
+    display: block;
+    height: 0;
+    width: 0;
+    margin-top: -0.14em;
+  }
+}
+
+/* --- Position --- */
+
+@mixin position-cover {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+}
+
+/* --- Visibility --- */
+
+@mixin visible-show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+@mixin visible-hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@mixin visually-hidden {
+  clip: rect(0 0 0 0);
+  position: absolute;
+  overflow: hidden;
+  margin: -1px;
+  padding: 0;
+  width: 1px;
+  height: 1px;
+  border: 0;
+}
+
+/* --- Patterns --- */
+
+@mixin pattern-arrows {
+  background-image: var(--pattern-arrows-url);
+  background-repeat: repeat;
+  background-size: var(--pattern-arrows-size-x) var(--pattern-arrows-size-y);
+}
+
+@mixin pattern-checkers {
+  background-image: var(--pattern-checkers-url);
+  background-repeat: repeat;
+  background-size: var(--pattern-checkers-size) var(--pattern-checkers-size);
+}
+
+@mixin pattern-diagonal {
+  background-image: var(--pattern-diagonal-url);
+  background-repeat: repeat;
+  background-size: var(--pattern-diagonal-size) var(--pattern-diagonal-size);
+}
+
+@mixin pattern-halftone {
+  background-image: var(--pattern-halftone-url);
+  background-repeat: repeat;
+  background-size: var(--pattern-halftone-size) var(--pattern-halftone-size);
+}
+
+@mixin pattern-halftone-dense {
+  background-image: var(--pattern-halftone-dense-url);
+  background-repeat: repeat;
+  background-size: var(--pattern-halftone-dense-size)
+    var(--pattern-halftone-dense-size);
+}

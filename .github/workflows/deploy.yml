@@ -1,0 +1,56 @@
+name: 🧑‍🚀 Deploy website
+
+# Adding `workflow_dispatch` allows us to run this
+# workflow manually from the Actions tab.
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# Sets the GITHUB_TOKEN permissions to allow deployment to GitHub Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment.
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+# This workflow is adapted from:
+# https://vitejs.dev/guide/static-deploy.html#github-pages
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🗳️ Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: 📦 Install dependencies
+        run: pnpm i
+
+      - name: 🏗️ Build projects
+        run: pnpm build
+
+      - name: 📄 Configure Pages
+        uses: actions/configure-pages@v4
+
+      - name: 📈 Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './app/website/dist'
+
+      - name: 📱 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

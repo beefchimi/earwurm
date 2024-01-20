@@ -1,4 +1,4 @@
-name: Lint
+name: 🤖 Lint
 on: [push]
 
 jobs:
@@ -7,20 +7,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: 🗳️ Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup Node 20.x to install with private scope
+      - name: 🧰 Configure PNPM
+        uses: pnpm/action-setup@v2
+
+      - name: 🔧 Setup Node 20.x
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
+          cache: 'pnpm'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: 📦 Install dependencies
+        run: pnpm i
 
-      - name: Lint
-        run: npm run lint
+      - name: 🎨 Lint
+        run: pnpm lint
 
-      - name: Prettier
-        run: npm run format
+      - name: 💄 Prettier
+        run: pnpm format
+
+      - name: 🕵️ Type check
+        run: pnpm type-check
