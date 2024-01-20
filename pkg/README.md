@@ -26,4 +26,4 @@ Individual package configs would look something like:
 
 A `references` value would look something like:
 
-`"references": [{"path": "app/demo-create-vue"}]`
+`"references": [{"path": "app/website"}]`
