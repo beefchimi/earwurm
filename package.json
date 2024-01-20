@@ -17,6 +17,7 @@
     "node": ">=20.10.0",
     "pnpm": ">=8.14.0"
   },
+  "packageManager": "^pnpm@8.14.0",
   "scripts": {
     "clean": "pnpm -r clean && rm -rf coverage",
     "nuke": "pnpm clean && ./scripts/nuke.sh",
@@ -31,9 +32,11 @@
     "test:ui": "vitest --ui",
     "coverage": "vitest --run --coverage",
     "report": "changeset",
-    "release": "pnpm build && changeset publish"
+    "release:version": "changeset version",
+    "release:publish": "changeset publish"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.5.0",
     "@changesets/cli": "^2.27.1",
     "@types/node": "^20.11.5",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
