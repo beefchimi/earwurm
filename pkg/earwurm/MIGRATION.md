@@ -1,4 +1,4 @@
-# Earwurm migration guide
+# Earwurm Migration Guide
 
 ## 0.7.0
 
