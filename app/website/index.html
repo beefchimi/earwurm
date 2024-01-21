@@ -18,38 +18,17 @@
       href="https://fonts.googleapis.com/css2?family=Lexend+Zetta:wght@900&display=swap"
       rel="stylesheet"
     />
-  </head>
-
-  <body>
-    <div id="VueApp"></div>
-
-    <script type="module" src="/src/main.ts"></script>
 
     <!-- Google tag (gtag.js) -->
     <script
       async
       src="https://www.googletagmanager.com/gtag/js?id=G-4CCVV95VKM"
     ></script>
-    <script>
-      const validAddressTerms = ['beefchimi', 'earwurm'];
-      const address = window.location.href.toLowerCase();
-      const validAddress = validAddressTerms.some((term) =>
-        address.includes(term),
-      );
+    <script src="/ga.js"></script>
+  </head>
 
-      // Do not proceed if in local development.
-      if (!validAddress) return;
-
-      window.dataLayer = window.dataLayer || [];
-
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-
-      gtag('js', new Date());
-      gtag('config', 'G-4CCVV95VKM');
-
-      console.log('Google Analytics initialized for:', address);
-    </script>
+  <body>
+    <div id="VueApp"></div>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
