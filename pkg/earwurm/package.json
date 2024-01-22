@@ -47,6 +47,11 @@
     "build": "pnpm clean && pnpm build:only",
     "start": "pnpm build:only --watch"
   },
+  "bundleDependencies": [
+    "@earwurm/helpers",
+    "@earwurm/types",
+    "@earwurm/utilities"
+  ],
   "dependencies": {
     "@earwurm/helpers": "workspace:*",
     "@earwurm/types": "workspace:*",
