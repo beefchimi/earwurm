@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import {SynthTypeValues} from '@/types';
-import {ManagerControls, StackControls} from '@/sections';
+import {useDebugStore} from '@/store';
+import {ManagerDebug, ManagerControls, StackControls} from '@/sections';
+
+const debugging = useDebugStore();
 
 // TODO: Necessary so we can split our layout into two separate
 // "grid column" wrappers. Required until we have support for
@@ -13,6 +16,7 @@ const entries = [column1, column2];
 
 <template>
   <main class="HomeView">
+    <ManagerDebug v-if="debugging" />
     <ManagerControls />
 
     <section class="Stacks">
