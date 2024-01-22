@@ -1,5 +1,11 @@
 # Earwurm Changelog
 
+## 0.8.2
+
+### Patch Changes
+
+- [#75](https://github.com/beefchimi/earwurm/pull/75) [`d159f16`](https://github.com/beefchimi/earwurm/commit/d159f168ce5e42b870a9b382571545265b9498fb) Thanks [@beefchimi](https://github.com/beefchimi)! - Remove bundleDependencies and just use devDependencies.
+
 ## 0.8.1
 
 ### Patch Changes
