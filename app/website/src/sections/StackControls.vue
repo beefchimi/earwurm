@@ -42,7 +42,7 @@ const preparing = computed(() => hasStack.value && !loaded.value);
 <template>
   <article :id="`Stack-${id}`" class="StackControls collapsed-border-grid">
     <div class="collapsed-border-row">
-      <StackLabel :label="id" :populated="hasStack && loaded" />
+      <StackLabel :label="id" :populated="hasStack && loaded" truncate />
 
       <div v-if="hasStack" class="PopulatedBar collapsed-border-row">
         <div class="VolumeStackWrapper collapsed-border-row">
