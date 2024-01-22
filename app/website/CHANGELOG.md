@@ -1,5 +1,12 @@
 # website
 
+## 0.0.3
+
+### Patch Changes
+
+- Updated dependencies [[`450aa86`](https://github.com/beefchimi/earwurm/commit/450aa869190ab3a08e99a9f5bcf845afeff4b4e0)]:
+  - earwurm@0.8.1
+
 ## 0.0.2
 
 ### Patch Changes
