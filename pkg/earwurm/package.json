@@ -47,19 +47,14 @@
     "build": "pnpm clean && pnpm build:only",
     "start": "pnpm build:only --watch"
   },
-  "bundleDependencies": [
-    "@earwurm/helpers",
-    "@earwurm/types",
-    "@earwurm/utilities"
-  ],
   "dependencies": {
-    "@earwurm/helpers": "workspace:*",
-    "@earwurm/types": "workspace:*",
-    "@earwurm/utilities": "workspace:*",
     "emitten": "^0.6.3"
   },
   "devDependencies": {
+    "@earwurm/helpers": "workspace:*",
     "@earwurm/mocks": "workspace:*",
+    "@earwurm/types": "workspace:*",
+    "@earwurm/utilities": "workspace:*",
     "vite": "^5.0.12",
     "vite-plugin-dts": "^3.7.1"
   },

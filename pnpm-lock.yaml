@@ -111,22 +111,22 @@ importers:
 
   pkg/earwurm:
     dependencies:
+      emitten:
+        specifier: ^0.6.3
+        version: 0.6.3
+    devDependencies:
       '@earwurm/helpers':
         specifier: workspace:*
         version: link:../helpers
+      '@earwurm/mocks':
+        specifier: workspace:*
+        version: link:../mocks
       '@earwurm/types':
         specifier: workspace:*
         version: link:../types
       '@earwurm/utilities':
         specifier: workspace:*
         version: link:../utilities
-      emitten:
-        specifier: ^0.6.3
-        version: 0.6.3
-    devDependencies:
-      '@earwurm/mocks':
-        specifier: workspace:*
-        version: link:../mocks
       vite:
         specifier: ^5.0.12
         version: 5.0.12(@types/node@20.11.5)(lightningcss@1.23.0)
