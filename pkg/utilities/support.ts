@@ -3,6 +3,7 @@ export function supportDom() {
 }
 
 export function supportMatchMedia() {
-  return () =>
-    window && 'matchMedia' in window && typeof window.matchMedia === 'function';
+  return (
+    window && 'matchMedia' in window && typeof window.matchMedia === 'function'
+  );
 }

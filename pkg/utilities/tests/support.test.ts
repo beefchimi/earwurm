@@ -12,8 +12,8 @@ describe('support utilities', () => {
 
   describe('supportMatchMedia()', () => {
     it('returns true in this test environment', async () => {
-      const resultFunction = supportMatchMedia();
-      expect(resultFunction()).toBe(true);
+      const result = supportMatchMedia();
+      expect(result).toBe(true);
     });
   });
 });
