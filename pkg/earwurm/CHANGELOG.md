@@ -1,5 +1,11 @@
 # Earwurm Changelog
 
+## 0.8.1
+
+### Patch Changes
+
+- [#73](https://github.com/beefchimi/earwurm/pull/73) [`450aa86`](https://github.com/beefchimi/earwurm/commit/450aa869190ab3a08e99a9f5bcf845afeff4b4e0) Thanks [@beefchimi](https://github.com/beefchimi)! - Define bundleDependencies in hopes it solves failed package installs.
+
 ## 0.8.0
 
 ### Minor Changes
