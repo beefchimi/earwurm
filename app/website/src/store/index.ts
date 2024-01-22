@@ -6,3 +6,4 @@ export {useStack} from './useStack';
 export {useSound} from './useSound';
 
 export {useDebugStore} from './useDebugStore';
+export {useDebugManager} from './useDebugManager';
