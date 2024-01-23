@@ -1,9 +1,28 @@
 <script setup lang="ts">
-import {useDebugManager} from '@/store';
-import {StackLabel} from '@/components';
+import {computed} from 'vue';
 
-const {activeStacks, stateHistory, errorHistory, unlockHistory, playHistory} =
-  useDebugManager();
+import {useDebugManager, useEarwurmStore} from '@/store';
+import {IconAction, StackLabel} from '@/components';
+
+const {manager} = useEarwurmStore();
+const {
+  activeStacks,
+  currentState,
+  stateHistory,
+  errorHistory,
+  unlockHistory,
+  playHistory,
+} = useDebugManager();
+
+const running = computed(() => currentState.value === 'running');
+
+function togglePlayback() {
+  if (running.value) {
+    manager.suspend();
+  } else {
+    manager.resume();
+  }
+}
 </script>
 
 <template>
@@ -75,6 +94,18 @@ const {activeStacks, stateHistory, errorHistory, unlockHistory, playHistory} =
         </li>
       </ul>
     </div>
+
+    <div class="collapsed-border-row">
+      <IconAction
+        icon="unmuted"
+        icon-pressed="muted"
+        :label="running ? 'Suspend' : 'Resume'"
+        :a11y="`${running ? 'Suspend' : 'Resume'} the Earwurm`"
+        :pressed="running"
+        pressed-style
+        @action="togglePlayback"
+      />
+    </div>
   </section>
 </template>
 
@@ -99,6 +130,10 @@ const {activeStacks, stateHistory, errorHistory, unlockHistory, playHistory} =
   > .collapsed-border-row {
     position: relative;
     z-index: 1;
+  }
+
+  > .collapsed-border-row:last-child {
+    z-index: 3;
   }
 }
 
