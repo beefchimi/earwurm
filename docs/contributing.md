@@ -75,8 +75,21 @@ Publishing is handled automatically by the `@changesets` package. This package, 
 
 ## App
 
-To aid in local development, I have provided a demo application. This app doubles as our “marketing site”, which is also built-and-deployed through GitHub.
+To aid in local development, I have provided a demo application _(`app/website`)_. This app doubles as our “marketing site”, which is also built-and-deployed through GitHub.
 
 ### Development
 
-Simply run the `start` command from the project root and you will get file watching for `pkg/earwurm` as well as HMR for the app. Any changes you make to `earwurm` are automatically available to the demo app.
+Simply run the `start` command from the project root and you will get file watching for `pkg/earwurm` as well as HMR for the `website`. Any changes you make to `earwurm` are automatically available to the `website`.
+
+Your terminal should report the `localhost` address. Take note: since we host on `GitHub Pages`, the address will end with `/earwurm/`. Expect something like: `http://localhost:5173/earwurm/`.
+
+If you want to preview the production build of the `website`, you can run the following from the project root:
+
+```sh
+pnpm build
+pnpm --filter website preview
+```
+
+The `website` should now be available on a locally reachable address, allowing you to test on a `mobile` device.
+
+To help surface some additional details about the state history of the `Earwurm` instance, you can append the `?mode=debug` param to the end of the url. Something like: `http://localhost:5173/earwurm/?mode=debug`
