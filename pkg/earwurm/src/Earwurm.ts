@@ -1,7 +1,6 @@
 import {EmittenCommon} from 'emitten';
 import {linearRamp, unlockAudioContext} from '@earwurm/helpers';
 import {arrayShallowEquals, clamp, getErrorMessage} from '@earwurm/utilities';
-import type {TimeoutId} from '@earwurm/types';
 
 import {Stack} from './Stack';
 import {tokens} from './tokens';
@@ -18,6 +17,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
   private _vol = 1;
   private _mute = false;
   private _trans = false;
+  private _playing = false;
   private _keys: StackId[] = [];
   private _state: ManagerState = 'suspended';
 
@@ -26,8 +26,6 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
   readonly #request: ManagerConfig['request'];
 
   #library: Stack[] = [];
-  #suspendId: TimeoutId = 0;
-  #queuedResume = false;
 
   // If the `AudioContext` is `running` upon initialization,
   // then it should be safe to mark audio as “unlocked”.
@@ -42,8 +40,6 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
 
     this.#gainNode.connect(this.#context.destination);
     this.#gainNode.gain.setValueAtTime(this._vol, this.#context.currentTime);
-
-    if (this._unlocked) this.#autoSuspend();
 
     this.#context.addEventListener('statechange', this.#handleStateChange);
   }
@@ -189,6 +185,48 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     return removedKeys;
   }
 
+  resume() {
+    if (this._state === 'suspended' || this._state === 'interrupted') {
+      this.#context.resume().catch((error) => {
+        this.emit('error', [tokens.error.resume, getErrorMessage(error)]);
+      });
+    }
+
+    return this;
+  }
+
+  suspend() {
+    if (
+      this._state === 'closed' ||
+      this._state === 'suspended' ||
+      this._state === 'suspending'
+    ) {
+      return this;
+    }
+
+    this.#setState('suspending');
+
+    const resolveSuspension = () => {
+      // Because all of these `AudioContext > state`
+      // methods are async, we need to make sure we don't
+      // set `suspended` after already `closed`.
+      if (this._state === 'closed') return;
+      this.#setState('suspended');
+    };
+
+    // The `state` either gets `suspended` or `interrupted`...
+    // Either way, we need to update the state to `suspended`.
+    this.#context
+      .suspend()
+      .then(resolveSuspension)
+      .catch((error) => {
+        resolveSuspension();
+        this.emit('error', [tokens.error.suspend, getErrorMessage(error)]);
+      });
+
+    return this;
+  }
+
   stop() {
     this.#library.forEach((stack) => stack.stop());
     this.suspend();
@@ -217,60 +255,6 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     return this;
   }
 
-  suspend() {
-    if (
-      this._state === 'closed' ||
-      this._state === 'suspended' ||
-      this._state === 'suspending'
-    ) {
-      return this;
-    }
-
-    this.#handleSuspend();
-
-    return this;
-  }
-
-  resume() {
-    if (this._state === 'suspending') {
-      this.#queuedResume = true;
-      return this;
-    }
-
-    if (this._state === 'suspended' || this._state === 'interrupted') {
-      this.#context.resume().catch((error) => {
-        this.emit('error', [tokens.error.resume, getErrorMessage(error)]);
-      });
-    }
-
-    this.#clearSuspendResume();
-
-    return this;
-  }
-
-  #autoSuspend() {
-    if (
-      this._state === 'closed' ||
-      this._state === 'suspended' ||
-      this._state === 'suspending'
-    ) {
-      return;
-    }
-
-    if (this.#suspendId) clearTimeout(this.#suspendId);
-
-    this.#suspendId = setTimeout(this.#handleSuspend, tokens.suspendAfterMs);
-  }
-
-  #clearSuspendResume() {
-    this.#queuedResume = false;
-
-    if (this.#suspendId) {
-      clearTimeout(this.#suspendId);
-      this.#suspendId = 0;
-    }
-  }
-
   #setLibrary(library: Stack[]) {
     const oldKeys = [...this._keys];
     const newKeys = library.map(({id}) => id);
@@ -290,36 +274,10 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
 
     if (value === 'running') {
       this._unlocked = true;
-      this.#autoSuspend();
     } else if (value === 'closed') {
       this._unlocked = false;
-      this.#clearSuspendResume();
     }
   }
-
-  readonly #handleSuspend = () => {
-    this.#setState('suspending');
-
-    const resolveSuspension = () => {
-      if (this._state !== 'closed') {
-        // Because all of these `AudioContext > state`
-        // methods are async, we need to make sure we don't
-        // set `suspended` after already `closed`.
-        this.#setState('suspended');
-      }
-
-      if (this.#suspendId) {
-        clearTimeout(this.#suspendId);
-        this.#suspendId = 0;
-      }
-
-      if (this.#queuedResume) this.resume();
-    };
-
-    // The `state` either gets `suspended` or `interrupted`...
-    // Either way, we need to update the state to `suspended`.
-    this.#context.suspend().then(resolveSuspension).catch(resolveSuspension);
-  };
 
   readonly #handleStateChange = () => {
     // TypeScript doesn’t seem to have a way to qualify the
@@ -328,16 +286,12 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     this.#setState(this.#context.state);
   };
 
-  readonly #handleStackState: StackEventMap['state'] = (current) => {
-    // We don't care about re-setting the auto-suspension each time
-    // a new `Sound` is prepared... but it will do that anyways
-    // since `Stack` returns to `idle` once loaded.
-    if (current === 'loading') return;
+  readonly #handleStackState: StackEventMap['state'] = (_current) => {
+    const isPlaying = this.playing;
 
-    if (this.playing) {
-      this.resume();
-    } else {
-      this.#autoSuspend();
+    if (isPlaying !== this._playing) {
+      this._playing = isPlaying;
+      this.emit('play', isPlaying);
     }
   };
 }
