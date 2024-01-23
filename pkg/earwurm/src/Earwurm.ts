@@ -191,7 +191,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
 
   stop() {
     this.#library.forEach((stack) => stack.stop());
-    this.#handleSuspend();
+    this.suspend();
 
     return this;
   }
@@ -217,6 +217,37 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     return this;
   }
 
+  suspend() {
+    if (
+      this._state === 'closed' ||
+      this._state === 'suspended' ||
+      this._state === 'suspending'
+    ) {
+      return this;
+    }
+
+    this.#handleSuspend();
+
+    return this;
+  }
+
+  resume() {
+    if (this._state === 'suspending') {
+      this.#queuedResume = true;
+      return this;
+    }
+
+    if (this._state === 'suspended' || this._state === 'interrupted') {
+      this.#context.resume().catch((error) => {
+        this.emit('error', [tokens.error.resume, getErrorMessage(error)]);
+      });
+    }
+
+    this.#clearSuspendResume();
+
+    return this;
+  }
+
   #autoSuspend() {
     if (
       this._state === 'closed' ||
@@ -229,21 +260,6 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     if (this.#suspendId) clearTimeout(this.#suspendId);
 
     this.#suspendId = setTimeout(this.#handleSuspend, tokens.suspendAfterMs);
-  }
-
-  #autoResume() {
-    if (this._state === 'suspending') {
-      this.#queuedResume = true;
-      return;
-    }
-
-    if (this._state === 'suspended' || this._state === 'interrupted') {
-      this.#context.resume().catch((error) => {
-        this.emit('error', [tokens.error.resume, getErrorMessage(error)]);
-      });
-    }
-
-    this.#clearSuspendResume();
   }
 
   #clearSuspendResume() {
@@ -292,10 +308,12 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
         this.#setState('suspended');
       }
 
-      if (this.#suspendId) clearTimeout(this.#suspendId);
-      this.#suspendId = 0;
+      if (this.#suspendId) {
+        clearTimeout(this.#suspendId);
+        this.#suspendId = 0;
+      }
 
-      if (this.#queuedResume) this.#autoResume();
+      if (this.#queuedResume) this.resume();
     };
 
     // The `state` either gets `suspended` or `interrupted`...
@@ -317,7 +335,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     if (current === 'loading') return;
 
     if (this.playing) {
-      this.#autoResume();
+      this.resume();
     } else {
       this.#autoSuspend();
     }
