@@ -93,6 +93,71 @@ manager.remove('Apple', 'Peach');
 // > ['Apple', 'Peach']
 ```
 
+**Auto suspend `AudioContext`:**
+
+By default, the `Earwurm > AudioContext` will continue `running` once it has begun playing sounds. That is unless the browser/device “interrupts” that playback, which can happen due to events such as putting your phone to sleep.
+
+To free up some precious resources, you can automatically `suspend` the `AudioContext` after a period of no playback. This is made easy by subscribing to the `Earwurn > play` event.
+
+```ts
+const suspendAfterMs = 30000;
+let suspendId = 0;
+
+function autoSuspend() {
+  manager.suspend();
+  suspendId = 0;
+}
+
+manager.on('play', (active) => {
+  if (active && suspendId) {
+    clearTimeout(suspendId);
+    suspendId = 0;
+    return;
+  }
+
+  if (!active) {
+    suspendId = setTimeout(autoSuspend, suspendAfterMs);
+  }
+});
+```
+
+The `suspend/resume` methods on the `AudioContext` are asynchronous. At the moment, `Earwurm` does not expose the `Promise` for each of these methods. It is possible that the need to “resume” could occur while the context is “suspending”. If this is a concern, you can try to get around it by also subscribing to the `Earwurn > state` event.
+
+```ts
+manager.on('state', (current) => {
+  if (current === 'suspending' && suspendId) {
+    clearTimeout(suspendId);
+    suspendId = 0;
+
+    // This is not guaranteed to work, as the `resume()` method
+    // could early return depending on the internal state.
+    manager.resume();
+  }
+});
+```
+
+Similarly, you may want to `suspend` the `AudioContext` if you no longer have any `Stack` instances.
+
+```ts
+manager.on('library', (newKeys) => {
+  // You could be even more aggresive by checking each
+  // `Stack > queue` to see if there are sounds.
+  if (newKeys.length === 0) manager.suspend();
+});
+```
+
+You may also want to perform some action - such as suspending the `AudioContext`, or pausing all sounds - if the page is no longer visible. The `document > visibilitychange` does not quite give us a way to distinguish between the many ways a page changes “visibility”... but it might be the catch-all the suits your needs.
+
+```ts
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    manager.suspend();
+  } else {
+    manager.resume();
+  }
+});
+```
+
 ## Using sounds
 
 **Interact with an available `Sound`:**
