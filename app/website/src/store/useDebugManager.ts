@@ -11,9 +11,6 @@ const {manager, activeStacks} = useEarwurmStore();
 
 const stateHistoryRef = ref([manager.state]);
 const errorHistoryRef = ref<ErrorResponse[]>([]);
-
-// TODO: Update these to be more accurate.
-// Currently, these do not update on the right events.
 const unlockHistoryRef = ref([manager.unlocked]);
 const playHistoryRef = ref([manager.playing]);
 
@@ -28,28 +25,20 @@ function updateUnlockHistory() {
   unlockHistoryRef.value = newHistory.slice(MAX_HISTORY_LENGTH * -1);
 }
 
-function updatePlayHistory() {
-  const currentLength = playHistoryRef.value.length;
-
-  if (manager.playing === playHistoryRef.value[currentLength - 1]) {
-    return;
-  }
-
-  const newHistory = [...playHistoryRef.value, manager.playing];
-  playHistoryRef.value = newHistory.slice(MAX_HISTORY_LENGTH * -1);
-}
-
 manager.on('state', (current) => {
-  const newState = [...stateHistoryRef.value, current];
-  stateHistoryRef.value = newState.slice(MAX_HISTORY_LENGTH * -1);
+  const newStateHistory = [...stateHistoryRef.value, current];
+  stateHistoryRef.value = newStateHistory.slice(MAX_HISTORY_LENGTH * -1);
 
   updateUnlockHistory();
-  updatePlayHistory();
+});
+
+manager.on('play', (active) => {
+  const newPlayHistory = [...playHistoryRef.value, active];
+  playHistoryRef.value = newPlayHistory.slice(MAX_HISTORY_LENGTH * -1);
 });
 
 manager.on('library', () => {
   updateUnlockHistory();
-  updatePlayHistory();
 });
 
 manager.on('error', (response) => {
