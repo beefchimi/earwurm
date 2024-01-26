@@ -214,12 +214,13 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
       this.#setState('suspended');
     };
 
-    // The `state` either gets `suspended` or `interrupted`...
-    // Either way, we need to update the state to `suspended`.
     this.#context
       .suspend()
       .then(resolveSuspension)
       .catch((error) => {
+        // The `state` either gets `suspended` or `interrupted`...
+        // Either way, we need to update the state to `suspended`,
+        // so we call `resolveSuspension()` even when it encounters an error.
         resolveSuspension();
         this.emit('error', [tokens.error.suspend, getErrorMessage(error)]);
       });
@@ -264,6 +265,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     this._keys = newKeys;
 
     if (!identicalKeys) this.emit('library', newKeys, oldKeys);
+    if (newKeys.length === 0) this.suspend();
   }
 
   #setState(value: ManagerState) {
