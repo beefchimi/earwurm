@@ -5,7 +5,6 @@ import {Earwurm} from '../Earwurm';
 import {Stack} from '../Stack';
 import type {Sound} from '../Sound';
 
-import {tokens} from '../tokens';
 import type {
   ManagerEventMap,
   ManagerConfig,
@@ -13,15 +12,10 @@ import type {
   StackId,
 } from '../types';
 
+import {managerSetup, mockEntries, mockInitialKeys} from './helpers';
+
 describe('Earwurm component', () => {
   let mockManager = new Earwurm();
-
-  const mockEntries: LibraryEntry[] = [
-    {id: 'Zero', path: mockData.audio},
-    {id: 'One', path: 'to/no/file.mp3'},
-    {id: 'Two', path: ''},
-  ];
-  const mockInitialKeys: StackId[] = mockEntries.map(({id}) => id);
 
   afterEach(() => {
     mockManager.teardown();
@@ -97,7 +91,6 @@ describe('Earwurm component', () => {
 
     it('triggers `state` event for every state', async () => {
       const spyState: ManagerEventMap['state'] = vi.fn((_current) => {});
-
       mockManager.on('state', spyState);
 
       expect(spyState).not.toBeCalled();
@@ -374,6 +367,21 @@ describe('Earwurm component', () => {
       );
     });
 
+    it('calls `suspend` if library becomes empty', async () => {
+      const spySuspend = vi.spyOn(Earwurm.prototype, 'suspend');
+
+      mockManager.add(...mockEntries);
+
+      const mockAllKeys: StackId[] = mockEntries.map(({id}) => id);
+      expect(mockManager.keys).toStrictEqual(mockAllKeys);
+      expect(spySuspend).not.toBeCalled();
+
+      mockManager.remove(...mockAllKeys);
+
+      expect(mockManager.keys).toStrictEqual([]);
+      expect(spySuspend).toBeCalledTimes(1);
+    });
+
     it('tears down Stacks before removing from library', async () => {
       const mockChangedEntries: LibraryEntry[] = [
         {
@@ -415,6 +423,124 @@ describe('Earwurm component', () => {
     });
   });
 
+  describe('resume()', () => {
+    const clickEvent = new Event('click');
+
+    // TODO: Our mocked setup doesn’t actually know how to
+    // update the `context.state` when a sound is played.
+    it.skip('resumes once a `Sound` plays', async () => {
+      managerSetup(mockManager, mockEntries);
+
+      const stack0 = mockManager.get(mockEntries[0].id);
+      const stack0Sound = await stack0?.prepare();
+
+      expect(mockManager.state).toBe('running');
+      mockManager.suspend();
+      expect(mockManager.state).toBe('suspended');
+
+      stack0Sound?.play();
+      expect(mockManager.state).toBe('running');
+
+      vi.advanceTimersByTime(mockData.playDurationMs * 2);
+      expect(mockManager.state).toBe('running');
+    });
+
+    it('calls `resume` if state is `suspended` or `interrupted`', async () => {
+      const spyResume = vi.spyOn(AudioContext.prototype, 'resume');
+
+      expect(mockManager.unlocked).toBe(false);
+      expect(mockManager.state).toBe('suspended');
+      expect(spyResume).not.toBeCalled();
+
+      mockManager.resume();
+
+      expect(mockManager.unlocked).toBe(true);
+      expect(mockManager.state).toBe('running');
+      expect(spyResume).toBeCalled();
+    });
+
+    it('does not call `resume` if already running', async () => {
+      const spyResume = vi.spyOn(AudioContext.prototype, 'resume');
+
+      mockManager.unlock();
+      document.dispatchEvent(clickEvent);
+
+      expect(mockManager.state).toBe('running');
+      expect(spyResume).toBeCalledTimes(2);
+
+      mockManager.resume();
+      expect(spyResume).not.toBeCalledTimes(3);
+    });
+
+    it('does not call `resume` if `closed`', async () => {
+      const spyResume = vi.spyOn(AudioContext.prototype, 'resume');
+
+      mockManager.teardown();
+      mockManager.resume();
+
+      // TODO: Should also test against `suspending` state.
+      expect(mockManager.state).toBe('closed');
+      expect(spyResume).not.toBeCalled();
+    });
+
+    it('returns instance', async () => {
+      const returnValue = mockManager.resume();
+      expect(returnValue).toBeInstanceOf(Earwurm);
+    });
+  });
+
+  describe('suspend()', () => {
+    const clickEvent = new Event('click');
+
+    // TODO: Figure out how to test against `interrupted` value.
+    it('calls `suspend` if `running` or `interrupted`', async () => {
+      const spySuspend = vi.spyOn(AudioContext.prototype, 'suspend');
+
+      expect(mockManager.state).toBe('suspended');
+
+      mockManager.unlock();
+      document.dispatchEvent(clickEvent);
+
+      expect(mockManager.state).toBe('running');
+
+      mockManager.suspend();
+
+      expect(spySuspend).toBeCalledTimes(1);
+      expect(mockManager.state).toBe('suspended');
+    });
+
+    it('does not call `suspend` if already `suspended`', async () => {
+      const spySuspend = vi.spyOn(AudioContext.prototype, 'suspend');
+      mockManager.suspend();
+
+      // TODO: Test against `suspending` as well
+      expect(mockManager.state).toBe('suspended');
+      expect(spySuspend).not.toBeCalled();
+    });
+
+    it('does not call `suspend` if `closed`', async () => {
+      const spySuspend = vi.spyOn(AudioContext.prototype, 'suspend');
+
+      mockManager.unlock();
+      document.dispatchEvent(clickEvent);
+      expect(spySuspend).not.toBeCalled();
+
+      mockManager.teardown();
+      // Calls once because of the empty library
+      expect(spySuspend).toBeCalledTimes(1);
+
+      mockManager.suspend();
+
+      expect(mockManager.state).toBe('closed');
+      expect(spySuspend).not.toBeCalledTimes(2);
+    });
+
+    it('returns instance', async () => {
+      const returnValue = mockManager.suspend();
+      expect(returnValue).toBeInstanceOf(Earwurm);
+    });
+  });
+
   describe('stop()', () => {
     it('stops all playing sounds with each Stack', async () => {
       const stacks: Stack[] = [];
@@ -447,6 +573,14 @@ describe('Earwurm component', () => {
 
       expect(mockManager.playing).toBe(false);
       expect(mockManager.keys).toHaveLength(3);
+    });
+
+    it('calls `suspend`', async () => {
+      const spySuspend = vi.spyOn(Earwurm.prototype, 'suspend');
+
+      expect(spySuspend).not.toBeCalled();
+      mockManager.stop();
+      expect(spySuspend).toBeCalledTimes(1);
     });
 
     it('returns instance', async () => {
@@ -493,7 +627,7 @@ describe('Earwurm component', () => {
       mockManager.unlock();
       document.dispatchEvent(clickEvent);
 
-      vi.advanceTimersByTime(tokens.suspendAfterMs - 1);
+      vi.advanceTimersByTime(1);
       expect(mockManager.state).toBe('running');
 
       mockManager.teardown();
@@ -509,7 +643,7 @@ describe('Earwurm component', () => {
       stack0Sound?.play();
       expect(mockManager.state).toBe('closed');
 
-      vi.advanceTimersByTime(tokens.suspendAfterMs);
+      vi.advanceTimersByTime(1);
       expect(mockManager.state).toBe('closed');
     });
 
@@ -517,7 +651,6 @@ describe('Earwurm component', () => {
       const spyClose = vi.spyOn(AudioContext.prototype, 'close');
 
       mockManager.teardown();
-
       expect(spyClose).toBeCalled();
     });
 
@@ -578,137 +711,28 @@ describe('Earwurm component', () => {
     });
   });
 
-  describe('#autoSuspend()', () => {
-    const clickEvent = new Event('click');
-
-    it('registers once `state` is `running`', async () => {
-      expect(mockManager.state).toBe('suspended');
-
-      mockManager.unlock();
-      document.dispatchEvent(clickEvent);
-
-      expect(mockManager.state).toBe('running');
-      vi.advanceTimersByTime(tokens.suspendAfterMs - 1);
-      expect(mockManager.state).toBe('running');
-
-      vi.advanceTimersByTime(1);
-      expect(mockManager.state).toBe('suspended');
-    });
-
-    // TODO: Figure out a way to force `AudioContext.state`
-    // to initialize with `running`.
-    it.todo('can register upon initialization');
-
-    it('resets countdown when Stack states change', async () => {
-      mockManager.add(...mockEntries);
-
-      const stack0 = mockManager.get(mockEntries[0].id);
-
-      // Beginning of suspension timer.
-      mockManager.unlock();
-      document.dispatchEvent(clickEvent);
-
-      expect(mockManager.state).toBe('running');
-      vi.advanceTimersByTime(tokens.suspendAfterMs - 1);
-      expect(mockManager.state).toBe('running');
-
-      // `Sound` preparation triggers `Stack` state changes,
-      // resulting in a suspension timer reset.
-      const stack0Sound = await stack0?.prepare();
-
-      vi.advanceTimersByTime(1);
-      expect(mockManager.state).toBe('running');
-      vi.advanceTimersByTime(tokens.suspendAfterMs - 2);
-      expect(mockManager.state).toBe('running');
-
-      expect(stack0?.playing).toBe(false);
-      // Another suspension timer reset.
-      stack0Sound?.play();
-      expect(stack0?.playing).toBe(true);
-
-      vi.advanceTimersByTime(1);
-      expect(mockManager.state).toBe('running');
-
-      // End of `Sound` + Reset of suspension timer.
-      vi.advanceTimersByTime(mockData.playDurationMs - 1);
-      expect(stack0?.playing).toBe(false);
-
-      vi.advanceTimersByTime(tokens.suspendAfterMs - 1);
-      expect(mockManager.state).toBe('running');
-
-      vi.advanceTimersByTime(1);
-      expect(mockManager.state).toBe('suspended');
-    });
-
-    it('triggers state changes', async () => {
-      const spyState: ManagerEventMap['state'] = vi.fn((_current) => {});
-
-      mockManager.on('state', spyState);
-
-      expect(spyState).not.toBeCalled();
-
-      mockManager.unlock();
-      document.dispatchEvent(clickEvent);
-
-      expect(spyState).toBeCalledWith('running');
-      vi.advanceTimersByTime(tokens.suspendAfterMs);
-      expect(spyState).toBeCalledWith('suspending');
-      expect(spyState).toBeCalledWith('suspended');
-    });
-
-    // TODO: Is there any good way / value in testing these conditions?
-    it.todo('does not re-register while `suspending`');
-    it.todo('does not re-register if already `suspended`');
-
-    it('does not allow suspension if `closed`', async () => {
-      mockManager.unlock();
-      document.dispatchEvent(clickEvent);
-
-      vi.advanceTimersByTime(tokens.suspendAfterMs);
-      expect(mockManager.state).toBe('suspended');
-
-      mockManager.teardown();
-      expect(mockManager.state).toBe('closed');
-
-      vi.advanceTimersByTime(tokens.suspendAfterMs);
-      expect(mockManager.state).toBe('closed');
-    });
-  });
-
-  describe('#autoResume()', () => {
-    const clickEvent = new Event('click');
-
-    it('resumes once a `Sound` plays', async () => {
-      mockManager.add(...mockEntries);
-
-      mockManager.unlock();
-      document.dispatchEvent(clickEvent);
-
-      const stack0 = mockManager.get(mockEntries[0].id);
-      const stack0Sound = await stack0?.prepare();
-
-      expect(mockManager.state).toBe('running');
-      vi.advanceTimersByTime(tokens.suspendAfterMs);
-      expect(mockManager.state).toBe('suspended');
-
-      stack0Sound?.play();
-      expect(mockManager.state).toBe('running');
-
-      vi.advanceTimersByTime(mockData.playDurationMs);
-      expect(mockManager.state).toBe('running');
-
-      vi.advanceTimersByTime(tokens.suspendAfterMs);
-      expect(mockManager.state).toBe('suspended');
-    });
-
-    // TODO: Cannot test this until we can "interrupt" the suspension.
-    it('queues a resume if `state` is `suspending`');
-
-    // TODO: Figure out how to test this.
-    it('throws error if the resume fails');
-  });
-
-  // All events are covered in other tests:
+  // Most events are covered in other tests:
   // `state`, `library`, `volume`, `mute`, and `error`.
-  // describe('events', () => {});
+  describe('events', () => {
+    describe('play', () => {
+      it('triggers as sounds play + stop/expire', async () => {
+        const spyPlay: ManagerEventMap['play'] = vi.fn((_active) => {});
+        mockManager.on('play', spyPlay);
+
+        managerSetup(mockManager, mockEntries);
+
+        const stack0 = mockManager.get(mockEntries[0].id);
+        const stack0Sound = await stack0?.prepare();
+
+        expect(spyPlay).not.toBeCalled();
+        stack0Sound?.play();
+        expect(spyPlay).toHaveBeenNthCalledWith(1, true);
+
+        stack0Sound?.stop();
+        expect(spyPlay).toHaveBeenNthCalledWith(2, false);
+
+        expect(spyPlay).not.toBeCalledTimes(3);
+      });
+    });
+  });
 });
