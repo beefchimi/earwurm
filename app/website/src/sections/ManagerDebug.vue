@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed} from 'vue';
+import {computed, type ComponentPublicInstance} from 'vue';
 
 import {useDebugManager, useEarwurmStore} from '@/store';
 import {IconAction, StackLabel} from '@/components';
@@ -23,6 +23,12 @@ function togglePlayback() {
     manager.resume();
   }
 }
+
+function scrollEnd(element: Element | ComponentPublicInstance | null) {
+  if (element instanceof Element) {
+    element.scroll({left: 12345, behavior: 'smooth'});
+  }
+}
 </script>
 
 <template>
@@ -30,7 +36,10 @@ function togglePlayback() {
     <div class="collapsed-border-row">
       <StackLabel label="Stacks" populated />
 
-      <ul class="DebugList collapsed-border-row--reverse pattern-halftone">
+      <ul
+        :ref="(el) => scrollEnd(el)"
+        class="DebugList collapsed-border-row pattern-halftone"
+      >
         <li v-for="stack in activeStacks" :key="stack" class="DebugItem">
           <StackLabel :label="stack" />
         </li>
@@ -40,7 +49,10 @@ function togglePlayback() {
     <div class="collapsed-border-row">
       <StackLabel label="State" populated />
 
-      <ul class="DebugList collapsed-border-row--reverse pattern-halftone">
+      <ul
+        :ref="(el) => scrollEnd(el)"
+        class="DebugList collapsed-border-row pattern-halftone"
+      >
         <li
           v-for="(state, index) in stateHistory"
           :key="`${state}-${index}`"
@@ -54,7 +66,10 @@ function togglePlayback() {
     <div class="collapsed-border-row">
       <StackLabel label="Errors" populated />
 
-      <ul class="DebugList collapsed-border-row--reverse pattern-halftone">
+      <ul
+        :ref="(el) => scrollEnd(el)"
+        class="DebugList collapsed-border-row pattern-halftone"
+      >
         <li
           v-for="(error, index) in errorHistory"
           :key="[...error, index].join(' | ')"
@@ -69,7 +84,8 @@ function togglePlayback() {
       <StackLabel label="Unlocked" populated />
 
       <ul
-        class="DebugList collapsed-border-row--reverse pattern-halftone--reverse pattern-halftone"
+        :ref="(el) => scrollEnd(el)"
+        class="DebugList collapsed-border-row pattern-halftone"
       >
         <li
           v-for="(status, index) in unlockHistory"
@@ -84,7 +100,10 @@ function togglePlayback() {
     <div class="collapsed-border-row">
       <StackLabel label="Playing" populated />
 
-      <ul class="DebugList collapsed-border-row--reverse pattern-halftone">
+      <ul
+        :ref="(el) => scrollEnd(el)"
+        class="DebugList collapsed-border-row pattern-halftone"
+      >
         <li
           v-for="(status, index) in playHistory"
           :key="`Playing-${status}-${index}`"
@@ -139,7 +158,6 @@ function togglePlayback() {
 
 .DebugList {
   counter-reset: debug-counter;
-  flex-direction: row-reverse;
   flex: 1 1 auto;
   box-shadow: inset 0 0 0 var(--app-border-width) var(--color-primary);
   overflow-x: scroll;
@@ -148,6 +166,10 @@ function togglePlayback() {
 .DebugItem {
   counter-increment: debug-counter;
   position: relative;
+
+  &:first-child {
+    margin-left: auto;
+  }
 
   &::before {
     content: counter(debug-counter);
@@ -165,8 +187,25 @@ function togglePlayback() {
     box-shadow: inset 0 0 0 var(--app-border-width) var(--color-primary);
   }
 
+  &::after {
+    @apply interaction-disable;
+    content: '';
+    display: block;
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    background-color: var(--color-primary);
+    transition: opacity var(--duration-slow) var(--easing-cubic);
+  }
+
   & > div {
     padding-left: 2rem;
+  }
+}
+
+@starting-style {
+  .DebugItem::after {
+    opacity: 1;
   }
 }
 </style>
