@@ -38,6 +38,13 @@ watch(managerVolumeRef, (incomingVolume) => {
   metroInstance.setVolume(manager.volume);
 });
 
+document.addEventListener('visibilitychange', () => {
+  // Pause all playing sounds when the device is interrupted.
+  if (document.hidden && manager.state === 'interrupted') {
+    activeStacksRef.value.forEach((stackId) => manager.get(stackId)?.pause());
+  }
+});
+
 export function useEarwurmStore() {
   return {
     audioLibrary,
