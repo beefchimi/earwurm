@@ -1,5 +1,13 @@
 # Earwurm Changelog
 
+## 0.9.0
+
+### Minor Changes
+
+- [#78](https://github.com/beefchimi/earwurm/pull/78) [`272c601`](https://github.com/beefchimi/earwurm/commit/272c601f15606e0a5728d9db0702e26a368aebe3) Thanks [@beefchimi](https://github.com/beefchimi)! - Remove timed auto-suspend in favour of exposing `.suspend() / .resume()` methods on `Earuwrm`.
+
+- [#78](https://github.com/beefchimi/earwurm/pull/78) [`272c601`](https://github.com/beefchimi/earwurm/commit/272c601f15606e0a5728d9db0702e26a368aebe3) Thanks [@beefchimi](https://github.com/beefchimi)! - New `play` event available on `Earwurm` instance.
+
 ## 0.8.2
 
 ### Patch Changes
