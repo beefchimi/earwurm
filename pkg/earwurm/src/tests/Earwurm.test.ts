@@ -426,9 +426,7 @@ describe('Earwurm component', () => {
   describe('resume()', () => {
     const clickEvent = new Event('click');
 
-    // TODO: Our mocked setup doesn’t actually know how to
-    // update the `context.state` when a sound is played.
-    it.skip('resumes once a `Sound` plays', async () => {
+    it('resumes once a `Sound` plays', async () => {
       managerSetup(mockManager, mockEntries);
 
       const stack0 = mockManager.get(mockEntries[0].id);
@@ -732,6 +730,26 @@ describe('Earwurm component', () => {
         expect(spyPlay).toHaveBeenNthCalledWith(2, false);
 
         expect(spyPlay).not.toBeCalledTimes(3);
+      });
+
+      it('does not trigger a 2nd time when the state hasnt changed', async () => {
+        const spyPlay: ManagerEventMap['play'] = vi.fn((_active) => {});
+        mockManager.on('play', spyPlay);
+
+        managerSetup(mockManager, mockEntries);
+
+        const stack0 = mockManager.get(mockEntries[0].id);
+        const stack0Sound = await stack0?.prepare();
+
+        expect(spyPlay).not.toBeCalled();
+        stack0Sound?.play();
+        expect(spyPlay).toHaveBeenNthCalledWith(1, true);
+
+        const stack1 = mockManager.get(mockEntries[1].id);
+        const stack1Sound = await stack1?.prepare();
+        stack1Sound?.play();
+
+        expect(spyPlay).not.toBeCalledTimes(2);
       });
     });
   });

@@ -272,13 +272,14 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
     if (this._state === value) return;
 
     this._state = value;
-    this.emit('state', value);
 
     if (value === 'running') {
       this._unlocked = true;
     } else if (value === 'closed') {
       this._unlocked = false;
     }
+
+    this.emit('state', value);
   }
 
   readonly #handleStateChange = () => {
@@ -291,9 +292,10 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
   readonly #handleStackState: StackEventMap['state'] = (_current) => {
     const isPlaying = this.playing;
 
-    if (isPlaying !== this._playing) {
-      this._playing = isPlaying;
-      this.emit('play', isPlaying);
-    }
+    if (isPlaying === this._playing) return;
+    if (isPlaying) this.resume();
+
+    this._playing = isPlaying;
+    this.emit('play', isPlaying);
   };
 }
