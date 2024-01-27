@@ -7,6 +7,10 @@ type ErrorResponse = Parameters<ManagerEventMap['error']>[0];
 
 const MAX_HISTORY_LENGTH = 44;
 
+// TODO: Consider enabling a auto-suspension option.
+// import {clamp, timeMeasurement} from '@earwurm/utilities';
+// const safeAutoSuspend = clamp(0, autoSuspend, timeMeasurement.msPerMin);
+
 const {manager, activeStacks} = useEarwurmStore();
 
 const stateHistoryRef = ref([manager.state]);
@@ -35,10 +39,6 @@ manager.on('state', (current) => {
 manager.on('play', (active) => {
   const newPlayHistory = [...playHistoryRef.value, active];
   playHistoryRef.value = newPlayHistory.slice(MAX_HISTORY_LENGTH * -1);
-});
-
-manager.on('library', () => {
-  updateUnlockHistory();
 });
 
 manager.on('error', (response) => {
