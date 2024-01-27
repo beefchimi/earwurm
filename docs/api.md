@@ -38,6 +38,22 @@ manager.add({id: 'One', path: 'path/to/one.webm'}, ...moreEntries);
 // Remove entries from this instance, referenced by `Stack > id`.
 manager.remove('EntryId', ...moreEntryIds);
 
+// Manually resume `running` state for the `AudioContext`.
+// This does not guarantee the `AudioContext` will become “unlocked”.
+// For the most part, `.resume()` is managed behind the scenes, and
+// likely won’t be a method you ever require calling manually...
+// unless of course you have manually called `.suspend()`.
+manager.resume();
+
+// Can be used to force playback to a halt. This is like a global
+// “pause” for all sounds within the instance. Calling `.suspend()`
+// will not trigger any `state` events on the `Stack` or `Sound`
+// instances contained within. Unless you have a specific reason
+// to do so, it is recommended that you call `.pause()` on the
+// individual sounds instead. Earwurm will do its best to
+// suspend and resume the `AudioContext` behind the scenes.
+manager.suspend();
+
 // Stop and destory all sounds within each `Stack`.
 // Each `Stack` will remain available in the library
 // to continue interacting with.
@@ -125,13 +141,7 @@ manager.activeEvents;
 
 **Static members:**
 
-There are no static members. However, there are some relevant static values that can be retrieved from the exported `tokens` object:
-
-```ts
-// Retrieve the total time (in milliseconds) that needs
-// to pass before the auto-suspension kicks in.
-tokens.suspendAfterMs;
-```
+There are no static members or relevant tokens exposed at the `manager` level.
 
 ## Stack API
 

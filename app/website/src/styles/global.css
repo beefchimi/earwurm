@@ -56,6 +56,14 @@ body {
   }
 }
 
+.collapsed-border-row--reverse {
+  display: flex;
+
+  > *:not(:last-child) {
+    margin-left: calc(var(--app-border-width) * -1);
+  }
+}
+
 /* --- Patterns --- */
 
 .pattern-arrows {

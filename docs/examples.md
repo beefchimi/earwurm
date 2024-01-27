@@ -6,7 +6,9 @@ The following examples should help demonstrate _most of the_ common use cases fo
 
 ## Getting started
 
-**Initialization:**
+Here are some basic examples to help initalize your `Earwurm` instance.
+
+### Initialization
 
 In order to start making noise, we will need to have an `Earwurm` instance to work with.
 
@@ -22,7 +24,7 @@ const sound = await stack?.prepare();
 sound?.play();
 ```
 
-**Enabling autoplay:**
+### Enabling autoplay
 
 Most browsers will intentionally block audio from playing automatically. The user should not be caught off guard with unwanted noise… annoying advertisements be damned! Any media should be explicitly initialized by the user.
 
@@ -38,7 +40,7 @@ manager.unlock();
 if (manager.unlocked) sound?.play();
 ```
 
-**Adding entries:**
+### Adding entries
 
 We can add as few as `1` new `Stack` at a time.
 
@@ -73,7 +75,7 @@ manager.add(
 // > ['Apple', 'Banana', 'Peach', 'Sprite']
 ```
 
-**Removing entries:**
+### Removing entries
 
 Similarly, we can remove any entries that have already been added:
 
@@ -93,9 +95,77 @@ manager.remove('Apple', 'Peach');
 // > ['Apple', 'Peach']
 ```
 
+### Auto suspend `AudioContext`
+
+`Earwurm` attempts to be efficient about managing `AudioContext` suspension by triggering a `suspend` if `.stop()` has been called on the `Earwurn` instance, or the `library` is empty _(`.remove()` has removed any remaining `Stack` instances)_.
+
+Otherwise, the `Earwurm > AudioContext` will continue `running` once it has begun playing sounds.
+
+> **Note:** There are instances where the browser/device can “interrupt” playback, causing `Earwurm` to emit an `interrupted` state change. Scenarios such as the device going to sleep, or receiving a phone call, invoke an “interruption”. This _should be_ functionally equivalent to the `suspended` state, and can be corrected by calling `.resume()`.
+
+To free up some precious resources, you can automatically `suspend` the `AudioContext` after a period of no playback. This is made easy by subscribing to the `Earwurn > play` event.
+
+```ts
+const suspendAfterMs = 30000;
+let suspendId = 0;
+
+function autoSuspend() {
+  manager.suspend();
+  suspendId = 0;
+}
+
+manager.on('play', (active) => {
+  clearTimeout(suspendId);
+  suspendId = 0;
+
+  if (active) return;
+
+  suspendId = setTimeout(autoSuspend, suspendAfterMs);
+});
+```
+
+The `suspend/resume` methods on the `AudioContext` are asynchronous. At the moment, `Earwurm` does not expose the `Promise` for each of these methods. It is possible that the need to “resume” could occur while the context is “suspending”. If this is a concern, you can try to get around it by also subscribing to the `Earwurn > state` event.
+
+```ts
+manager.on('state', (current) => {
+  if (current === 'suspending' && suspendId) {
+    clearTimeout(suspendId);
+    suspendId = 0;
+
+    // This is not guaranteed to work, as the `resume()` method
+    // could early return depending on the internal state.
+    manager.resume();
+  }
+});
+```
+
+You may also want to perform some action - such as suspending the `AudioContext`, or pausing all sounds - if the page is no longer visible. The `document > visibilitychange` does not quite give us a way to distinguish between the many ways a page changes “visibility”... but it might be the catch-all that suits your needs.
+
+```ts
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    manager.suspend();
+  } else {
+    manager.resume();
+  }
+});
+```
+
+A good use-case for the above is restoring playback on a mobile device that went to sleep.
+
+```ts
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && manager.state === 'interrupted') {
+    manager.resume();
+  }
+});
+```
+
 ## Using sounds
 
-**Interact with an available `Sound`:**
+Some more detailed examples for interacting with individual sounds.
+
+### Interact with an available `Sound`
 
 Now that we have added some audio files, let’s go ahead and play one.
 
@@ -134,7 +204,7 @@ const sound2 = stack?.prepare();
 if (sound2) sound2.then((soundInstance) => soundInstance.play());
 ```
 
-**Determining state values:**
+### Determining state values
 
 A `Stack` instance will have a dedicated `playing` property to help identify if _atleast one contained `Sound`_ is actively “playing”.
 
@@ -166,11 +236,11 @@ sound.on('state', (state) => {
 
 ## Sound behaviour
 
-As discussed in the `Design` document, sounds within the `AudioContext` are “one-and-done”. A `Sound` is “destroyed” upon completion.
+As discussed in the [Design document](./design.md), sounds within the `AudioContext` are “one-and-done”. A `Sound` is “destroyed” upon completion.
 
 Depending on our needs, we can tailor the behaviour in several ways.
 
-**Allowing sounds to overlap:**
+### Allowing sounds to overlap
 
 Every time we make a call to `.prepare()`, we “create a new instance” of that `Sound` within the `Stack`. After calling `.play()`, that `Sound` then “expires” and is removed from the `Stack` upon completion _(or call to `.stop()`)_.
 
@@ -193,7 +263,7 @@ async function handleOverlappingPlay() {
 return <Button onClick={handleOverlappingPlay}>Overlap</Button>;
 ```
 
-**Restricting a `Sound` to a single instance:**
+### Restricting a `Sound` to a single instance
 
 If we do not want consecutive plays of a `Sound` to overlap, we can restrict the `Stack` to allow only a single `Sound` in the `queue` at once. Simply checking for `stack.keys.length` will let us know how many sounds have been queued up.
 
@@ -237,7 +307,7 @@ async function handleSinglePlay() {
 }
 ```
 
-**Restarting a playing `Sound`:**
+### Restarting a playing `Sound`
 
 A variation of the “One-at-a-time pattern” is the “Restart pattern”. Here, we will check if the `Sound` is `playing`, and if `true`, simply “restart it” from the beginning:
 
@@ -261,7 +331,7 @@ function handleRestartPlay() {
 return <Button onClick={handleRestartPlay}>Restart</Button>;
 ```
 
-**Restricting a specific `Sound` in the `Stack`:**
+### Restricting a specific `Sound` in the `Stack`
 
 If we are re-using the same `Sound` in multiple places throughout the app, it could be beneficial to re-use the same variable reference.
 
@@ -285,7 +355,7 @@ function handleSoundPlay() {
 return <Button onClick={handleSinglePlay}>Single</Button>;
 ```
 
-**Managing a `Sound` queue:**
+### Managing a `Sound` queue
 
 The problem with the “One-at-a-time” pattern is that it prevents adding a `Sound` to the `stack.queue` if `state` is `playing`. If the behaviour we _really want_ is to queue up a sound to play as soon as `state` is no longer `playing`, we can utilize the “Wait-your-turn pattern”:
 
@@ -350,7 +420,7 @@ async function handleQueuedPlay() {
 return <Button onClick={handleQueuedPlay}>Queue and play</Button>;
 ```
 
-**Stopping after an elapsed play time:**
+### Stopping after an elapsed play time
 
 ```ts
 const stack = manager.get('MyStack');
@@ -385,7 +455,7 @@ if (sound) {
 }
 ```
 
-**Looping audio:**
+### Looping audio
 
 We can easily toggle a `Sound` to “loop indefinitely” by the `sound.loop` accessor.
 
@@ -411,4 +481,6 @@ if (sound) {
 
 ## Summary
 
-Hopefully this document has provided enough examples to help you identify the capabilities of `earwurm`. If you are anxious to start experimenting, please check out the included demo app within this repo!
+Hopefully this document has provided enough examples to help you identify the capabilities of `Earwurm`. If you are anxious to start experimenting, please check out the included demo app within this repo!
+
+If you end up experimenting with `Earwurm` and have a `CodeSandbox` to share, feel free to [open an issue](https://github.com/beefchimi/earwurm/issues) and post the link so other consumers can learn from it.

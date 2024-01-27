@@ -14,10 +14,8 @@ export function unlockAudioContext(
   const buffer = scratchBuffer(context);
 
   function unlock() {
-    // TODO: Double-check and make sure this is still required.
+    // TODO: Double-check and make sure this is still required:
     // Android can not play in suspend state.
-    // We might want to use `autoResume()` here,
-    // and if so, will need a `.onStart?()`.
     context.resume().catch(() => null);
 
     const source = context.createBufferSource();

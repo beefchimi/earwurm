@@ -5,4 +5,13 @@ import ManagerControls from './ManagerControls.vue';
 import SoundControls from './SoundControls.vue';
 import StackControls from './StackControls.vue';
 
-export {AppHeader, AppFooter, ManagerControls, SoundControls, StackControls};
+import ManagerDebug from './ManagerDebug.vue';
+
+export {
+  AppHeader,
+  AppFooter,
+  ManagerControls,
+  SoundControls,
+  StackControls,
+  ManagerDebug,
+};

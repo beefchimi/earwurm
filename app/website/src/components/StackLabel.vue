@@ -4,6 +4,7 @@ import {classNames} from '@/helpers';
 export interface StackLabelProps {
   label: string;
   populated?: boolean;
+  truncate?: boolean;
 }
 
 defineProps<StackLabelProps>();
@@ -11,7 +12,7 @@ defineProps<StackLabelProps>();
 
 <template>
   <div :class="classNames('StackLabel', {populated})">
-    <p class="Text">{{ label }}</p>
+    <p :class="classNames('Text', {truncate})">{{ label }}</p>
   </div>
 </template>
 
@@ -21,6 +22,7 @@ defineProps<StackLabelProps>();
   place-items: center;
   place-content: center;
   padding: 0.8rem;
+  flex: 0 0 auto;
   min-width: var(--row-height);
   height: var(--row-height);
   color: var(--color-primary);
@@ -37,8 +39,11 @@ defineProps<StackLabelProps>();
 }
 
 .Text {
+  font-size: 1.4rem;
+}
+
+.truncate {
   @apply truncate;
   @apply flex-fix-width;
-  font-size: 1.4rem;
 }
 </style>

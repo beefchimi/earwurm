@@ -2,7 +2,7 @@ import {computed} from 'vue';
 import {useMounted} from './useMounted';
 
 // Adapted from Vue Use: https://vueuse.org/
-export function useSupported(callback: () => unknown) {
+export function useSupported(callback: () => boolean) {
   const isMounted = useMounted();
 
   return computed(() => {

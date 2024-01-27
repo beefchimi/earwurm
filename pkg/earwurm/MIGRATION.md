@@ -1,5 +1,16 @@
 # Earwurm Migration Guide
 
+## 0.9.0
+
+- Removed the “timed auto-suspend” behaviour.
+  - With the new `play` event, it is now easy for consumers to specify this behaviour themselves.
+  - See the `Examples` documentation for some insight.
+  - PR for code change: <https://github.com/beefchimi/earwurm/pull/78>
+- While there is no more “timed auto-suspend”, the `Earwurm` will attempt to optimistically `suspend` whenever:
+  - All `Stacks` have been removed from the `Earwurm`. instance.
+  - `.stop()` has been called on the `Earwurn` instance.
+- Will now auto-resume a `suspended` state when `.play()` is called on a `Sound`.
+
 ## 0.7.0
 
 - Replaced the `fadeMs?: number` option for `Earwurm`, `Stack`, and `Sound` with a simpler `transitions?: boolean` option.
