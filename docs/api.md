@@ -124,6 +124,11 @@ manager.activeEvents;
 // “unlocked” right away.
 (event: 'state', listener: (current: ManagerState) => void)
 
+// Event called whenever `manager.playing` switches from
+// `true -> false` (and vice-versa). Useful for when you
+// just want to be notified whenever that value changes.
+(event: 'play', listener: (active: boolean) => void)
+
 // Event called whenever the `keys` property changes. This is useful
 // to subscribe to changes in the internal “stack library”.
 (event: 'library', listener: (newKeys: StackId[], oldKeys: StackId[]) => void)
