@@ -1,6 +1,6 @@
+import {arrayShallowEquals, clamp, getErrorMessage} from 'beeftools';
 import {EmittenCommon} from 'emitten';
 import {linearRamp, unlockAudioContext} from '@earwurm/helpers';
-import {arrayShallowEquals, clamp, getErrorMessage} from '@earwurm/utilities';
 
 import {Stack} from './Stack';
 import {tokens} from './tokens';

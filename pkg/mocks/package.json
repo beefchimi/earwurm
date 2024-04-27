@@ -8,7 +8,7 @@
     "pnpm": ">=9.0.0"
   },
   "dependencies": {
-    "@earwurm/utilities": "workspace:*"
+    "beeftools": "^0.0.5"
   },
   "devDependencies": {}
 }

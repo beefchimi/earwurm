@@ -48,17 +48,18 @@
     "start": "pnpm build:only --watch"
   },
   "dependencies": {
+    "beeftools": "^0.0.5",
     "emitten": "^0.6.6"
   },
   "devDependencies": {
     "@earwurm/helpers": "workspace:*",
     "@earwurm/mocks": "workspace:*",
     "@earwurm/types": "workspace:*",
-    "@earwurm/utilities": "workspace:*",
     "vite": "^5.2.10",
     "vite-plugin-dts": "^3.9.0"
   },
   "peerDependencies": {
+    "beeftools": "^0.0.5",
     "emitten": "^0.6.6"
   }
 }

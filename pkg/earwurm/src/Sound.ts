@@ -1,6 +1,6 @@
+import {clamp, calcProgress} from 'beeftools';
 import {EmittenCommon} from 'emitten';
 import {linearRamp} from '@earwurm/helpers';
-import {clamp, calcProgress} from '@earwurm/utilities';
 
 import {tokens} from './tokens';
 import type {
