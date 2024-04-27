@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {classNames} from '@/helpers';
+import {clx} from 'beeftools';
 
 export interface DragHandleProps {
   invert?: boolean;
@@ -9,7 +9,7 @@ defineProps<DragHandleProps>();
 </script>
 
 <template>
-  <div :class="classNames('DragHandle', {invert})">
+  <div :class="clx('DragHandle', {invert})">
     <div class="Column">
       <div class="Dot" />
     </div>

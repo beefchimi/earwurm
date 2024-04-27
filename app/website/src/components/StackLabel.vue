@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {classNames} from '@/helpers';
+import {clx} from 'beeftools';
 
 export interface StackLabelProps {
   label: string;
@@ -11,8 +11,8 @@ defineProps<StackLabelProps>();
 </script>
 
 <template>
-  <div :class="classNames('StackLabel', {populated})">
-    <p :class="classNames('Text', {truncate})">{{ label }}</p>
+  <div :class="clx('StackLabel', {populated})">
+    <p :class="clx('Text', {truncate})">{{ label }}</p>
   </div>
 </template>
 

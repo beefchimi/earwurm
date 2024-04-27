@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {computed} from 'vue';
-import {arrayOfLength} from '@earwurm/utilities';
-import {classNames} from '@/helpers';
+import {arrayOfLength, clx} from 'beeftools';
 
 export interface MuteBarProps {
   count?: number;
@@ -16,7 +15,7 @@ const barItems = computed(() => arrayOfLength(Math.max(count + 1, 1)));
 </script>
 
 <template>
-  <ul :class="classNames('MuteBar', {collapsed})">
+  <ul :class="clx('MuteBar', {collapsed})">
     <li v-for="bar in barItems" :key="`MuteBar-Item-${bar}`" class="Item" />
   </ul>
 </template>

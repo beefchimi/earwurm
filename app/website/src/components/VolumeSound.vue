@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import {computed, ref} from 'vue';
-import {arrayOfLength, clamp, roundNumber} from '@earwurm/utilities';
+import {arrayOfLength, clamp, clx, roundNumber} from 'beeftools';
 
-import {classNames} from '@/helpers';
 import {MuteBar} from '@/components';
 
 export interface VolumeSoundProps {
@@ -52,8 +51,8 @@ function handleChange(volume: number) {
 </script>
 
 <template>
-  <div :class="classNames('VolumeSound', {disabled})">
-    <div :class="classNames('MuteBarWrapper', {show: disabled})">
+  <div :class="clx('VolumeSound', {disabled})">
+    <div :class="clx('MuteBarWrapper', {show: disabled})">
       <MuteBar :count="TICK_LENGTH" />
     </div>
 
@@ -66,7 +65,7 @@ function handleChange(volume: number) {
         <button
           type="button"
           :class="
-            classNames(
+            clx(
               'Action',
               interactIndex !== undefined
                 ? {

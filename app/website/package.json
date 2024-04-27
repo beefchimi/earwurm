@@ -26,7 +26,7 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
   },
   "dependencies": {
-    "@earwurm/utilities": "workspace:*",
+    "beeftools": "^0.0.5",
     "earwurm": "workspace:*",
     "vue": "^3.4.25"
   },

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {classNames} from '@/helpers';
+import {clx} from 'beeftools';
 
 export interface SquareActionProps {
   classes?: string;
@@ -24,7 +24,7 @@ defineEmits<SquareActionEmits>();
   <a
     v-if="url?.length"
     :href="url"
-    :class="classNames('SquareAction', 'link', {disabled}, classes)"
+    :class="clx('SquareAction', 'link', {disabled}, classes)"
     :target="external ? '_blank' : undefined"
     :rel="external ? 'noopener noreferrer' : undefined"
   >
@@ -34,7 +34,7 @@ defineEmits<SquareActionEmits>();
   <button
     v-else
     type="button"
-    :class="classNames('SquareAction', 'button', classes)"
+    :class="clx('SquareAction', 'button', classes)"
     :aria-label="a11y"
     :aria-pressed="pressed ? true : undefined"
     :disabled="disabled"

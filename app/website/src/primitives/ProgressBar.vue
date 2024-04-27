@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {computed} from 'vue';
-import {clamp, calcProgress} from '@earwurm/utilities';
-import {classNames} from '@/helpers';
+import {calcProgress, clamp, clx} from 'beeftools';
 
 export interface ProgressBarProps {
   id: string;
@@ -19,7 +18,7 @@ const progress = computed(() => calcProgress(value, {min, max, round: true}));
 <template>
   <div
     :class="
-      classNames('ProgressBar', 'pattern-diagonal', {
+      clx('ProgressBar', 'pattern-diagonal', {
         'pattern-diagonal--animated': speed,
         disabled,
       })

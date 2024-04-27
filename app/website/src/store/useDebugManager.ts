@@ -8,7 +8,7 @@ type ErrorResponse = Parameters<ManagerEventMap['error']>[0];
 const MAX_HISTORY_LENGTH = 44;
 
 // TODO: Consider enabling a auto-suspension option.
-// import {clamp, timeMeasurement} from '@earwurm/utilities';
+// import {clamp, timeMeasurement} from 'beeftools';
 // const safeAutoSuspend = clamp(0, autoSuspend, timeMeasurement.msPerMin);
 
 const {manager, activeStacks} = useEarwurmStore();

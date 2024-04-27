@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import {computed} from 'vue';
-import {calcProgress} from '@earwurm/utilities';
+import {calcProgress, clx} from 'beeftools';
 
-import {classNames} from '@/helpers';
 import {InputRange, type InputRangeProps} from '@/primitives';
 import {DragHandle, MuteBar} from '@/components';
 
@@ -27,7 +26,7 @@ const progress = computed(() => {
 
 <template>
   <div class="VolumeManager" :style="{'--slider-progress': progress}">
-    <div :class="classNames('MuteBarWrapper', {show: disabled})">
+    <div :class="clx('MuteBarWrapper', {show: disabled})">
       <MuteBar :count="MUTE_BAR_COUNT" />
     </div>
 

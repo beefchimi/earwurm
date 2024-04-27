@@ -1,5 +1,5 @@
 import {computed, ref} from 'vue';
-import {clamp} from '@earwurm/utilities';
+import {clamp} from 'beeftools';
 
 // TODO: `volume` range may actually need to be `0-100`.
 const INITIAL_VOLUME = 1;
