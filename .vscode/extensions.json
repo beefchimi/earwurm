@@ -9,8 +9,7 @@
     "DavidAnson.vscode-markdownlint",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
-    "Vue.volar",
-    "Vue.vscode-typescript-vue-plugin",
+    "vue.volar",
     "csstools.postcss",
     "stylelint.vscode-stylelint"
   ]

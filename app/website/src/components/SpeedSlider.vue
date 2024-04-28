@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import {computed} from 'vue';
+import {calcProgress, clx} from 'beeftools';
 import {tokens} from 'earwurm';
-import {calcProgress} from '@earwurm/utilities';
 
-import {classNames} from '@/helpers';
 import {InputRange, type InputRangeProps} from '@/primitives';
 import {MuteBar} from '@/components';
 
@@ -37,7 +36,7 @@ const stripes = computed(() => {
 
 <template>
   <div
-    :class="classNames('SpeedSlider', {disabled})"
+    :class="clx('SpeedSlider', {disabled})"
     :style="{'--slider-progress': progress}"
   >
     <div class="BackgroundStripes">

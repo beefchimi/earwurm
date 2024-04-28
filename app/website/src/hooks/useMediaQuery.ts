@@ -1,5 +1,5 @@
 import {ref, watchEffect} from 'vue';
-import {supportMatchMedia} from '@earwurm/utilities';
+import {supportMatchMedia} from 'beeftools';
 
 import type {MaybeRefOrGetter} from '@/types';
 import {toValue, tryOnScopeDispose} from '@/helpers';

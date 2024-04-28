@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {classNames} from '@/helpers';
+import {clx} from 'beeftools';
 import {
   MotionFadeScale,
   SquareAction,
@@ -29,7 +29,7 @@ defineEmits<IconActionEmits>();
 <template>
   <SquareAction
     :classes="
-      classNames('IconAction', {
+      clx('IconAction', {
         hasLabel: label?.length,
         disabled,
         filledLabel,

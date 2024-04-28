@@ -1,6 +1,6 @@
 import {afterEach, describe, it, expect, vi} from 'vitest';
+import {arrayOfLength} from 'beeftools';
 import {mockData} from '@earwurm/mocks';
-import {arrayOfLength} from '@earwurm/utilities';
 
 import {Stack} from '../Stack';
 import {Sound} from '../Sound';

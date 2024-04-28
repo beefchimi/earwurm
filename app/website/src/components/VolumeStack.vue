@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {computed} from 'vue';
-
-import {calcProgress} from '@earwurm/utilities';
+import {calcProgress} from 'beeftools';
 
 import {InputRange, type InputRangeProps} from '@/primitives';
 import {MuteBar} from '@/components';
