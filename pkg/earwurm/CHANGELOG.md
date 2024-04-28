@@ -1,5 +1,11 @@
 # Earwurm Changelog
 
+## 0.10.0
+
+### Minor Changes
+
+- [#82](https://github.com/beefchimi/earwurm/pull/82) [`c2f5c21`](https://github.com/beefchimi/earwurm/commit/c2f5c214c577e6b1d26c4030518dd9336995efaf) Thanks [@beefchimi](https://github.com/beefchimi)! - Switched from local utilities package to beeftools.
+
 ## 0.9.0
 
 ### Minor Changes
