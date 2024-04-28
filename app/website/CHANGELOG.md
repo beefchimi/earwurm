@@ -1,5 +1,16 @@
 # website
 
+## 0.1.0
+
+### Minor Changes
+
+- [#82](https://github.com/beefchimi/earwurm/pull/82) [`c2f5c21`](https://github.com/beefchimi/earwurm/commit/c2f5c214c577e6b1d26c4030518dd9336995efaf) Thanks [@beefchimi](https://github.com/beefchimi)! - Switched from local utilities package to beeftools.
+
+### Patch Changes
+
+- Updated dependencies [[`c2f5c21`](https://github.com/beefchimi/earwurm/commit/c2f5c214c577e6b1d26c4030518dd9336995efaf)]:
+  - earwurm@0.10.0
+
 ## 0.0.5
 
 ### Patch Changes
