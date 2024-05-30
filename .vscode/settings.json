@@ -5,6 +5,8 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "eslint.validate": ["javascript", "typescript", "vue"],
+  "eslint.experimental.useFlatConfig": true,
+  "eslint.useFlatConfig": true,
   "stylelint.enable": true,
   "typescript.tsdk": "./node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
