@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@earwurm/types": "workspace:*",
+    "@eslint/eslintrc": "^3.1.0",
     "@tsconfig/node20": "^20.1.4",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vue/eslint-config-prettier": "^9.0.0",
