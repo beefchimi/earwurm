@@ -5,7 +5,9 @@ import pluginPrettier from 'eslint-plugin-prettier/recommended';
 
 export default [
   {
-    ignores: ['.nx/cache', 'coverage/**', 'dist/**', 'scrap/**'],
+    // Completely ignoring the `app` folder and re-defining Vue linting
+    // within that directory.
+    ignores: ['.nx/cache', 'coverage/**', 'dist/**', 'scrap/**', 'app/**'],
   },
   configLove,
   pluginPrettier,
