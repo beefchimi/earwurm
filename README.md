@@ -1,6 +1,7 @@
 # Earwurm
 
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+[![Mutable.ai Auto Wiki](https://img.shields.io/badge/Auto_Wiki-Mutable.ai-blue)](https://wiki.mutable.ai/beefchimi/earwurm)
 
 > `Earwurm` is a minimal-scope library for managing `webm` audio files using the [`Web Audio API`](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API).
 
