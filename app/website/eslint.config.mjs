@@ -11,6 +11,10 @@ import {fileURLToPath} from 'node:url';
 import {FlatCompat} from '@eslint/eslintrc';
 import pluginVue from 'eslint-plugin-vue';
 
+// import vueParser from 'vue-eslint-parser';
+// import tsParser from '@typescript-eslint/parser';
+// import tsPlugin from '@typescript-eslint/eslint-plugin';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const compat = new FlatCompat({
@@ -21,6 +25,12 @@ const compat = new FlatCompat({
 // to end up with the correct parser.
 export default [
   {
+    // ignores: ['.nx/cache', 'coverage/**', 'dist/**', 'scrap/**'],
+
+    // We want the root `eslint` config to handle everything outside
+    // of this folder, so we will ignore everything except `/app`.
+    // ignores: ['**/*', '!app/**/*/'],
+
     ignores: ['.nx/cache', 'coverage/**', 'dist/**', 'scrap/**'],
   },
 
@@ -44,6 +54,18 @@ export default [
       ecmaVersion: 'latest',
       sourceType: 'module',
     },
+
+    // Taken from:
+    // https://github.com/vuejs/vue-eslint-parser/issues/232
+    /*
+    languageOptions: {
+      parser: vueParser,
+      parserOptions: {
+        parser: tsParser,
+      },
+      ecmaVersion: 'latest',
+    },
+    */
 
     rules: {
       'no-console': 'warn',
