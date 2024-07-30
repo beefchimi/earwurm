@@ -1,18 +1,18 @@
 🧰 Dependency:
   - changed-files:
-      - any-glob-to-any-file: 'pnpm-lock.yaml'
+      - any-glob-to-any-file: pnpm-lock.yaml
 
 📚 Documentation:
   - changed-files:
-      - any-glob-to-any-file: ['README.md', 'docs/**']
+      - any-glob-to-any-file: [README.md, 'docs/**']
 
 ⚖️ Legal:
   - changed-files:
-      - any-glob-to-any-file: 'LICENSE'
+      - any-glob-to-any-file: LICENSE
 
 🔖 Release:
   - changed-files:
-      - any-glob-to-any-file: 'CHANGELOG.md'
+      - any-glob-to-any-file: CHANGELOG.md
 
 🧪 Testing:
   - changed-files:
@@ -21,23 +21,21 @@
 🛠️ Tooling:
   - changed-files:
       - any-glob-to-any-file:
-          [
-            '.github/**',
-            '.vscode/**',
-            '.editorconfig',
-            '.eslintignore',
-            '.eslintrc',
-            '.eslintrc.cjs',
-            '.gitignore',
-            '.npmignore',
-            '.nvmrc',
-            '.prettierignore',
-            '.prettierrc',
-            'config/**',
-            'package.json',
-            'tsconfig.json',
-            'tsconfig.*.json',
-            'vite.config.ts',
-            '**/*/env.d.ts',
-            '**/*/lightningcss-plugins.ts',
-          ]
+          - '.github/**'
+          - '.vscode/**'
+          - .editorconfig
+          - .eslintignore
+          - .eslintrc
+          - .eslintrc.cjs
+          - .gitignore
+          - .npmignore
+          - .nvmrc
+          - .prettierignore
+          - .prettierrc
+          - 'config/**'
+          - package.json
+          - tsconfig.json
+          - 'tsconfig.*.json'
+          - vite.config.ts
+          - '**/*/env.d.ts'
+          - '**/*/lightningcss-plugins.ts'

@@ -16,7 +16,7 @@ permissions:
 
 # Allow one concurrent deployment.
 concurrency:
-  group: 'pages'
+  group: pages
   cancel-in-progress: true
 
 # This workflow is adapted from:
@@ -37,8 +37,8 @@ jobs:
       - name: 🔧 Setup Node 20.x
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'pnpm'
+          node-version-file: .nvmrc
+          cache: pnpm
 
       - name: 📦 Install dependencies
         run: pnpm i
@@ -52,7 +52,7 @@ jobs:
       - name: 📈 Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './app/website/dist'
+          path: ./app/website/dist
 
       - name: 📱 Deploy to GitHub Pages
         id: deployment
