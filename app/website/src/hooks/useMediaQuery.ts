@@ -1,10 +1,9 @@
 import {ref, watchEffect} from 'vue';
 import {supportMatchMedia} from 'beeftools';
 
+import {useSupported} from './useSupported';
 import type {MaybeRefOrGetter} from '@/types';
 import {toValue, tryOnScopeDispose} from '@/helpers';
-
-import {useSupported} from './useSupported';
 
 // Adapted from Vue Use: https://vueuse.org/
 export function useMediaQuery(query: MaybeRefOrGetter<string>) {
