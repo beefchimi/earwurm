@@ -10,6 +10,7 @@ export interface SquareActionProps {
   pressed?: boolean;
 }
 
+// eslint-disable-next-line ts/consistent-type-definitions
 export type SquareActionEmits = {
   action: [event: MouseEvent];
   hover: [event: MouseEvent];
