@@ -21,6 +21,8 @@
     "start:fresh": "vite --force",
     "preview": "vite preview --host",
     "build": "pnpm --parallel type-check && vite build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
   },
   "dependencies": {
@@ -29,11 +31,12 @@
     "vue": "^3.4.34"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^2.24.0",
     "@earwurm/types": "workspace:*",
-    "@tsconfig/node20": "^20.1.4",
     "@typescript-eslint/parser": "^7.18.0",
     "@vitejs/plugin-vue": "^5.1.1",
-    "@vue/tsconfig": "^0.5.1",
+    "eslint": "^9.8.0",
+    "eslint-plugin-format": "^0.1.2",
     "lightningcss": "^1.25.1",
     "vite-plugin-svg-sprite": "^0.5.2",
     "vue-tsc": "^2.0.29"
