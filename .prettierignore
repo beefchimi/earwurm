@@ -1,5 +1,0 @@
-package-lock.json
-pnpm-lock.yaml
-tsconfig.json
-tsconfig.*.json
-.changeset/*.md

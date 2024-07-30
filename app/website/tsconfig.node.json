@@ -1,6 +1,6 @@
 {
   "extends": "@tsconfig/node20/tsconfig.json",
-  "include": ["eslint.config.mjs", "lightningcss-plugins.ts", "vite.config.ts"],
+  "include": ["lightningcss-plugins.ts", "vite.config.ts"],
   "compilerOptions": {
     "composite": true,
     "module": "esnext",

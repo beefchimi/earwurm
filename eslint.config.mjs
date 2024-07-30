@@ -1,31 +1,48 @@
-import globals from 'globals';
-import configLove from 'eslint-config-love';
-// Includes both `config` and `plugin`.
-import pluginPrettier from 'eslint-plugin-prettier/recommended';
+// eslint.config.js
+import antfu from '@antfu/eslint-config'
 
-export default [
-  {
-    // Completely ignoring the `app` folder and re-defining Vue linting
-    // within that directory.
-    ignores: ['.nx/cache', 'coverage/**', 'dist/**', 'scrap/**', 'app/**'],
+// References:
+// 1. https://github.com/antfu/eslint-config
+// 2. https://github.com/antfu/eslint-plugin-antfu
+// 3. https://github.com/antfu/eslint-plugin-format
+export default antfu({
+  // The default is 'app', but we might want to
+  // use `lib` here and `app` within `/website`.
+  // type: 'lib',
+
+  // Enable stylistic formatting rules
+  // stylistic: true,
+
+  // Or customize the stylistic rules
+
+  /*
+  stylistic: {
+    indent: 2,
+    quotes: 'single',
   },
-  configLove,
-  pluginPrettier,
-  {
-    name: 'root-rules',
-    files: ['**/*.ts', '**/*.js', '**/*.mjs'],
-    languageOptions: {
-      ...configLove.languageOptions,
-      globals: {
-        ...globals.browser,
-      },
-      ecmaVersion: 2022,
-      sourceType: 'module',
-    },
+  */
+
+  typescript: {
+    tsconfigPath: 'tsconfig.json',
+  },
+
+  // Enable if we find Vue is not being autodetected.
+  // vue: true,
+
+  // In case we want to use a custom config within `website`: 'app/**'
+  ignores: ['.nx/cache', 'coverage/**', 'dist/**', 'scrap/**'],
+
+  formatters: {
+    // Formats .css and .scss files, but also the `<style>` blocks in Vue.
+    css: true,
+    markdown: true,
+  },
+})
+
+/*
     rules: {
       'no-console': 'warn',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/strict-boolean-expressions': 'off',
     },
-  },
-];
+*/

@@ -16,7 +16,7 @@ This file exists until we have finished our `eslint` migration.
   "lint": "pnpm -r lint && eslint .",
   "lint:fix": "pnpm -r lint:fix && eslint . --fix",
   "format": "prettier --check .",
-  "format:fix": "prettier --write .",
+  "format:fix": "prettier --write ."
 }
 ```
 
@@ -25,35 +25,35 @@ This file exists until we have finished our `eslint` migration.
 ```json
 {
   "lint": "eslint .",
-  "lint:fix": "eslint . --fix",
+  "lint:fix": "eslint . --fix"
 }
 ```
 
 ## Website eslint config
 
 ```mjs
-import globals from 'globals';
-import configLove from 'eslint-config-love';
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import globals from 'globals'
+import configLove from 'eslint-config-love'
 // Includes both `config` and `plugin`.
-import pluginPrettier from 'eslint-plugin-prettier/recommended';
+import pluginPrettier from 'eslint-plugin-prettier/recommended'
 
 // TODO: Update this once the various `vue > eslint` packages
 // fully support the new flat config.
-import path from 'node:path';
-import {fileURLToPath} from 'node:url';
 
-import {FlatCompat} from '@eslint/eslintrc';
-import pluginVue from 'eslint-plugin-vue';
+import { FlatCompat } from '@eslint/eslintrc'
+import pluginVue from 'eslint-plugin-vue'
 
 // import vueParser from 'vue-eslint-parser';
 // import tsParser from '@typescript-eslint/parser';
 // import tsPlugin from '@typescript-eslint/eslint-plugin';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 const compat = new FlatCompat({
   baseDirectory: __dirname,
-});
+})
 
 // TODO: This config currently is not working... as we do not appear
 // to end up with the correct parser.
@@ -115,7 +115,7 @@ export default [
 
       'vue/multi-word-component-names': [
         'error',
-        {ignores: ['Thumbnail', 'Tooltip']},
+        { ignores: ['Thumbnail', 'Tooltip'] },
       ],
       'vue/no-undef-components': ['error'],
 
@@ -124,7 +124,7 @@ export default [
       'vue/no-setup-props-destructure': 'off',
     },
   },
-];
+]
 ```
 
 ## Prettier
@@ -138,7 +138,7 @@ export default [
 
 ## Prettier ignore
 
-```
+```txt
 package-lock.json
 pnpm-lock.yaml
 tsconfig.json
