@@ -1,8 +1,8 @@
-import {afterEach, describe, it, expect, vi} from 'vitest';
+import {afterEach, describe, expect, it, vi} from 'vitest';
 
 import {Sound} from '../Sound';
 import {tokens} from '../tokens';
-import type {SoundState, SoundEventMap} from '../types';
+import type {SoundEventMap, SoundState} from '../types';
 
 type SoundConstructor = ConstructorParameters<typeof Sound>;
 
@@ -459,6 +459,7 @@ describe('Sound component', () => {
 
         expect(spyEnded).toBeCalledWith({
           id: testSound.id,
+          // eslint-disable-next-line ts/no-unsafe-assignment
           source: expect.any(AudioBufferSourceNode),
           neverStarted: false,
         });
@@ -477,6 +478,7 @@ describe('Sound component', () => {
 
         expect(spyEnded).toBeCalledWith({
           id: testSound.id,
+          // eslint-disable-next-line ts/no-unsafe-assignment
           source: expect.any(AudioBufferSourceNode),
           neverStarted: true,
         });

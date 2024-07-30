@@ -1,14 +1,14 @@
-import {clamp, calcProgress} from 'beeftools';
+import {calcProgress, clamp} from 'beeftools';
 import {EmittenCommon} from 'emitten';
 import {linearRamp} from '@earwurm/helpers';
 
 import {tokens} from './tokens';
 import type {
-  SoundId,
-  SoundState,
-  SoundEventMap,
-  SoundProgressEvent,
   SoundConfig,
+  SoundEventMap,
+  SoundId,
+  SoundProgressEvent,
+  SoundState,
 } from './types';
 
 export class Sound extends EmittenCommon<SoundEventMap> {
@@ -58,7 +58,7 @@ export class Sound extends EmittenCommon<SoundEventMap> {
   }
 
   private get hasProgressSub() {
-    return this.activeEvents.some((event) => event === 'progress');
+    return this.activeEvents.includes('progress');
   }
 
   private get transDuration() {
@@ -177,8 +177,8 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     // Not yet sure how to resolve this.
     this.#incrementLoop();
 
-    const timeSince =
-      Math.max(this.context.currentTime - this.#timestamp, 0) * this.speed;
+    const timeSince
+      = Math.max(this.context.currentTime - this.#timestamp, 0) * this.speed;
 
     this.#progress.elapsed = clamp(
       0,
@@ -258,7 +258,9 @@ export class Sound extends EmittenCommon<SoundEventMap> {
       this.#intervalId = this.hasProgressSub
         ? requestAnimationFrame(this.#handleInterval)
         : 0;
-    } else {
+    }
+    // TODO: This should not be broken onto a separate line.
+    else {
       cancelAnimationFrame(this.#intervalId);
       this.#intervalId = 0;
 
@@ -273,9 +275,9 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     if (!this.loop) return;
 
     if (
-      this.#progress.elapsed === this.duration ||
-      this.#progress.remaining === 0 ||
-      this.#progress.percentage === 100
+      this.#progress.elapsed === this.duration
+      || this.#progress.remaining === 0
+      || this.#progress.percentage === 100
     ) {
       this.#progress.elapsed = 0;
       this.#progress.remaining = this.duration;
