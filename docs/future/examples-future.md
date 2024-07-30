@@ -7,33 +7,31 @@ This document simply sets aside some code examples that serve as an expectation 
 It is worth remembering that each call to `.play()` creates a new instance of a `Sound`. If doing so is a problem, and you need to reference / re-use an existing sound, you can alternatively call `.seek()` on the actively playing sound.
 
 ```tsx
-const restartStack = manager.get('MySound');
-let sound = await restartStack.prepare();
+async function Example() {
+  const restartStack = manager.get('MySound');
+  let sound = await restartStack.prepare();
 
-async function handleRestartPlay() {
-  // Early return if the `Promise` has not resolved.
-  if (!sound?.id) return;
+  async function handleRestartPlay() {
+    // Early return if the `Promise` has not resolved.
+    if (!sound?.id) return;
 
-  // Simply call `.play()` if the sound has
-  // never been played yet.
-  if (sound.state === 'created') {
-    return sound.play();
+    // Simply call `.play()` if the sound has
+    // never been played yet.
+    if (sound.state === 'created') return sound.play();
+
+    // Check if the `Sound` is `playing`, and if so,
+    // return the “play position” back to the beginning.
+    if (sound.playing) return sound.seek(0);
+
+    // Otherwise, we need to re-create the sound
+    // and play it once ready.
+    sound = await restartStack.prepare();
+    const restarted = sound.play();
+    return restarted;
   }
 
-  // Check if the `Sound` is `playing`, and if so,
-  // return the “play position” back to the beginning.
-  if (sound.playing) {
-    return sound.seek(0);
-  }
-
-  // Otherwise, we need to re-create the sound
-  // and play it once ready.
-  sound = await restartStack.prepare();
-  const restarted = sound.play();
-  return restarted;
+  return <Button onClick={handleRestartPlay}>Restart</Button>;
 }
-
-return <Button onClick={handleRestartPlay}>Restart</Button>;
 ```
 
 **Using audio sprites:**

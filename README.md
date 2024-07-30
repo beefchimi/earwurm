@@ -26,6 +26,8 @@ pnpm add earwurm
 
 **Initializing a global instance:**
 
+<!-- eslint-skip -->
+
 ```ts
 import {Earwurm, type ManagerConfig} from 'earwurm';
 

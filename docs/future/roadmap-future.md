@@ -18,7 +18,7 @@ soundStack.cached;
 // Capture the moment the audio asset fetch request changes
 // from `false` to `true`. Will never fire if an `error`
 // occurs, or if the asset is already cached on initialization.
-soundStack.on('cache', () => void);
+soundStack.on('cache', () => {});
 ```
 
 ## Sound
@@ -68,7 +68,7 @@ sound.sprite;
 
 // Event called whenever there is an `Error` thrown
 // from the `Sound`.
-soundStack.on('error', (message: CombinedErrorMessage) => void);
+soundStack.on('error', (CombinedErrorMessage) => {});
 ```
 
 ## Concerns

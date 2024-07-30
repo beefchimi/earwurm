@@ -141,6 +141,8 @@ manager.on('state', (current) => {
 
 You may also want to perform some action - such as suspending the `AudioContext`, or pausing all sounds - if the page is no longer visible. The `document > visibilitychange` does not quite give us a way to distinguish between the many ways a page changes “visibility”... but it might be the catch-all that suits your needs.
 
+<!-- eslint-skip -->
+
 ```ts
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
@@ -219,6 +221,7 @@ const isPlaying = stack.playing;
 // Or get a string value for the current state.
 const currentState = stack.state;
 
+// eslint-disable-next-line no-console
 stack.on('state', (currentState) => console.log(currentState));
 ```
 
@@ -249,18 +252,20 @@ Depending on the `duration` of the `Sound`, rapid consecutive calls to `.prepare
 This is referred to as the “Overlapping pattern”:
 
 ```tsx
-const overlapStack = manager.get('MyStack');
+function Example() {
+  const overlapStack = manager.get('MyStack');
 
-async function handleOverlappingPlay() {
-  if (!overlapStack) return;
+  async function handleOverlappingPlay() {
+    if (!overlapStack) return;
 
-  const sound = await overlapStack.prepare();
-  const playedSound = sound.play();
+    const sound = await overlapStack.prepare();
+    const playedSound = sound.play();
 
-  return playedSound;
+    return playedSound;
+  }
+
+  return <Button onClick={handleOverlappingPlay}>Overlap</Button>;
 }
-
-return <Button onClick={handleOverlappingPlay}>Overlap</Button>;
 ```
 
 ### Restricting a `Sound` to a single instance
@@ -270,20 +275,22 @@ If we do not want consecutive plays of a `Sound` to overlap, we can restrict the
 In this example, we will avoid additional calls to `.prepare()` if the `queue` exceeds `1`. This is referred to as the “One-at-a-time pattern”:
 
 ```tsx
-const singleStack = manager.get('MyStack');
+function Example() {
+  const singleStack = manager.get('MyStack');
 
-// Each attempt to `play` will early return if there are
-// sounds in the `queue`, preventing overlapping sounds.
-async function handleSinglePlay() {
-  if (!singleStack || singleStack.keys.length >= 1) return;
+  // Each attempt to `play` will early return if there are
+  // sounds in the `queue`, preventing overlapping sounds.
+  async function handleSinglePlay() {
+    if (!singleStack || singleStack.keys.length >= 1) return;
 
-  const sound = await singleStack.prepare();
-  const playedSound = sound.play();
+    const sound = await singleStack.prepare();
+    const playedSound = sound.play();
 
-  return playedSound;
+    return playedSound;
+  }
+
+  return <Button onClick={handleSinglePlay}>Single</Button>;
 }
-
-return <Button onClick={handleSinglePlay}>Single</Button>;
 ```
 
 It could be that there are sounds in the `queue` that were paused. We might decide to clear out any non-playing sounds whenever a new call to `.play()` is requested.
@@ -312,23 +319,26 @@ async function handleSinglePlay() {
 A variation of the “One-at-a-time pattern” is the “Restart pattern”. Here, we will check if the `Sound` is `playing`, and if `true`, simply “restart it” from the beginning:
 
 ```tsx
-const restartStack = manager.get('MyStack');
+function Example() {
+  const restartStack = manager.get('MyStack');
 
-// Each attempt to `play` (while already playing)
-// will stop then restart the `Sound`.
-function handleRestartPlay() {
-  if (!restartStack) return;
-  // If we are treating this as a “single instance sound”,
-  // then it is fine to call `.stop()` on an already "stopped" `Stack`.
-  restartStack.stop();
+  // Each attempt to `play` (while already playing)
+  // will stop then restart the `Sound`.
+  async function handleRestartPlay() {
+    if (!restartStack) return;
 
-  const sound = await restartStack.prepare();
-  const playedSound = sound.play();
+    // If we are treating this as a “single instance sound”,
+    // then it is fine to call `.stop()` on an already "stopped" `Stack`.
+    restartStack.stop();
 
-  return playedSound;
+    const sound = await restartStack.prepare();
+    const playedSound = sound.play();
+
+    return playedSound;
+  }
+
+  return <Button onClick={handleRestartPlay}>Restart</Button>;
 }
-
-return <Button onClick={handleRestartPlay}>Restart</Button>;
 ```
 
 ### Restricting a specific `Sound` in the `Stack`
@@ -338,21 +348,23 @@ If we are re-using the same `Sound` in multiple places throughout the app, it co
 Here is another example of the “One-at-a-time pattern”, but referrencing a specific variable:
 
 ```tsx
-const stack = manager.get('MyStack');
-let sound = await stack?.prepare();
+async function Example() {
+  const stack = manager.get('MyStack');
+  let sound = await stack?.prepare();
 
-sound?.on('ended', () => {
-  // Upon completion of the `Sound`,
-  // re-assign a new instance to the `sound` variable.
-  // This will result in a new `id` for that `Sound`.
-  sound = stack?.prepare();
-});
+  sound?.on('ended', () => {
+    // Upon completion of the `Sound`,
+    // re-assign a new instance to the `sound` variable.
+    // This will result in a new `id` for that `Sound`.
+    sound = stack?.prepare();
+  });
 
-function handleSoundPlay() {
-  sound?.play();
+  function handleSoundPlay() {
+    sound?.play();
+  }
+
+  return <Button onClick={handleSinglePlay}>Single</Button>;
 }
-
-return <Button onClick={handleSinglePlay}>Single</Button>;
 ```
 
 ### Managing a `Sound` queue
@@ -366,6 +378,8 @@ The pattern works like so:
    - Remember, there is a limit to the number of sounds that can be queued within a `Stack`!
 3. When the `queue` has changed:
    - Get the first sound in the `queue` and call `.play()`
+
+<!-- eslint-skip -->
 
 ```tsx
 const stack = manager.get('MyStack');
@@ -395,6 +409,8 @@ return <Button onClick={handleQueuedPlay}>Queue and play</Button>;
 ```
 
 This same pattern could be achieved using the `Sound > ended` event instead:
+
+<!-- eslint-skip -->
 
 ```tsx
 const stack = manager.get('MyStack');
@@ -450,6 +466,7 @@ if (sound) {
   });
 
   sound.on('ended', ({id}) => {
+    // eslint-disable-next-line no-console
     console.log(`Sound ${id} has been stopped at ${completion} completion`);
   });
 }

@@ -49,6 +49,8 @@ While we are intentionally keeping the scope of `Earwurm` to an absolute minimum
 
 Maybe there is some value in passing an array of `GainNode/AudioNode` for `destination`? If so, that might look something like:
 
+<!-- eslint-skip -->
+
 ```ts
 export type AudioOutputs = [...GainNode[], AudioNode];
 
