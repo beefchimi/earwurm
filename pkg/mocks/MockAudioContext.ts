@@ -7,8 +7,7 @@ function internalMessage(methodName: string, ...args: unknown[]) {
 
 export class MockAudioContext
   extends MockBaseAudioContext
-  implements AudioContext
-{
+  implements AudioContext {
   latencyHint: AudioContextOptions['latencyHint'];
   readonly baseLatency = 0;
   readonly outputLatency = 0.0123;
