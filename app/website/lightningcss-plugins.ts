@@ -1,9 +1,10 @@
 import type {
-  CustomAtRules,
   CustomAtRuleDefinition,
+  CustomAtRules,
   Visitor,
 } from 'lightningcss';
 
+// eslint-disable-next-line ts/consistent-type-definitions
 type MixinCustomAtRules = {
   mixin: CustomAtRuleDefinition;
   apply: CustomAtRuleDefinition;
@@ -31,6 +32,7 @@ export const mixinVisitor: Visitor<MixinCustomAtRules> = {
         return [];
       },
       apply(rule) {
+        // eslint-disable-next-line ts/no-unsafe-return
         return mixinVisitorMap.get(rule.prelude.value);
       },
     },
@@ -46,9 +48,9 @@ export const applyVisitor: Visitor<CustomAtRules> = {
     style(rule) {
       for (const selector of rule.value.selectors) {
         if (
-          selector.length === 1 &&
-          selector[0].type === 'type' &&
-          selector[0].name.startsWith('--')
+          selector.length === 1
+          && selector[0].type === 'type'
+          && selector[0].name.startsWith('--')
         ) {
           applyVisitorMap.set(selector[0].name, rule.value.declarations);
           return {type: 'ignored', value: null};
@@ -59,14 +61,17 @@ export const applyVisitor: Visitor<CustomAtRules> = {
         if (child.type === 'unknown' && child.value.name === 'apply') {
           for (const token of child.value.prelude) {
             if (
-              token.type === 'dashed-ident' &&
-              applyVisitorMap.has(token.value)
+              token.type === 'dashed-ident'
+              && applyVisitorMap.has(token.value)
             ) {
+              // eslint-disable-next-line ts/no-unsafe-assignment
               const value = applyVisitorMap.get(token.value);
               const declarations = rule.value.declarations;
 
+              // eslint-disable-next-line ts/no-unsafe-argument, ts/no-unsafe-member-access
               declarations.declarations.push(...value.declarations);
               declarations.importantDeclarations.push(
+                // eslint-disable-next-line ts/no-unsafe-argument, ts/no-unsafe-member-access
                 ...value.importantDeclarations,
               );
             }
