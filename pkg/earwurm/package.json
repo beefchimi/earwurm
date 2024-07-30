@@ -1,9 +1,18 @@
 {
   "name": "earwurm",
+  "type": "module",
   "version": "0.10.0",
   "description": "Browser audio for the modern age",
   "author": "Curtis Dulmage",
   "license": "ISC",
+  "homepage": "https://github.com/beefchimi/earwurm#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beefchimi/earwurm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/beefchimi/earwurm/issues"
+  },
   "keywords": [
     "browser",
     "web",
@@ -11,32 +20,23 @@
     "sound",
     "webm"
   ],
-  "homepage": "https://github.com/beefchimi/earwurm#readme",
-  "bugs": {
-    "url": "https://github.com/beefchimi/earwurm/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/beefchimi/earwurm.git"
-  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
-  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/earwurm.es.js",
+      "require": "./dist/earwurm.umd.js"
+    }
+  },
   "main": "./dist/earwurm.umd.js",
   "module": "./dist/earwurm.es.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
-  "exports": {
-    ".": {
-      "import": "./dist/earwurm.es.js",
-      "require": "./dist/earwurm.umd.js",
-      "types": "./dist/index.d.ts"
-    }
-  },
   "engines": {
     "node": ">=22.4.0",
     "pnpm": ">=9.6.0"
@@ -46,6 +46,10 @@
     "build:only": "tsc && vite build",
     "build": "pnpm clean && pnpm build:only",
     "start": "pnpm build:only --watch"
+  },
+  "peerDependencies": {
+    "beeftools": "^0.1.0",
+    "emitten": "^0.6.0"
   },
   "dependencies": {
     "beeftools": "^0.1.6",
@@ -57,9 +61,5 @@
     "@earwurm/types": "workspace:*",
     "vite": "^5.3.5",
     "vite-plugin-dts": "^3.9.1"
-  },
-  "peerDependencies": {
-    "beeftools": "^0.1.0",
-    "emitten": "^0.6.0"
   }
 }

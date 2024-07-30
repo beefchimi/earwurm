@@ -1,24 +1,24 @@
 {
   "name": "earwurm-monorepo",
   "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@9.6.0",
   "description": "Monorepo for the Earwurm TypeScript project",
   "author": "Curtis Dulmage",
   "license": "ISC",
-  "keywords": [],
   "homepage": "https://github.com/beefchimi/earwurm#readme",
-  "bugs": {
-    "url": "https://github.com/beefchimi/earwurm/issues"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/beefchimi/earwurm.git"
   },
-  "private": true,
+  "bugs": {
+    "url": "https://github.com/beefchimi/earwurm/issues"
+  },
+  "keywords": [],
   "engines": {
     "node": ">=22.4.0",
     "pnpm": ">=9.6.0"
   },
-  "packageManager": "pnpm@9.6.0",
   "scripts": {
     "clean": "pnpm -r clean && rm -rf coverage",
     "nuke": "pnpm clean && ./scripts/nuke.sh",

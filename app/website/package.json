@@ -1,6 +1,8 @@
 {
   "name": "website",
+  "type": "module",
   "version": "0.1.0",
+  "private": true,
   "description": "Marketing and test app for Earwurm library.",
   "author": "Curtis Dulmage",
   "license": "UNLICENSED",
@@ -9,8 +11,6 @@
     "app",
     "earwurm"
   ],
-  "private": true,
-  "type": "module",
   "engines": {
     "node": ">=22.4.0",
     "pnpm": ">=9.6.0"
