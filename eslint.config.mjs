@@ -1,5 +1,5 @@
 // eslint.config.js
-import antfu from '@antfu/eslint-config'
+import antfu from '@antfu/eslint-config';
 
 // References:
 // 1. https://github.com/antfu/eslint-config
@@ -10,39 +10,41 @@ export default antfu({
   // use `lib` here and `app` within `/website`.
   // type: 'lib',
 
-  // Enable stylistic formatting rules
-  // stylistic: true,
-
-  // Or customize the stylistic rules
-
-  /*
-  stylistic: {
-    indent: 2,
-    quotes: 'single',
-  },
-  */
-
-  typescript: {
-    tsconfigPath: 'tsconfig.json',
-  },
-
-  // Enable if we find Vue is not being autodetected.
-  // vue: true,
-
   // In case we want to use a custom config within `website`: 'app/**'
-  ignores: ['.nx/cache', 'coverage/**', 'dist/**', 'scrap/**'],
+  ignores: ['.nx/cache', 'coverage/**', 'dist/**', 'scrap/**', 'app/**'],
 
   formatters: {
     // Formats .css and .scss files, but also the `<style>` blocks in Vue.
     css: true,
     markdown: true,
   },
-})
 
-/*
-    rules: {
-      'no-console': 'warn',
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/strict-boolean-expressions': 'off',
-    },
-*/
+  stylistic: {
+    semi: true,
+  },
+
+  typescript: {
+    tsconfigPath: 'tsconfig.json',
+    // overrides: {},
+  },
+
+  // vue: {overrides: {}},
+}, {
+  // Without a `files` scope, these rules will apply to everything.
+  rules: {
+    'antfu/if-newline': 'off',
+    'no-console': 'warn',
+    'style/arrow-parens': ['error', 'always'],
+    'style/object-curly-spacing': ['error', 'never'],
+    'test/prefer-lowercase-title': 'off',
+    'ts/strict-boolean-expressions': 'off',
+
+    // TODO: Try and solve broken if/else statements.
+    /*
+    'style/padding-line-between-statements': [
+      'error',
+      {blankLine: 'never', prev: 'if', next: 'block-like'},
+    ],
+    */
+  },
+});
