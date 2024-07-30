@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {HomeView} from '@/views';
-import {AppHeader, AppFooter} from '@/sections';
+import {AppFooter, AppHeader} from '@/sections';
 </script>
 
 <template>

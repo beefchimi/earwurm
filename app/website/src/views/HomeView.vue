@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {SynthTypeValues} from '@/types';
 import {useDebugStore} from '@/store';
-import {ManagerDebug, ManagerControls, StackControls} from '@/sections';
+import {ManagerControls, ManagerDebug, StackControls} from '@/sections';
 
 const debugging = useDebugStore();
 
