@@ -6,6 +6,7 @@ export interface LabelActionProps {
   pressed?: boolean;
 }
 
+// eslint-disable-next-line ts/consistent-type-definitions
 export type LabelActionEmits = {
   action: [event: MouseEvent];
 };

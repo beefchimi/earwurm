@@ -10,6 +10,7 @@ export interface VolumeSoundProps {
   disabled?: boolean;
 }
 
+// eslint-disable-next-line ts/consistent-type-definitions
 export type VolumeSoundEmits = {
   change: [volume: number];
 };
@@ -69,9 +70,9 @@ function handleChange(volume: number) {
               'Action',
               interactIndex !== undefined
                 ? {
-                    beforeHover: index < interactIndex,
-                    afterHover: index > interactIndex,
-                  }
+                  beforeHover: index < interactIndex,
+                  afterHover: index > interactIndex,
+                }
                 : {},
             )
           "
@@ -85,7 +86,9 @@ function handleChange(volume: number) {
           @mouseleave="handleInteractEnd"
         >
           <div class="Interior">
-            <p class="Label visually-hidden">Volume: {{ tick }}</p>
+            <p class="Label visually-hidden">
+              Volume: {{ tick }}
+            </p>
           </div>
         </button>
       </li>
