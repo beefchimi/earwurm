@@ -11,8 +11,7 @@ function internalMessage(methodName: string, ...args: unknown[]) {
 
 export class MockAudioScheduledSourceNode
   extends MockAudioNode
-  implements AudioScheduledSourceNode
-{
+  implements AudioScheduledSourceNode {
   onended: AudioScheduledSourceNode['onended'] = null;
 
   start(_when?: number | undefined): void {

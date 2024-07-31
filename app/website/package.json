@@ -1,6 +1,8 @@
 {
   "name": "website",
+  "type": "module",
   "version": "0.1.0",
+  "private": true,
   "description": "Marketing and test app for Earwurm library.",
   "author": "Curtis Dulmage",
   "license": "UNLICENSED",
@@ -9,11 +11,9 @@
     "app",
     "earwurm"
   ],
-  "private": true,
-  "type": "module",
   "engines": {
-    "node": ">=20.12.0",
-    "pnpm": ">=9.0.0"
+    "node": ">=22.4.0",
+    "pnpm": ">=9.6.0"
   },
   "scripts": {
     "clean": "rm -rf dist && rm -rf *.tsbuildinfo",
@@ -21,26 +21,23 @@
     "start:fresh": "vite --force",
     "preview": "vite preview --host",
     "build": "pnpm --parallel type-check && vite build",
-    "lint": "eslint . --ext .vue,.ts",
-    "lint:fix": "eslint . --fix --ext .vue,.ts",
-    "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "type-check": "vue-tsc --noEmit -p tsconfig.json --composite false"
   },
   "dependencies": {
-    "beeftools": "^0.0.5",
+    "beeftools": "^0.1.6",
     "earwurm": "workspace:*",
-    "vue": "^3.4.25"
+    "vue": "^3.4.34"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^2.24.0",
     "@earwurm/types": "workspace:*",
-    "@rushstack/eslint-patch": "^1.10.2",
-    "@tsconfig/node20": "^20.1.4",
-    "@vitejs/plugin-vue": "^5.0.4",
-    "@vue/eslint-config-prettier": "^9.0.0",
-    "@vue/eslint-config-typescript": "^13.0.0",
-    "@vue/tsconfig": "^0.5.1",
-    "eslint-plugin-vue": "^9.25.0",
-    "lightningcss": "^1.24.1",
-    "vite-plugin-svg-sprite": "^0.5.1",
-    "vue-tsc": "^2.0.14"
+    "@vitejs/plugin-vue": "^5.1.1",
+    "eslint": "^9.8.0",
+    "eslint-plugin-format": "^0.1.2",
+    "lightningcss": "^1.25.1",
+    "vite-plugin-svg-sprite": "^0.5.2",
+    "vue-tsc": "^2.0.29"
   }
 }

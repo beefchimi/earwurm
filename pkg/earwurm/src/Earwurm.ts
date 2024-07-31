@@ -1,16 +1,16 @@
-import {arrayShallowEquals, clamp, getErrorMessage} from 'beeftools';
+import {arrayEquals, clamp, getErrorMessage} from 'beeftools';
 import {EmittenCommon} from 'emitten';
 import {linearRamp, unlockAudioContext} from '@earwurm/helpers';
 
 import {Stack} from './Stack';
 import {tokens} from './tokens';
 import type {
-  ManagerState,
-  ManagerEventMap,
-  ManagerConfig,
   LibraryEntry,
-  StackId,
+  ManagerConfig,
+  ManagerEventMap,
+  ManagerState,
   StackEventMap,
+  StackId,
 } from './types';
 
 export class Earwurm extends EmittenCommon<ManagerEventMap> {
@@ -197,9 +197,9 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
 
   suspend() {
     if (
-      this._state === 'closed' ||
-      this._state === 'suspended' ||
-      this._state === 'suspending'
+      this._state === 'closed'
+      || this._state === 'suspended'
+      || this._state === 'suspending'
     ) {
       return this;
     }
@@ -259,7 +259,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
   #setLibrary(library: Stack[]) {
     const oldKeys = [...this._keys];
     const newKeys = library.map(({id}) => id);
-    const identicalKeys = arrayShallowEquals(oldKeys, newKeys);
+    const identicalKeys = arrayEquals(oldKeys, newKeys);
 
     this.#library = library;
     this._keys = newKeys;
@@ -275,7 +275,9 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
 
     if (value === 'running') {
       this._unlocked = true;
-    } else if (value === 'closed') {
+    }
+    // TODO: This should not be broken onto a separate line.
+    else if (value === 'closed') {
       this._unlocked = false;
     }
 

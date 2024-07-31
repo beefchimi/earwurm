@@ -11,11 +11,11 @@ import MotionSlideReveal, {
 import ProgressBar, {type ProgressBarProps} from './ProgressBar.vue';
 
 import SquareAction, {
-  type SquareActionProps,
   type SquareActionEmits,
+  type SquareActionProps,
 } from './SquareAction.vue';
 
-import SvgIcon, {type SvgIconProps, type SvgIconId} from './SvgIcon.vue';
+import SvgIcon, {type SvgIconId, type SvgIconProps} from './SvgIcon.vue';
 
 export {
   InputRange,

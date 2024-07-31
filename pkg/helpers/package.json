@@ -1,11 +1,11 @@
 {
   "name": "@earwurm/helpers",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "license": "ISC",
   "engines": {
-    "node": ">=20.12.0",
-    "pnpm": ">=9.0.0"
+    "node": ">=22.4.0",
+    "pnpm": ">=9.6.0"
   },
   "dependencies": {},
   "devDependencies": {

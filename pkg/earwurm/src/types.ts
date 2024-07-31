@@ -2,7 +2,7 @@ import type {CombinedErrorMessage} from '@earwurm/types';
 
 export type ManagerState = AudioContextState | 'suspending' | 'interrupted';
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+// eslint-disable-next-line ts/consistent-type-definitions
 export type ManagerEventMap = {
   state: (current: ManagerState) => void;
   play: (active: boolean) => void;
@@ -34,7 +34,7 @@ export interface StackError {
   message: CombinedErrorMessage;
 }
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+// eslint-disable-next-line ts/consistent-type-definitions
 export type StackEventMap = {
   state: (current: StackState) => void;
   queue: (newKeys: SoundId[], oldKeys: SoundId[]) => void;
@@ -75,7 +75,7 @@ export interface SoundProgressEvent {
   iterations: number;
 }
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+// eslint-disable-next-line ts/consistent-type-definitions
 export type SoundEventMap = {
   state: (current: SoundState) => void;
   ended: (event: SoundEndedEvent) => void;

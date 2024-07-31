@@ -1,11 +1,11 @@
-import {afterEach, describe, it, expect, vi} from 'vitest';
+import {afterEach, describe, expect, it, vi} from 'vitest';
 import {arrayOfLength} from 'beeftools';
 import {mockData} from '@earwurm/mocks';
 
 import {Stack} from '../Stack';
 import {Sound} from '../Sound';
 import {tokens} from '../tokens';
-import type {StackEventMap, SoundEventMap} from '../types';
+import type {SoundEventMap, StackEventMap} from '../types';
 
 type StackConstructor = ConstructorParameters<typeof Stack>;
 
@@ -504,7 +504,7 @@ describe('Stack component', () => {
 
       // Fill the `queue` up with the exact max number of Sounds.
       const pendingSounds = arrayOfLength(tokens.maxStackSize).map(
-        async (_index) => await testStack.prepare(),
+        async (_index) => testStack.prepare(),
       );
 
       const sounds = await Promise.all(pendingSounds);
@@ -533,7 +533,7 @@ describe('Stack component', () => {
 
       // Add more sounds before any current Sound has finished playing.
       const additionalSounds = arrayOfLength(additionalSoundsCount).map(
-        async (_index) => await testStack.prepare(),
+        async (_index) => testStack.prepare(),
       );
 
       await Promise.all(additionalSounds);

@@ -12,8 +12,7 @@ function internalMessage(methodName: string, ...args: unknown[]) {
 
 export class MockBaseAudioContext
   extends EventTarget
-  implements BaseAudioContext
-{
+  implements BaseAudioContext {
   // Cannot be `readonly` because `AudioContext` needs
   // to update this value from within it’s constructor.
   sampleRate = 44100;
@@ -130,7 +129,7 @@ export class MockBaseAudioContext
     _successCallback?: DecodeSuccessCallback | null | undefined,
     _errorCallback?: DecodeErrorCallback | null | undefined,
   ): Promise<AudioBuffer> {
-    return await new Promise((resolve) => {
+    return new Promise((resolve) => {
       const buffer = new MockAudioBuffer({
         length: 1,
         numberOfChannels: 2,

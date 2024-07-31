@@ -12,7 +12,9 @@ defineProps<StackLabelProps>();
 
 <template>
   <div :class="clx('StackLabel', {populated})">
-    <p :class="clx('Text', {truncate})">{{ label }}</p>
+    <p :class="clx('Text', {truncate})">
+      {{ label }}
+    </p>
   </div>
 </template>
 

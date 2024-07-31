@@ -4,7 +4,9 @@ import {LogoEarwurmCombo} from '@/components';
 
 <template>
   <header class="AppHeader">
-    <h1 class="visually-hidden">Earwurm</h1>
+    <h1 class="visually-hidden">
+      Earwurm
+    </h1>
 
     <div class="LogoWrapper">
       <LogoEarwurmCombo />

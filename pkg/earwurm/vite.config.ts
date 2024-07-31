@@ -1,6 +1,6 @@
+import {resolve} from 'node:path';
 import {defineConfig} from 'vite';
 import dts from 'vite-plugin-dts';
-import {resolve} from 'path';
 
 import rootViteConfig from '../../vite.config';
 import pkg from './package.json';
@@ -16,7 +16,7 @@ export default defineConfig({
     rollupOptions: {
       // We might need to define global variables
       // to use in the UMD build.
-      external: Object.keys(pkg.peerDependencies || {}),
+      external: Object.keys(pkg.peerDependencies),
     },
     minify: false,
   },

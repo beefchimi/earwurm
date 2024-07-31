@@ -1,4 +1,4 @@
-import {describe, it, expect} from 'vitest';
+import {describe, expect, it} from 'vitest';
 import {mockData} from '@earwurm/mocks';
 
 import {fetchAudioBuffer} from '../fetch-audio-buffer';
@@ -13,7 +13,7 @@ describe('fetchAudioBuffer()', () => {
     // `Failed to parse URL from ${mockPath}`
     // However, we now get back a `[object Request]`,
     await expect(
-      async () => await fetchAudioBuffer(mockPath, mockContext),
+      async () => fetchAudioBuffer(mockPath, mockContext),
     ).rejects.toThrowError();
   });
 

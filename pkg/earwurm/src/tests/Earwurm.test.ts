@@ -1,4 +1,4 @@
-import {afterEach, describe, it, expect, vi} from 'vitest';
+import {afterEach, describe, expect, it, vi} from 'vitest';
 import {mockData} from '@earwurm/mocks';
 
 import {Earwurm} from '../Earwurm';
@@ -6,9 +6,9 @@ import {Stack} from '../Stack';
 import type {Sound} from '../Sound';
 
 import type {
-  ManagerEventMap,
-  ManagerConfig,
   LibraryEntry,
+  ManagerConfig,
+  ManagerEventMap,
   StackId,
 } from '../types';
 

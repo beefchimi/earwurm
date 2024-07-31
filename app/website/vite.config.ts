@@ -1,4 +1,4 @@
-import {fileURLToPath, URL} from 'node:url';
+import {URL, fileURLToPath} from 'node:url';
 
 import {defineConfig} from 'vite';
 import vue from '@vitejs/plugin-vue';
@@ -20,7 +20,7 @@ export default defineConfig({
       },
       // targets: browserslistToTargets(browserslist('>= 0.25%')),
 
-      // @ts-ignore: No overloads
+      // @ts-expect-error: No overloads
       customAtRules: mixinAtRules,
       visitor: mixinVisitor,
 
@@ -30,12 +30,8 @@ export default defineConfig({
     },
   },
   plugins: [
-    // TODO: These features should be removed once they are no longer "experimental".
-    vue({
-      script: {
-        propsDestructure: true,
-      },
-    }),
+    // Remove experimental features once they are fully supported.
+    vue({features: {propsDestructure: true}}),
     createSvgSpritePlugin({svgo: false}),
   ],
   resolve: {

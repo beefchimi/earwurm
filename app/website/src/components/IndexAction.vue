@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {
   SquareAction,
-  SvgIcon,
-  type SquareActionProps,
   type SquareActionEmits,
+  type SquareActionProps,
+  SvgIcon,
 } from '@/primitives';
 
 export interface IndexActionProps {
@@ -29,7 +29,9 @@ defineEmits<IndexActionEmits>();
     @hover="(event) => $emit('hover', event)"
     @hoveroff="(event) => $emit('hoveroff', event)"
   >
-    <p class="IndexLabel">{{ index }}</p>
+    <p class="IndexLabel">
+      {{ index }}
+    </p>
 
     <div class="Icon icon-wrapper icon-hover">
       <SvgIcon id="close" />

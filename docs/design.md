@@ -38,6 +38,8 @@ There are a few “master controls” available on the “Manager” which allow
 
 In order to play a sound, you must first add it to the “Manager’s” `library` as an `LibraryEntry`. Each “entry” is then transformed into a `Stack`, which surfaces an API that allows you to interact with the sound within.
 
+<!-- eslint-skip -->
+
 ```ts
 const manager = new Earwurm();
 
@@ -52,7 +54,7 @@ manager.add(singleEntry, ...additionalEntries);
 Once an “entry” has been successfully added to the `library`, you can retrieve and interact with it like so:
 
 ```ts
-const soundStack: Stack | undefined = manager.get('MySoundId');
+const soundStack = manager.get('MySoundId');
 const sound = await soundStack?.prepare();
 
 sound?.play();
@@ -75,7 +77,8 @@ const soundStack = manager.get('MySound');
 const sound = await soundStack?.prepare();
 
 // We can imagine some internal code that looks like:
-const updatedStack = [...stack.queue, new Sound(id: totalSoundsCreated + 1)];
+const latestId = totalSoundsCreated + 1;
+const updatedStack = [...stack.queue, new Sound(latestId)];
 
 // We then make 3 consecutive calls to `play` on the same `Sound`:
 sound?.play();

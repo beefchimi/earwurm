@@ -5,8 +5,7 @@ const mockParam = new MockAudioParam();
 
 export class MockAudioBufferSourceNode
   extends MockAudioScheduledSourceNode
-  implements AudioBufferSourceNode
-{
+  implements AudioBufferSourceNode {
   buffer: AudioBuffer | null;
   loop: boolean;
   loopEnd: number;

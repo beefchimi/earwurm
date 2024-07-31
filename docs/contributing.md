@@ -47,8 +47,7 @@ For a list of all the available commands, please see the root `package.json`. Ov
   - All `localhost` addresses for running apps will be printed to your terminal when you run `start`.
 - `lint` checks the codebase for `eslint` errors, but does not fix them.
 - `lint:fix` automatically fixes any `eslint` errors that can be programatically resolved.
-- `format` checks the codebase for `prettier` errors, but does not fix them.
-- `format:fix` automatically fixes any `prettier` errors that can be programatically resolved.
+- `format` originally checked the codebase for `prettier` errors, but that is now handled by `eslint` and is performed via the `lint` tasks.
 - `type-check` checks the codebase for any TypeScript errors, but does not fix them.
 - `test` fires up the `vitest` server and runs all `*.test.ts` files.
 - `clean` will delete any `dist` and `coverage` folders.

@@ -1,17 +1,17 @@
-import {arrayShallowEquals, clamp, getErrorMessage} from 'beeftools';
+import {arrayEquals, clamp, getErrorMessage} from 'beeftools';
 import {EmittenCommon} from 'emitten';
 import {fetchAudioBuffer, linearRamp, scratchBuffer} from '@earwurm/helpers';
 
 import {Sound} from './Sound';
 import {tokens} from './tokens';
 import type {
-  StackId,
-  StackState,
+  SoundEventMap,
+  SoundId,
+  StackConfig,
   StackError,
   StackEventMap,
-  StackConfig,
-  SoundId,
-  SoundEventMap,
+  StackId,
+  StackState,
 } from './types';
 
 export class Stack extends EmittenCommon<StackEventMap> {
@@ -212,7 +212,7 @@ export class Stack extends EmittenCommon<StackEventMap> {
   #setQueue(value: Sound[]) {
     const oldKeys = [...this._keys];
     const newKeys = value.map(({id}) => id);
-    const identicalKeys = arrayShallowEquals(oldKeys, newKeys);
+    const identicalKeys = arrayEquals(oldKeys, newKeys);
 
     this.#queue = value;
     this._keys = newKeys;

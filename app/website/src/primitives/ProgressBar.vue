@@ -31,9 +31,7 @@ const progress = computed(() => calcProgress(value, {min, max, round: true}));
     }"
   >
     <progress :id="id" class="Progress" :value="value" :min="min" :max="max">
-      <output :id="`${id}-Output`" class="visually-hidden"
-        >{{ progress }}%</output
-      >
+      <output :id="`${id}-Output`" class="visually-hidden">{{ progress }}%</output>
     </progress>
   </div>
 </template>

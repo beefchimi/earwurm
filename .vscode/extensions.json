@@ -10,7 +10,7 @@
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "vue.volar",
-    "csstools.postcss",
-    "stylelint.vscode-stylelint"
-  ]
+    "csstools.postcss"
+  ],
+  "unwantedRecommendations": []
 }

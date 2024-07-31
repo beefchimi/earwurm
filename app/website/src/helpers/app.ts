@@ -1,6 +1,6 @@
-import {type StackId} from 'earwurm';
+import type {StackId} from 'earwurm';
 
-import {SynthTypeValues, type SynthType} from '@/types';
+import {type SynthType, SynthTypeValues} from '@/types';
 
 export function assertSynthType(id = ''): id is SynthType {
   const comparableArray: string[] = [...SynthTypeValues];

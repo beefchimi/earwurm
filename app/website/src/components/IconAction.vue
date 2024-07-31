@@ -3,9 +3,9 @@ import {clx} from 'beeftools';
 import {
   MotionFadeScale,
   SquareAction,
-  SvgIcon,
-  type SquareActionProps,
   type SquareActionEmits,
+  type SquareActionProps,
+  SvgIcon,
   type SvgIconId,
 } from '@/primitives';
 
@@ -61,7 +61,9 @@ defineEmits<IconActionEmits>();
     </div>
 
     <div v-if="label?.length" class="LabelWrapper">
-      <p class="Label">{{ label }}</p>
+      <p class="Label">
+        {{ label }}
+      </p>
     </div>
   </SquareAction>
 </template>

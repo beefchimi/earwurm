@@ -1,8 +1,8 @@
 import {computed, ref, watch} from 'vue';
 import type {StackEventMap} from 'earwurm';
 
-import type {SynthType} from '@/types';
 import {useEarwurmStore} from './useEarwurmStore';
+import type {SynthType} from '@/types';
 
 const {addStack, manager} = useEarwurmStore();
 
@@ -106,7 +106,7 @@ export function useStack(id: SynthType) {
     stack.on('queue', handleQueueChange);
     stack.on('mute', handleMuteChange);
 
-    addSound();
+    void addSound();
   }
 
   return {

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {
   SquareAction,
-  SvgIcon,
-  type SquareActionProps,
   type SquareActionEmits,
+  type SquareActionProps,
+  SvgIcon,
 } from '@/primitives';
 
 export interface TeardownActionProps {

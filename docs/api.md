@@ -11,9 +11,8 @@ Capabilities of the `Earwurm` “audio manager”.
 **Initialization:**
 
 ```ts
-// Create a new instance, optionally passing
-// a configuration object.
-const manager = new Earwurm(config?: ManagerConfig);
+// Create a new instance, optionally passing a configuration object.
+const manager = new Earwurm(ManagerConfig);
 ```
 
 **Methods:**
@@ -116,8 +115,9 @@ manager.activeEvents;
 
 **Events:**
 
-```ts
+<!-- eslint-skip -->
 
+```ts
 // Event called whenever `AudioContext > statechange` is triggered.
 // Returns the current `AudioContext > state`. This may trigger
 // immediately upon `new Earwurm()` if the `AudioContext` is
@@ -182,7 +182,7 @@ soundStack.has('SoundId');
 // Will return a `Promise` which resolves to the`Sound` instance.
 // You can either chain with `.then()`, or `await` and call
 // `.play()` once the `Promise` has resolved.
-soundStack.prepare(id?: string);
+soundStack.prepare(optionalId);
 
 // Pause all sounds within the `Stack`. Each `Sound` is
 // paused at it’s respective `elapsed` time.
@@ -245,6 +245,8 @@ soundStack.activeEvents;
 ```
 
 **Events:**
+
+<!-- eslint-skip -->
 
 ```ts
 // Event called as a consequence of any `Sound > state` change within
@@ -366,6 +368,8 @@ sound.activeEvents;
 
 **Events:**
 
+<!-- eslint-skip -->
+
 ```ts
 // Event called whenever `Sound > state` is changed.
 // Possible `SoundState` values are:
@@ -408,19 +412,19 @@ For more detailed documentation, [please see the `Emitten` docs](https://github.
 const component = new Earwurm();
 
 // Register an event listener for a specified event.
-component.on(event, listener: (value) => void);
+component.on(event, (value) => {});
 
 // Register an event listener that will remove itself
 // after only a single execution.
-component.once(event, listener: (value) => void);
+component.once(event, (value) => {});
 
 // Remove any previously registered event listener.
-component.off(event, listener: (value) => void);
+component.off(event, (value) => {});
 
 // Capture the “off function” from `.on()` so that
 // you can manually call it, allowing for easier
 // removal of anonymous functions.
-const dispose = component.on(event, listener: (value) => void);
+const dispose = component.on(event, (value) => {});
 
 // Calling this will remove the listener
 // just like `.off(event, listener)` would.
