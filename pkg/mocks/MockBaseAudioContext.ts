@@ -129,8 +129,7 @@ export class MockBaseAudioContext
     _successCallback?: DecodeSuccessCallback | null | undefined,
     _errorCallback?: DecodeErrorCallback | null | undefined,
   ): Promise<AudioBuffer> {
-    // eslint-disable-next-line ts/return-await
-    return await new Promise((resolve) => {
+    return new Promise((resolve) => {
       const buffer = new MockAudioBuffer({
         length: 1,
         numberOfChannels: 2,

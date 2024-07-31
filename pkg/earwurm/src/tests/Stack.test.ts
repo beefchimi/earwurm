@@ -504,8 +504,7 @@ describe('Stack component', () => {
 
       // Fill the `queue` up with the exact max number of Sounds.
       const pendingSounds = arrayOfLength(tokens.maxStackSize).map(
-        // eslint-disable-next-line ts/return-await
-        async (_index) => await testStack.prepare(),
+        async (_index) => testStack.prepare(),
       );
 
       const sounds = await Promise.all(pendingSounds);
@@ -534,8 +533,7 @@ describe('Stack component', () => {
 
       // Add more sounds before any current Sound has finished playing.
       const additionalSounds = arrayOfLength(additionalSoundsCount).map(
-        // eslint-disable-next-line ts/return-await
-        async (_index) => await testStack.prepare(),
+        async (_index) => testStack.prepare(),
       );
 
       await Promise.all(additionalSounds);

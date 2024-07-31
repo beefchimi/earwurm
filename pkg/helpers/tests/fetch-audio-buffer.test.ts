@@ -13,8 +13,7 @@ describe('fetchAudioBuffer()', () => {
     // `Failed to parse URL from ${mockPath}`
     // However, we now get back a `[object Request]`,
     await expect(
-      // eslint-disable-next-line ts/return-await
-      async () => await fetchAudioBuffer(mockPath, mockContext),
+      async () => fetchAudioBuffer(mockPath, mockContext),
     ).rejects.toThrowError();
   });
 
