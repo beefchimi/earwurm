@@ -1,8 +1,8 @@
 import {computed, ref, watch} from 'vue';
-import type {SoundId, SoundEventMap} from 'earwurm';
+import type {SoundEventMap, SoundId} from 'earwurm';
 
-import type {SynthType} from '@/types';
 import {useEarwurmStore} from './useEarwurmStore';
+import type {SynthType} from '@/types';
 
 const {manager} = useEarwurmStore();
 
@@ -84,7 +84,8 @@ export function useSound(id: SoundId, stackId: SynthType) {
 
     if (sound.state === 'playing') {
       sound.pause();
-    } else {
+    }
+    else {
       sound.play();
     }
   }
@@ -106,7 +107,7 @@ export function useSound(id: SoundId, stackId: SynthType) {
 
   const reversedRef = ref(false);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line unused-imports/no-unused-vars
   function toggleReverse() {
     reversedRef.value = !reversedRef.value;
   }

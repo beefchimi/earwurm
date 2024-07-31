@@ -1,5 +1,5 @@
 import {computed, ref} from 'vue';
-import {type ManagerEventMap} from 'earwurm';
+import type {ManagerEventMap} from 'earwurm';
 
 import {useEarwurmStore} from './useEarwurmStore';
 

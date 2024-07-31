@@ -1,7 +1,7 @@
 import {computed, ref, watch} from 'vue';
 import {Earwurm} from 'earwurm';
 
-import type {SynthType, SynthEntries} from '@/types';
+import type {SynthEntries, SynthType} from '@/types';
 import {filterSynthValues} from '@/helpers';
 import {useMetronome} from '@/hooks';
 import {audioPath} from '@/assets/audio';
@@ -75,7 +75,8 @@ export function useEarwurmStore() {
 
       if (metronomeRef.value) {
         metroInstance.start();
-      } else {
+      }
+      else {
         metroInstance.stop();
       }
     },
@@ -99,7 +100,8 @@ export function useEarwurmStore() {
     ///
     /// Mutations
 
-    addStack(id: SynthType) {
+    // Instead of an arrow function, we could use `this: void`.
+    addStack: (id: SynthType) => {
       if (manager.get(id)) return;
 
       const stackEntry = audioLibrary.find((entry) => entry.id === id);
