@@ -23,7 +23,7 @@
     "build": "pnpm --parallel type-check && vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
+    "type-check": "vue-tsc --noEmit -p tsconfig.json --composite false"
   },
   "dependencies": {
     "beeftools": "^0.1.6",

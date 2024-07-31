@@ -48,8 +48,8 @@
     "start": "pnpm build:only --watch"
   },
   "peerDependencies": {
-    "beeftools": "^0.1.0",
-    "emitten": "^0.6.0"
+    "beeftools": "^0.1.6",
+    "emitten": "^0.6.7"
   },
   "dependencies": {
     "beeftools": "^0.1.6",
