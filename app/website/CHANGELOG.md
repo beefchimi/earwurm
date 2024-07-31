@@ -1,5 +1,16 @@
 # website
 
+## 0.2.0
+
+### Minor Changes
+
+- [#84](https://github.com/beefchimi/earwurm/pull/84) [`fba1989`](https://github.com/beefchimi/earwurm/commit/fba198953c4c1f099763002f2287044eb40d0d87) Thanks [@beefchimi](https://github.com/beefchimi)! - Bumped required node and pnpm versions. Also overhauled linting/formatting.
+
+### Patch Changes
+
+- Updated dependencies [[`fba1989`](https://github.com/beefchimi/earwurm/commit/fba198953c4c1f099763002f2287044eb40d0d87)]:
+  - earwurm@0.11.0
+
 ## 0.1.0
 
 ### Minor Changes
