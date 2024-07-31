@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {computed} from 'vue';
 
+import SoundControls from './SoundControls.vue';
 import type {SynthType} from '@/types';
 import {useStack} from '@/store';
 import {MotionSlideReveal, ProgressBar} from '@/primitives';
@@ -11,8 +12,6 @@ import {
   TeardownAction,
   VolumeStack,
 } from '@/components';
-
-import SoundControls from './SoundControls.vue';
 
 export interface StackControlsProps {
   id: SynthType;

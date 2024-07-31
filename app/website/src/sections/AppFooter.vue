@@ -30,7 +30,9 @@ const {theme, toggleTheme} = useThemeStore();
       />
     </div>
 
-    <p class="LegalText">&copy; Curtis Dulmage | Infinity—Beyond</p>
+    <p class="LegalText">
+      &copy; Curtis Dulmage | Infinity—Beyond
+    </p>
   </footer>
 </template>
 

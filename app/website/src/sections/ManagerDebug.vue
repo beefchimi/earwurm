@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, type ComponentPublicInstance} from 'vue';
+import {type ComponentPublicInstance, computed} from 'vue';
 
 import {useDebugManager, useEarwurmStore} from '@/store';
 import {IconAction, StackLabel} from '@/components';
@@ -19,7 +19,8 @@ const running = computed(() => currentState.value === 'running');
 function togglePlayback() {
   if (running.value) {
     manager.suspend();
-  } else {
+  }
+  else {
     manager.resume();
   }
 }
