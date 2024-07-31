@@ -148,8 +148,17 @@ tsconfig.*.json
 
 ### Issues
 
+- Can import order be improved to be relative paths at the bottom?
+- Restore `"earwurm": "workspace:*",` within `website > package.json` once we get it working.
 - `.ts` within markdown does not appear to work. Getting errors for type declarations.
   - Remove all instances of `<!-- eslint-skip -->`.
 - Check in on instances of `// eslint-disable-next-line ts/return-await`
 - Fix broken `if/else` statements.
-- if conditions with `|| / &&` broken onto multiple lines should have these operators as teh endo f the line, not the beginning.
+  - Search for `else` with spaces.
+
+### Test
+
+```vue
+import Thumbnail from '@/components/Thumbnail.vue';
+<Thumbnail />
+```
