@@ -33,7 +33,6 @@
   "devDependencies": {
     "@antfu/eslint-config": "^2.24.0",
     "@earwurm/types": "workspace:*",
-    "@typescript-eslint/parser": "^7.18.0",
     "@vitejs/plugin-vue": "^5.1.1",
     "eslint": "^9.8.0",
     "eslint-plugin-format": "^0.1.2",
