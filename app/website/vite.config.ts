@@ -30,9 +30,8 @@ export default defineConfig({
     },
   },
   plugins: [
-    // May need to customize experimental features for Vue:
-    // {script: {propsDestructure: true}}
-    vue(),
+    // Remove experimental features once they are fully supported.
+    vue({features: {propsDestructure: true}}),
     createSvgSpritePlugin({svgo: false}),
   ],
   resolve: {
