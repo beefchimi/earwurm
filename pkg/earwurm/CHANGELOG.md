@@ -1,5 +1,11 @@
 # Earwurm Changelog
 
+## 0.11.1
+
+### Patch Changes
+
+- [#88](https://github.com/beefchimi/earwurm/pull/88) [`af3f8ea`](https://github.com/beefchimi/earwurm/commit/af3f8eaa86b12d5ea0a54f719724d152c8112432) Thanks [@beefchimi](https://github.com/beefchimi)! - Downgrade to Node LTS.
+
 ## 0.11.0
 
 ### Minor Changes
