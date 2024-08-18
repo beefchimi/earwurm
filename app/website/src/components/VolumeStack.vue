@@ -53,18 +53,14 @@ const progress = computed(() => {
 
 <style scoped>
 .VolumeStack {
-  --volume-stack-track-height: calc(
-    var(--row-height) - var(--action-padding) * 2
-  );
+  --volume-stack-track-height: calc(var(--row-height) - var(--action-padding) * 2);
 
   --volume-stack-track-stop-1: calc(50% - var(--app-border-width) / 2);
   --volume-stack-track-stop-2: calc(50% + var(--app-border-width) / 2);
 
   --slider-progress: 0;
   --slider-percent: calc(var(--slider-progress) * 1%);
-  --slider-offset: calc(
-    var(--row-height) * (0.5 - var(--slider-progress) / 100)
-  );
+  --slider-offset: calc(var(--row-height) * (0.5 - var(--slider-progress) / 100));
 
   position: relative;
   z-index: 1;
@@ -84,7 +80,6 @@ const progress = computed(() => {
 
 @mixin input-track {
   height: var(--volume-stack-track-height);
-  /* prettier-ignore */
   background: linear-gradient(
     transparent 0% var(--volume-stack-track-stop-1),
     var(--color-primary) var(--volume-stack-track-stop-1) var(--volume-stack-track-stop-2),

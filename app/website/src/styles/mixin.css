@@ -183,6 +183,5 @@
 @mixin pattern-halftone-dense {
   background-image: var(--pattern-halftone-dense-url);
   background-repeat: repeat;
-  background-size: var(--pattern-halftone-dense-size)
-    var(--pattern-halftone-dense-size);
+  background-size: var(--pattern-halftone-dense-size) var(--pattern-halftone-dense-size);
 }

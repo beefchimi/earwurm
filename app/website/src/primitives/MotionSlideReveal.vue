@@ -22,12 +22,7 @@ defineProps<MotionSlideRevealProps>();
 .slideReveal-enter-active,
 .slideReveal-leave-active {
   --clip-path-x: 100%;
-  clip-path: polygon(
-    0 0,
-    var(--clip-path-x) 0,
-    var(--clip-path-x) 100%,
-    0 100%
-  );
+  clip-path: polygon(0 0, var(--clip-path-x) 0, var(--clip-path-x) 100%, 0 100%);
   transition: clip-path var(--duration-slow) var(--easing-cubic);
 
   /* Nested <LabelAction />
@@ -61,12 +56,7 @@ defineProps<MotionSlideRevealProps>();
 .slideReverse-enter-active,
 .slideReverse-leave-active {
   --clip-path-x: 0%;
-  clip-path: polygon(
-    var(--clip-path-x) 0,
-    100% 0,
-    100% 100%,
-    var(--clip-path-x) 100%
-  );
+  clip-path: polygon(var(--clip-path-x) 0, 100% 0, 100% 100%, var(--clip-path-x) 100%);
   transition: clip-path var(--duration-slow) var(--easing-cubic);
 
   /* Nested <LabelAction />

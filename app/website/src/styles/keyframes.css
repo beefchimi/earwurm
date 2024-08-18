@@ -3,8 +3,7 @@
     background-position: 0 0;
   }
   to {
-    background-position: var(--pattern-diagonal-size)
-      var(--pattern-diagonal-size);
+    background-position: var(--pattern-diagonal-size) var(--pattern-diagonal-size);
   }
 }
 
@@ -13,7 +12,6 @@
     background-position: 0 0;
   }
   to {
-    background-position: var(--pattern-halftone-size)
-      var(--pattern-halftone-size);
+    background-position: var(--pattern-halftone-size) var(--pattern-halftone-size);
   }
 }

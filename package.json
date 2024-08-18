@@ -2,7 +2,7 @@
   "name": "earwurm-monorepo",
   "version": "0.0.0",
   "private": true,
-  "packageManager": "pnpm@9.6.0",
+  "packageManager": "pnpm@9.7.1",
   "description": "Monorepo for the Earwurm TypeScript project",
   "author": "Curtis Dulmage",
   "license": "ISC",
@@ -16,8 +16,8 @@
   },
   "keywords": [],
   "engines": {
-    "node": ">=22.4.0",
-    "pnpm": ">=9.6.0"
+    "node": ">=20.16.0",
+    "pnpm": ">=9.7.1"
   },
   "scripts": {
     "clean": "pnpm -r clean && rm -rf coverage",

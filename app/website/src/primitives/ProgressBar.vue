@@ -61,8 +61,7 @@ const progress = computed(() => calcProgress(value, {min, max, round: true}));
 
 .pattern-diagonal--animated {
   /* Custom class for unique duration and easing. */
-  animation: anim-svg-diagonal calc(var(--progress-pattern-speed, 0) * 1ms)
-    infinite steps(4);
+  animation: anim-svg-diagonal calc(var(--progress-pattern-speed, 0) * 1ms) infinite steps(4);
 }
 
 .Progress {
