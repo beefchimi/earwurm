@@ -43,9 +43,7 @@
   --app-border-width: 0.2rem;
 
   --app-max-width: 84rem;
-  --app-full-width-mobile: calc(
-    var(--breakpoint-mobile-begin) - var(--app-padding) * 2
-  );
+  --app-full-width-mobile: calc(var(--breakpoint-mobile-begin) - var(--app-padding) * 2);
 
   /* Paired with inset border gives the appearance of 4px padding. */
   --action-padding: 0.6rem;

@@ -57,15 +57,11 @@ const progress = computed(() => {
 
 <style scoped>
 .VolumeManager {
-  --volume-manager-track-height: calc(
-    var(--row-height) - var(--action-padding) * 2
-  );
+  --volume-manager-track-height: calc(var(--row-height) - var(--action-padding) * 2);
 
   --slider-progress: 0;
   --slider-percent: calc(var(--slider-progress) * 1%);
-  --slider-offset: calc(
-    var(--row-height) * (0.5 - var(--slider-progress) / 100)
-  );
+  --slider-offset: calc(var(--row-height) * (0.5 - var(--slider-progress) / 100));
 
   display: grid;
   align-items: center;

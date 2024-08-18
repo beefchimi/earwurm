@@ -70,21 +70,15 @@ const stripes = computed(() => {
 <style scoped>
 .SpeedSlider {
   /* Webkit does not like `height > 100%` for inputs. */
-  --speed-slider-track-height: calc(
-    var(--row-height) - var(--action-padding) * 2
-  );
-  --speed-slider-progress-height: calc(
-    var(--row-height) - var(--action-padding) * 2 - var(--app-border-width) * 4
-  );
+  --speed-slider-track-height: calc(var(--row-height) - var(--action-padding) * 2);
+  --speed-slider-progress-height: calc(var(--row-height) - var(--action-padding) * 2 - var(--app-border-width) * 4);
 
   --speed-slider-track-stop-1: calc(50% - var(--app-border-width));
   --speed-slider-track-stop-2: calc(50% + var(--app-border-width));
 
   --slider-progress: 0;
   --slider-percent: calc(var(--slider-progress) * 1%);
-  --slider-offset: calc(
-    var(--row-height) * (0.5 - var(--slider-progress) / 100)
-  );
+  --slider-offset: calc(var(--row-height) * (0.5 - var(--slider-progress) / 100));
 
   display: grid;
   flex: 1 1 auto;
@@ -133,7 +127,6 @@ const stripes = computed(() => {
 
 @mixin input-track {
   height: var(--speed-slider-track-height);
-  /* prettier-ignore */
   background: linear-gradient(
     transparent 0% var(--speed-slider-track-stop-1),
     currentColor var(--speed-slider-track-stop-1) var(--speed-slider-track-stop-2),

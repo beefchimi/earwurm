@@ -49,10 +49,7 @@ const entries = [column1, column2];
 .Stacks {
   display: grid;
   gap: var(--app-spacing);
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(var(--app-full-width-mobile), 1fr)
-  );
+  grid-template-columns: repeat(auto-fit, minmax(var(--app-full-width-mobile), 1fr));
 
   @media (min-width: 1440px) and (min-height: 1280px) {
     gap: var(--row-height);
