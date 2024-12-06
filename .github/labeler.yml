@@ -24,18 +24,12 @@
           - '.github/**'
           - '.vscode/**'
           - .editorconfig
-          - .eslintignore
-          - .eslintrc
-          - .eslintrc.cjs
-          - .gitignore
-          - .npmignore
-          - .nvmrc
-          - .prettierignore
-          - .prettierrc
+          - '.env*'
+          - '.*ignore'
+          - '.*rc'
           - 'config/**'
-          - package.json
-          - tsconfig.json
-          - 'tsconfig.*.json'
-          - vite.config.ts
+          - '*.config.*'
+          - 'package*.json'
+          - 'tsconfig*.json'
           - '**/*/env.d.ts'
           - '**/*/lightningcss-plugins.ts'
