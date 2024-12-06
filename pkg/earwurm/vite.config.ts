@@ -2,11 +2,9 @@ import {resolve} from 'node:path';
 import {defineConfig} from 'vite';
 import dts from 'vite-plugin-dts';
 
-import rootViteConfig from '../../vite.config';
 import pkg from './package.json';
 
 export default defineConfig({
-  ...rootViteConfig,
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
