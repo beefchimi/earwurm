@@ -25,13 +25,20 @@ export default antfu(
   {
     // Without a `files` scope, these rules will apply to everything.
     rules: {
-      'antfu/if-newline': 'off',
+      // General
       'no-console': 'warn',
+
+      // Antfu
+      'antfu/if-newline': 'off',
+      'perfectionist/sort-exports': 'off',
+      'perfectionist/sort-named-exports': 'off',
+      'perfectionist/sort-imports': 'off',
       'style/arrow-parens': ['error', 'always'],
       'style/object-curly-spacing': ['error', 'never'],
       'test/prefer-lowercase-title': 'off',
       'ts/explicit-function-return-type': 'off',
       'ts/strict-boolean-expressions': 'off',
+
       // Would like this if I could differentiate between ternary and if conditions.
       // 'style/operator-linebreak': ['error', 'after'],
 
