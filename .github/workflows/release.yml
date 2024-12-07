@@ -18,7 +18,7 @@ jobs:
       - name: 🧰 Configure PNPM
         uses: pnpm/action-setup@v4
 
-      - name: 🔧 Setup Node 20.x
+      - name: 🔧 Setup Node 22.x
         uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc

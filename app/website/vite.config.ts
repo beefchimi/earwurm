@@ -1,7 +1,7 @@
-import {URL, fileURLToPath} from 'node:url';
+import {fileURLToPath, URL} from 'node:url';
 
-import {defineConfig} from 'vite';
 import vue from '@vitejs/plugin-vue';
+import {defineConfig} from 'vite';
 import createSvgSpritePlugin from 'vite-plugin-svg-sprite';
 
 import {mixinAtRules, mixinVisitor} from './lightningcss-plugins';
@@ -19,11 +19,8 @@ export default defineConfig({
         customMedia: true,
       },
       // targets: browserslistToTargets(browserslist('>= 0.25%')),
-
-      // @ts-expect-error: No overloads
       customAtRules: mixinAtRules,
       visitor: mixinVisitor,
-
       // It would be ideal if we could tree-shake unused utility classes.
       // Lightning CSS is not able to determine this by itself.
       // unusedSymbols: ['foo', '--bar']

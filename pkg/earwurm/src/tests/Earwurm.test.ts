@@ -560,9 +560,25 @@ describe('Earwurm component', () => {
         }
       });
 
+      const readySounds = await Promise.all(sounds);
+
+      for (const sound of readySounds) {
+        sound.play();
+      }
+
+      /*
+      Alternate #1:
       for await (const sound of sounds) {
         sound.play();
       }
+      */
+
+      /*
+      Alternate #2:
+      for (const sound of sounds) {
+        (await sound).play();
+      }
+      */
 
       expect(mockManager.playing).toBe(true);
       expect(mockManager.keys).toHaveLength(3);

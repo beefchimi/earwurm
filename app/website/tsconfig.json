@@ -1,31 +1,7 @@
 {
-  "compilerOptions": {
-    // "types": ["node"],
-    "composite": true,
-    "target": "esnext",
-    "jsx": "preserve",
-    "jsxImportSource": "vue",
-    "lib": [
-      "es2020",
-      "dom",
-      "dom.iterable"
-    ],
-    "useDefineForClassFields": true,
-    "baseUrl": ".",
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-    "resolveJsonModule": true,
-    "types": [],
-    "strict": true,
-    "noImplicitThis": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "verbatimModuleSyntax": true,
-    "skipLibCheck": true
-  },
-  "include": ["env.d.ts", "lightningcss-plugins.ts", "vite.config.ts", "src/**/*", "src/**/*.vue"]
+  "references": [
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.app.json" }
+  ],
+  "files": []
 }

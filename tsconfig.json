@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "target": "esnext",
     "lib": ["esnext", "dom"],
     "module": "esnext",
@@ -14,5 +15,5 @@
     "isolatedModules": true,
     "skipLibCheck": true
   },
-  "include": ["config/**/*", "pkg/**/*", "eslint.config.mjs", "vite.config.ts"]
+  "include": ["config", "pkg", "eslint.config.mjs", "vite.config.ts", "vitest.config.ts"]
 }

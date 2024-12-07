@@ -38,8 +38,8 @@
     "dist"
   ],
   "engines": {
-    "node": ">=20.16.0",
-    "pnpm": ">=9.7.1"
+    "node": ">=22.11.0",
+    "pnpm": ">=9.15.0"
   },
   "scripts": {
     "clean": "rm -rf dist",
@@ -48,18 +48,18 @@
     "start": "pnpm build:only --watch"
   },
   "peerDependencies": {
-    "beeftools": "^0.1.7",
+    "beeftools": "^0.1.8",
     "emitten": "^0.6.8"
   },
   "dependencies": {
-    "beeftools": "^0.1.7",
+    "beeftools": "^0.1.8",
     "emitten": "^0.6.8"
   },
   "devDependencies": {
     "@earwurm/helpers": "workspace:*",
     "@earwurm/mocks": "workspace:*",
     "@earwurm/types": "workspace:*",
-    "vite": "^5.4.1",
-    "vite-plugin-dts": "^4.0.3"
+    "vite": "^6.0.3",
+    "vite-plugin-dts": "^4.3.0"
   }
 }

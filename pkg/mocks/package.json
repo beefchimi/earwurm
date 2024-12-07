@@ -4,11 +4,11 @@
   "private": true,
   "license": "ISC",
   "engines": {
-    "node": ">=20.16.0",
-    "pnpm": ">=9.7.1"
+    "node": ">=22.11.0",
+    "pnpm": ">=9.15.0"
   },
   "dependencies": {
-    "beeftools": "^0.1.7"
+    "beeftools": "^0.1.8"
   },
   "devDependencies": {}
 }

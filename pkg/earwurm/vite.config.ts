@@ -2,11 +2,11 @@ import {resolve} from 'node:path';
 import {defineConfig} from 'vite';
 import dts from 'vite-plugin-dts';
 
-import rootViteConfig from '../../vite.config';
 import pkg from './package.json';
 
+// TODO: We may need a unique `vitest.config.ts` file for this
+// package... but simply adding that file does not appear to work.
 export default defineConfig({
-  ...rootViteConfig,
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),

@@ -9,6 +9,7 @@
     "DavidAnson.vscode-markdownlint",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
+    "yoavbls.pretty-ts-errors",
     "vue.volar",
     "csstools.postcss"
   ],
