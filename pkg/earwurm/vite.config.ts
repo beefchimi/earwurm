@@ -4,6 +4,8 @@ import dts from 'vite-plugin-dts';
 
 import pkg from './package.json';
 
+// TODO: We may need a unique `vitest.config.ts` file for this
+// package... but simply adding that file does not appear to work.
 export default defineConfig({
   build: {
     lib: {

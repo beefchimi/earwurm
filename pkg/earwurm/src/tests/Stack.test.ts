@@ -415,8 +415,7 @@ describe('Stack component', () => {
         id: mockStackId,
         message: [
           `Failed to load: ${mockPath}`,
-          // This string ends with `[object Request]`.
-          expect.stringContaining('Failed to parse URL from'),
+          expect.stringContaining('Failed to execute'),
         ],
       });
     });

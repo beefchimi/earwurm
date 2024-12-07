@@ -18,7 +18,7 @@ export class Stack extends EmittenCommon<StackEventMap> {
   static readonly #loadError = (
     id: StackId,
     path: string,
-    error: string,
+    error: unknown,
   ): StackError => ({
     id,
     message: [`Failed to load: ${path}`, getErrorMessage(error)],
@@ -170,7 +170,7 @@ export class Stack extends EmittenCommon<StackEventMap> {
     ).catch((error) => {
       this.emit(
         'error',
-        Stack.#loadError(this.id, this.path, getErrorMessage(error)),
+        Stack.#loadError(this.id, this.path, error),
       );
 
       return scratchBuffer(this.context);
