@@ -33,7 +33,9 @@
   "devDependencies": {
     "@antfu/eslint-config": "^3.11.2",
     "@earwurm/types": "workspace:*",
+    "@tsconfig/node22": "^22.0.0",
     "@vitejs/plugin-vue": "^5.2.1",
+    "@vue/tsconfig": "^0.7.0",
     "eslint": "^9.16.0",
     "eslint-plugin-format": "^0.1.3",
     "lightningcss": "^1.28.2",

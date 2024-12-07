@@ -23,6 +23,7 @@
     "clean": "pnpm -r clean && rm -rf coverage",
     "nuke": "pnpm clean && ./scripts/nuke.sh",
     "start": "pnpm --filter earwurm build && pnpm -r --parallel --stream start",
+    "preview": "pnpm --filter website preview",
     "build": "pnpm -r build",
     "lint": "pnpm -r build:only && pnpm -r lint && eslint .",
     "lint:fix": "pnpm -r build:only && pnpm -r lint:fix && eslint . --fix",
