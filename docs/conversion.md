@@ -1,8 +1,8 @@
 # Converting audio
 
-This documentation will NOT describe how to record audio and export it from any editing software.
+> This documentation will NOT describe how to record audio and export it from any editing software. For that, you may want to read: <https://medium.com/shopify-ux/improving-ui-with-web-audio-368bf674ccf7>
 
-Quite simply, if you have existing audio files that are not already in `webm` format, you can convert them using a command-line tool called [`ffmpeg`](https://ffmpeg.org/). You can learn some audio-specific commands from the [`ffmpeg` documentation](https://ffmpeg.org/ffmpeg.html#Audio-Options).
+If you have existing audio files that are not already in `webm` format, you can convert them using a command-line tool called [`ffmpeg`](https://ffmpeg.org/). You can learn some audio-specific commands from the [`ffmpeg` documentation](https://ffmpeg.org/ffmpeg.html#Audio-Options).
 
 Using `ffmpeg`, you can select an audio file as an “input source”, pass some options that tell `ffmpeg` how you want to transform the audio, and point to an “output source” to save the converted asset.
 
