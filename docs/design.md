@@ -17,8 +17,8 @@ The quickest way to describe the “structure” of an `Earwurm` is:
 - The `Manager` contains a library of “stacks”.
 - A `Stack` contains a queue of “sounds”.
 - A `Sound` is created and queued within the `Stack`.
-  - The queue builds up upon `stack.prepare()`.
-  - The queue decreases upon `sound.stop()` _(or `ended` event)_.
+  - The queue increases when calling: `stack.prepare()`.
+  - The queue decreases when calling: `sound.stop()` _(or `ended` event)_.
   - The queue has a maximum size.
     - A `Sound` is automatically destroyed as new sounds are added that would exceed that maximum size.
 - As sounds begin playing, their output travels through a “chain of gain nodes”, the final “destination” being your device’s speakers.

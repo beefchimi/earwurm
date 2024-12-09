@@ -53,7 +53,7 @@ manager.resume();
 // suspend and resume the `AudioContext` behind the scenes.
 manager.suspend();
 
-// Stop and destory all sounds within each `Stack`.
+// Stop and destroy all sounds within each `Stack`.
 // Each `Stack` will remain available in the library
 // to continue interacting with.
 manager.stop();
@@ -139,7 +139,7 @@ manager.activeEvents;
 // Event called whenever the `mute` property changes.
 (event: 'mute', listener: (muted: boolean) => void)
 
-// Event called whenever an error is occured on the `AudioContext`.
+// Event called whenever an error occurs on the `AudioContext`.
 // This could be a result of: failed to resume, failed to close.
 (event: 'error', listener: (messages: CombinedErrorMessage) => void)
 ```
@@ -150,7 +150,7 @@ There are no static members or relevant tokens exposed at the `manager` level.
 
 ## Stack API
 
-Capabilities of an indivudual `Earwurm > Stack`.
+Capabilities of an individual `Earwurm > Stack`.
 
 **Initialization:**
 
@@ -179,7 +179,7 @@ soundStack.has('SoundId');
 // to `created`. Accepts an optional `id`. Otherwise, `id` is auto
 // assigned by combining the `id` passed to `new Stack()` with
 // the total number of sounds created during this stack’s life.
-// Will return a `Promise` which resolves to the`Sound` instance.
+// Will return a `Promise` which resolves to the `Sound` instance.
 // You can either chain with `.then()`, or `await` and call
 // `.play()` once the `Promise` has resolved.
 soundStack.prepare(optionalId);
@@ -265,7 +265,7 @@ soundStack.activeEvents;
 // Event called whenever the `mute` property changes.
 (event: 'mute', listener: (muted: boolean) => void)
 
-// Event called whenever an error is occured on the `Stack`.
+// Event called whenever an error occurs on the `Stack`.
 // This could be a result of: failed to load the `path`.
 (event: 'error', listener: ({id, message}: StackError) => void)
 ```
