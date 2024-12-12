@@ -1,5 +1,13 @@
 # Earwurm Changelog
 
+## 0.11.2
+
+### Patch Changes
+
+- [#92](https://github.com/beefchimi/earwurm/pull/92) [`54b5434`](https://github.com/beefchimi/earwurm/commit/54b543408f0c1f09c0f59624e647631e24483210) Thanks [@beefchimi](https://github.com/beefchimi)! - Earwurm state is now set to the `context.state` upon initialization.
+
+- [#90](https://github.com/beefchimi/earwurm/pull/90) [`dd04449`](https://github.com/beefchimi/earwurm/commit/dd04449fe50af9c124184e20978fd442798d28b6) Thanks [@beefchimi](https://github.com/beefchimi)! - Update project dependencies.
+
 ## 0.11.1
 
 ### Patch Changes
