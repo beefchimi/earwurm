@@ -74,16 +74,21 @@ A rough pseudo-code visualization:
 
 ```tsx
 const soundStack = manager.get('MySound');
-const sound = await soundStack?.prepare();
+
+// We then make 3 consecutive calls to `prepare`
+// on the same `Stack`, produces 3 instances of that `Sound`:
+const sound1 = await soundStack?.prepare();
+const sound2 = await soundStack?.prepare();
+const sound3 = await soundStack?.prepare();
 
 // We can imagine some internal code that looks like:
 const latestId = totalSoundsCreated + 1;
 const updatedStack = [...stack.queue, new Sound(latestId)];
 
-// We then make 3 consecutive calls to `play` on the same `Sound`:
-sound?.play();
-sound?.play();
-sound?.play();
+// We then make 3 consecutive calls to `play` each `Sound`:
+sound1.play();
+sound2.play();
+sound3.play();
 
 // If we were to inspect that `Entry` at this exact moment,
 // it might look something like this:
