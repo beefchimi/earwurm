@@ -306,7 +306,7 @@ export class Sound extends EmittenCommon<SoundEventMap> {
     // was "stopped" or came to a natural "end".
     // We should also include the `iterations` value here so
     // that we can distinguish from a `loop > stop` having
-    // played to completion at least one. Lastly, we might
+    // played to completion at least once. Lastly, we might
     // also need to indicate if this was a "scratch buffer".
     this.emit('ended', {
       id: this.id,

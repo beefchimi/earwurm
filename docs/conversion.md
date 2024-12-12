@@ -1,8 +1,10 @@
 # Converting audio
 
-This documentation will NOT describe how to record audio and export it from any editing software.
+> This documentation will NOT describe how to record audio and export it from any editing software. For that, you may want to read: <https://medium.com/shopify-ux/improving-ui-with-web-audio-368bf674ccf7>
 
-Quite simply, if you have existing audio files that are not already in `webm` format, you can convert them using a command-line tool called [`ffmpeg`](https://ffmpeg.org/). You can learn some audio-specific commands from the [`ffmpeg` documentation](https://ffmpeg.org/ffmpeg.html#Audio-Options).
+If you have existing audio files that are not already in `webm` format, you can convert them using a command-line tool called [`ffmpeg`](https://ffmpeg.org/). If you are on a Mac and using Homebrew, `ffmpeg` is [very easy to install](https://formulae.brew.sh/formula/ffmpeg) as a command-line tool.
+
+You can learn some audio-specific commands from the [`ffmpeg` documentation](https://ffmpeg.org/ffmpeg.html#Audio-Options).
 
 Using `ffmpeg`, you can select an audio file as an “input source”, pass some options that tell `ffmpeg` how you want to transform the audio, and point to an “output source” to save the converted asset.
 
@@ -30,3 +32,18 @@ ffmpeg -i input-file.wav -dash 1 -map_metadata -1 -acodec libopus -ar 48000 -ac 
 - `-ab 96k`: Set the bitrate. `96k` for 2-channel `stereo` sound is probably good, but `128k` might be preferrable.
 - `-f webm`: Specifiy the output format.
 - `{output-file.ext}`: End with the file name _(including extension)_ you wish to save.
+
+## Tricks
+
+`ffmpeg` may not always be able to convert your source assets. When this happens, it is usually because of some file format conflict.
+
+Sometimes it helps to use another tool to convert that source asset. If you are on a Mac, you can usually `right-click` an audio file and select `Encode Selected Audio Files`. From there, just choose the highest quality output format. More than likely, this will be `Apple Lossless`.
+
+As long as that conversion works, you should then be able to point `ffmpeg` at that newly encoded file and proceed with the `.webm` conversion.
+
+## Resources
+
+Below are a few places you can go to get royalty-free audio assets:
+
+- <https://www.epidemicsound.com/>
+- <https://sonniss.com/>

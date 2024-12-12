@@ -14,21 +14,21 @@ import type {
 } from './types';
 
 export class Earwurm extends EmittenCommon<ManagerEventMap> {
-  private _vol = 1;
-  private _mute = false;
-  private _trans = false;
-  private _playing = false;
-  private _keys: StackId[] = [];
-  private _state: ManagerState = 'suspended';
-
   readonly #context = new AudioContext();
   readonly #gainNode = this.#context.createGain();
   readonly #request: ManagerConfig['request'];
 
   #library: Stack[] = [];
 
+  private _vol = 1;
+  private _mute = false;
+  private _trans = false;
+  private _playing = false;
+  private _keys: StackId[] = [];
+
   // If the `AudioContext` is `running` upon initialization,
   // then it should be safe to mark audio as “unlocked”.
+  private _state: ManagerState = this.#context.state || 'suspended';
   private _unlocked = this.#context.state === 'running';
 
   constructor(config?: ManagerConfig) {
@@ -140,6 +140,7 @@ export class Earwurm extends EmittenCommon<ManagerEventMap> {
       const existingStack = this.get(id);
       const identicalStack = existingStack?.path === path;
 
+      // Only skip updating the `Stack` if both `id + path` are the same.
       if (identicalStack) return collection;
 
       newKeys.push(id);

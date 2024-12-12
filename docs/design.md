@@ -17,8 +17,8 @@ The quickest way to describe the “structure” of an `Earwurm` is:
 - The `Manager` contains a library of “stacks”.
 - A `Stack` contains a queue of “sounds”.
 - A `Sound` is created and queued within the `Stack`.
-  - The queue builds up upon `stack.prepare()`.
-  - The queue decreases upon `sound.stop()` _(or `ended` event)_.
+  - The queue increases when calling: `stack.prepare()`.
+  - The queue decreases when calling: `sound.stop()` _(or `ended` event)_.
   - The queue has a maximum size.
     - A `Sound` is automatically destroyed as new sounds are added that would exceed that maximum size.
 - As sounds begin playing, their output travels through a “chain of gain nodes”, the final “destination” being your device’s speakers.
@@ -74,16 +74,21 @@ A rough pseudo-code visualization:
 
 ```tsx
 const soundStack = manager.get('MySound');
-const sound = await soundStack?.prepare();
+
+// We then make 3 consecutive calls to `prepare`
+// on the same `Stack`, produces 3 instances of that `Sound`:
+const sound1 = await soundStack?.prepare();
+const sound2 = await soundStack?.prepare();
+const sound3 = await soundStack?.prepare();
 
 // We can imagine some internal code that looks like:
 const latestId = totalSoundsCreated + 1;
 const updatedStack = [...stack.queue, new Sound(latestId)];
 
-// We then make 3 consecutive calls to `play` on the same `Sound`:
-sound?.play();
-sound?.play();
-sound?.play();
+// We then make 3 consecutive calls to `play` each `Sound`:
+sound1.play();
+sound2.play();
+sound3.play();
 
 // If we were to inspect that `Entry` at this exact moment,
 // it might look something like this:
